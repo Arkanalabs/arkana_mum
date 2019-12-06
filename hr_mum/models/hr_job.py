@@ -11,18 +11,6 @@ from dateutil import relativedelta
 import babel
 
 
-class HrJob(models.Model):
-    _inherit = 'hr.job'
-
-    job_ids = fields.Many2many('hr.job.order', string='Job Order')
-    job_type = fields.Selection([
-        ('internal', 'Internal'),
-        ('external', 'External'),
-    ], string='Type')
-    file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
-                                       'hr.file.template'].search([], limit=1)[0].id)
-
-
 class HrJobOrder(models.Model):
     _name = 'hr.job.order'
     _description = 'Job Order'
@@ -66,3 +54,15 @@ class HrFileTemplateLine(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     is_required = fields.Boolean(string='Required')
     template_id = fields.Many2one('hr.file.template', ondelete='cascade')
+
+
+class HrJob(models.Model):
+    _inherit = 'hr.job'
+
+    job_ids = fields.Many2many('hr.job.order', string='Job Order')
+    job_type = fields.Selection([
+        ('internal', 'Internal'),
+        ('external', 'External'),
+    ], string='Type')
+    file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
+                                       'hr.file.template'].search([], limit=1)[0].id)
