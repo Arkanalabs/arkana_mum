@@ -65,4 +65,4 @@ class HrJob(models.Model):
         ('external', 'External'),
     ], string='Type')
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
-                                       'hr.file.template'].search([], limit=1)[0].id)
+                                       'hr.file.template'].search([], limit=1))
