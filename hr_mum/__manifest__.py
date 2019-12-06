@@ -10,7 +10,7 @@
     'website': 'https://www.arkana.co.id',
     'description': """HR MUM""",
     'depends': [
-        'hr_recruitment',
+        'website_hr_recruitment',
     ],
     'data': [
         'security/ir.model.access.csv',
