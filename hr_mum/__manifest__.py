@@ -13,6 +13,7 @@
         'website_hr_recruitment',
     ],
     'data': [
+        'data/service_cron.xml',
         'security/ir.model.access.csv',
         'views/view_hr_recruitment.xml',
         'views/templates_website_hr_recruitment.xml',

@@ -5,15 +5,38 @@
 		<field name="model">hr.job</field> 
 		<field name="inherit_id" ref="hr.view_hr_job_form" /> 
 		<field name="arch" type="xml">
+			<button name="set_recruit" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</button>
+			<field name="state" position="attributes">
+				<attribute name="statusbar_visible">recruit,open,finish</attribute>
+			</field>
 			<field name="department_id" position="before">
-				<field name="job_type" />
+				<field name="code"/>
+				<field name="job_type" readonly="1"/>
 			</field>
 			<field name="user_id" position="after">
 				<field name="job_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
-				<field name="file_template_id" />
+				<field name="file_template_id"/>
+			</field>
+			<field name="no_of_recruitment" position="before">
+				<field name="date_start"/>
+				<field name="date_finish"/>
+				<field name="date_dif"/>
 			</field>
 		</field>
 	</record>
+
+	<record id="view_hr_job_published_button" model="ir.ui.view" >
+        <field name="name">hr.job.form.published.button</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+        <field name="arch" type="xml">
+            <field name="is_published" widget="website_redirect_button" position="attributes">
+				<attribute name="groups">base.group_system</attribute>
+			</field>
+        </field>
+    </record>
 
 	<record model="ir.ui.view" id="view_hr_job_kanban"> 
 		<field name="name">hr.job.kanban</field> 
@@ -26,6 +49,17 @@
 			<xpath expr="//templates/t/div/div/div/div/span" position="after">
 				<span>(<t t-esc="record.address_id.value"/>)</span>
 			</xpath>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_job_simple_form"> 
+		<field name="name">hr.job.simple.form</field> 
+		<field name="model">hr.job</field> 
+		<field name="inherit_id" ref="hr_recruitment.hr_job_simple_form" /> 
+		<field name="arch" type="xml">
+			<field name="name" position="after">
+				<field name="job_type"/>
+			</field>
 		</field>
 	</record>
 
@@ -48,11 +82,15 @@
 
 
 	<!-- Applicant -->
-	<!-- <record model="ir.ui.view" id="hr_applicant_view_form"> 
+	<record model="ir.ui.view" id="hr_applicant_view_form"> 
 		<field name="name">hr.applicant.form</field> 
 		<field name="model">hr.applicant</field> 
 		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" /> 
 		<field name="arch" type="xml">
+			<button name="create_employee_from_applicant" position="after">
+				<button string="Process" name="button_process" type="object"
+                        class="oe_highlight"/>
+			</button>
 			<xpath expr="//sheet/group" position="after">
 				<separator string='Documents' />
 				<field name="file_ids">
@@ -61,9 +99,24 @@
 						<field name="file" />
 					</tree>
 				</field>
+				<separator string='Processing Time' />
+				<field name="time_ids" readonly="1">
+					<tree>
+						<field name="time_process" readonly="1"/>
+						<field name="name" string="Process" readonly="1"/>
+					</tree>
+				</field>
 			</xpath>
+			<field name="type_id" position="after">
+				<field name="psikotes"/>
+				<field name="sequence_stage" invisible="1"/>
+			</field>
+			<field name="source_id" position="after">
+				<field name="qualified" attrs="{'readonly': [('sequence_stage', '!=', 1)]}"/>				
+				<field name="progress"/>
+			</field>
 		</field>
-	</record> -->
+	</record>
 
 	<!-- File Template -->
 	<record id="action_file_template" model="ir.actions.act_window">
@@ -106,6 +159,39 @@
 			<tree>
 				<field name="name" />
 			</tree>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="recruitment_stage_tree">
+		<field name="name">hr.recruitment.stage.tree</field>
+		<field name="model">hr.recruitment.stage</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_recruitment_stage_tree"/>
+		<field name="arch" type="xml">
+			<field name="name" position="after">
+				<field name="progress" />
+			</field>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="recruitment_stage_form">
+		<field name="name">hr.recruitment.stage.tree</field>
+		<field name="model">hr.recruitment.stage</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_recruitment_stage_form"/>
+		<field name="arch" type="xml">
+			<field name="template_id" position="after">
+				<field name="progress" />
+			</field>
+		</field>
+	</record>
+		
+	<record model="ir.ui.view" id="view_res_partner_form">
+		<field name="name">res.partner.form</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+			<field name="category_id" position="after">
+				<field name="rekrutment" />
+			</field>
 		</field>
 	</record>
 
