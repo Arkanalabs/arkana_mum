@@ -38,6 +38,17 @@
         </field>
     </record>
 
+	<record model="ir.ui.view" id="view_job_desc_website_inherit"> 
+		<field name="name">hr.job.desc.website.inherit</field> 
+		<field name="model">hr.job</field> 
+		<field name="inherit_id" ref="website_hr_recruitment.hr_job_website_inherit" /> 
+		<field name="arch" type="xml">
+			<xpath expr="//span/a" position="attributes">
+				<attribute name="groups">base.group_system</attribute>
+			</xpath>
+		</field>
+	</record>
+
 	<record model="ir.ui.view" id="view_hr_job_kanban"> 
 		<field name="name">hr.job.kanban</field> 
 		<field name="model">hr.job</field> 
@@ -63,6 +74,20 @@
 		</field>
 	</record>
 
+	<!-- <record model="ir.ui.view" id="view_job_filter_searchpanel"> 
+		<field name="name">hr.job.filter.searchpanel</field> 
+		<field name="model">hr.job</field> 
+		<field name="inherit_id" ref="hr_recruitment.hr_job_search_view" /> 
+		<field name="arch" type="xml">
+			<field name="user_id" position="replace">
+				<field name="address_id" icon="fa-map" domain="[('type', '=', 'recruitment')]"/>
+			</field>
+			<xpath expr="//searchpanel/field[@name='user_id']" position="replace">
+				<field name="address_id" icon="fa-map" domain="[('type', '=', 'recruitment')]"/>
+			</xpath>
+		</field>
+	</record> -->
+
 	<record model="ir.ui.view" id="view_job_filter">
 		<field name="name">hr.job.search</field> 
 		<field name="model">hr.job</field> 
@@ -79,7 +104,6 @@
 			</field>
 		</field>
 	</record>
-
 
 	<!-- Applicant -->
 	<record model="ir.ui.view" id="hr_applicant_view_form"> 
@@ -183,8 +207,17 @@
 			</field>
 		</field>
 	</record>
+
+	<record id="action_partner_recruitment" model="ir.actions.act_window">
+        <field name="name">Partner</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[('type', '=', 'recruitment')]</field>
+        <field name="help"></field>
+    </record>
 		
-	<record model="ir.ui.view" id="view_res_partner_form">
+	<!-- <record model="ir.ui.view" id="view_res_partner_form">
 		<field name="name">res.partner.form</field>
 		<field name="model">res.partner</field>
 		<field name="inherit_id" ref="base.view_partner_form"/>
@@ -193,12 +226,19 @@
 				<field name="rekrutment" />
 			</field>
 		</field>
-	</record>
+	</record> -->
 
 	<menuitem name="File Template"
 		id="menu_file_template"
 		groups="base.group_user"
 		sequence="30"
 		action="action_file_template"
+		parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+
+	<menuitem name="Job Location"
+		id="menu_partner_recruitement"
+		groups="base.group_user"
+		sequence="40"
+		action="action_partner_recruitment"
 		parent="hr_recruitment.menu_hr_recruitment_configuration"/>
 </odoo>

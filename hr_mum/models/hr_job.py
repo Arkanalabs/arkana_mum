@@ -144,6 +144,7 @@ class HrJob(models.Model):
     class Partner(models.Model):
         _inherit = 'res.partner'
 
-        rekrutment = fields.Boolean('Rekrutment')
+        # rekrutment = fields.Boolean('Rekrutment')
+        type = fields.Selection(selection_add=[("recruitment", "Recruitment")])
     
         
