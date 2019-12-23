@@ -6,7 +6,7 @@
     'license': 'AGPL-3',
     'version': '13.0',
     'category': 'Human Resources',
-    'author': 'Arkana, Joenan <joenan@arkana.co.id>',
+    'author': 'Arkana, Joenan <joenan@arkana.co.id>, Romskuy',
     'website': 'https://www.arkana.co.id',
     'description': """HR MUM""",
     'depends': [
