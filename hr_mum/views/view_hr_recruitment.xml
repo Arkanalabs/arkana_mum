@@ -12,8 +12,12 @@
 				<attribute name="statusbar_visible">recruit,open,finish</attribute>
 			</field>
 			<field name="department_id" position="before">
-				<field name="code"/>
+				<field name="code" attrs="{'invisible': [('job_type', '=', 'internal')]}"/>
 				<field name="job_type" readonly="1"/>
+			</field>
+			<field name="address_id" position="after">
+				<field name="qualification"/>
+				<field name="salary_expected" />
 			</field>
 			<field name="user_id" position="after">
 				<field name="job_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
@@ -57,6 +61,9 @@
 			<field name="name" position="after">
 				<field name="address_id" />
 			</field>
+			<xpath expr="//kanban" position="attributes">
+				<attribute name="default_order">create_date desc</attribute>
+			</xpath>
 			<xpath expr="//templates/t/div/div/div/div/span" position="after">
 				<span>(<t t-esc="record.address_id.value"/>)</span>
 			</xpath>
@@ -70,23 +77,21 @@
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="job_type"/>
+				<field name="address_id"/>
 			</field>
 		</field>
 	</record>
 
-	<!-- <record model="ir.ui.view" id="view_job_filter_searchpanel"> 
+	<record model="ir.ui.view" id="view_job_filter_searchpanel"> 
 		<field name="name">hr.job.filter.searchpanel</field> 
 		<field name="model">hr.job</field> 
 		<field name="inherit_id" ref="hr_recruitment.hr_job_search_view" /> 
 		<field name="arch" type="xml">
-			<field name="user_id" position="replace">
-				<field name="address_id" icon="fa-map" domain="[('type', '=', 'recruitment')]"/>
-			</field>
 			<xpath expr="//searchpanel/field[@name='user_id']" position="replace">
-				<field name="address_id" icon="fa-map" domain="[('type', '=', 'recruitment')]"/>
+				<field name="address_id" select="multi" icon="fa-map" domain="[('type', '=', 'recruitment')]"/>
 			</xpath>
 		</field>
-	</record> -->
+	</record>
 
 	<record model="ir.ui.view" id="view_job_filter">
 		<field name="name">hr.job.search</field> 
@@ -97,6 +102,9 @@
 				<field name="address_id" />
 				<field name="job_ids" />
 			</field>
+			<filter name="status" position="after">
+				<filter string="Job Location" name="address" domain="[('type', '=', 'recruitment')]"  context="{'group_by': 'address_id'}" />
+			</filter>
 			<field name="department_id" position="after">
 				<filter name="type_internal" string="Internal" domain="[('job_type', '=', 'internal')]"/>
 				<filter name="type_external" string="External" domain="[('job_type', '=', 'external')]"/>
@@ -115,29 +123,59 @@
 				<button string="Process" name="button_process" type="object"
                         class="oe_highlight"/>
 			</button>
+			<field name="job_id" position="before">
+				<field name="job_type"/>
+			</field>
 			<xpath expr="//sheet/group" position="after">
-				<separator string='Documents' />
-				<field name="file_ids">
-					<tree editable="bottom">
-						<field name="name" />
-						<field name="file" />
-					</tree>
-				</field>
-				<separator string='Processing Time' />
-				<field name="time_ids" readonly="1">
-					<tree>
-						<field name="time_process" readonly="1"/>
-						<field name="name" string="Process" readonly="1"/>
-					</tree>
-				</field>
+				<notebook colspan="4">
+					<page string='Documents'>
+						<group>
+							<field name="file_ids" nolabel="1">
+								<tree editable="bottom">
+									<field name="name" />
+									<field name="file" />
+								</tree>
+							</field>
+						</group>
+					</page>
+					<page string='Processing Time'>
+						<group>
+							<field name="time_ids" readonly="1" nolabel="1">
+								<tree>
+									<field name="time_process" readonly="1"/>
+									<field name="name" string="Process" readonly="1"/>
+								</tree>
+							</field>
+						</group>
+					</page>
+				</notebook>
 			</xpath>
 			<field name="type_id" position="after">
 				<field name="psikotes"/>
+				<field name="gender"/>
+				<field name="birth"/>
+				<field name="age"/>
+				<field name="no_ktp"/>
+				<field name="address"/>
+				<field name="work_experience"/>
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
 				<field name="qualified" attrs="{'readonly': [('sequence_stage', '!=', 1)]}"/>				
 				<field name="progress"/>
+			</field>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="hr_applicant_view_search">
+		<field name="name">hr.applicant.view.search</field> 
+		<field name="model">hr.applicant</field> 
+		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis" /> 
+		<field name="arch" type="xml">
+			<field name="attachment_ids" position="after">
+				<filter name="type_internal" string="Internal" domain="[('job_type', '=', 'internal')]"/>
+				<filter name="type_external" string="External" domain="[('job_type', '=', 'external')]"/>
+				<separator/>
 			</field>
 		</field>
 	</record>
@@ -207,6 +245,18 @@
 			</field>
 		</field>
 	</record>
+	
+	<!-- Partner -->
+	<record model="ir.ui.view" id="view_res_partner_form">
+		<field name="name">res.partner.form</field>
+		<field name="model">res.partner</field>
+		<field name="inherit_id" ref="base.view_partner_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//label[@name='address_name']" position="inside">
+				<b attrs="{'invisible': [('type', '!=', 'recruitment')]}">Recruitment Address</b>
+			</xpath>
+		</field>
+	</record>
 
 	<record id="action_partner_recruitment" model="ir.actions.act_window">
         <field name="name">Partner</field>
@@ -216,18 +266,7 @@
         <field name="domain">[('type', '=', 'recruitment')]</field>
         <field name="help"></field>
     </record>
-		
-	<!-- <record model="ir.ui.view" id="view_res_partner_form">
-		<field name="name">res.partner.form</field>
-		<field name="model">res.partner</field>
-		<field name="inherit_id" ref="base.view_partner_form"/>
-		<field name="arch" type="xml">
-			<field name="category_id" position="after">
-				<field name="rekrutment" />
-			</field>
-		</field>
-	</record> -->
-
+	
 	<menuitem name="File Template"
 		id="menu_file_template"
 		groups="base.group_user"

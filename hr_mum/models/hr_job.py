@@ -25,11 +25,21 @@ class HrApplicant(models.Model):
 
     file_ids = fields.One2many(
         'hr.applicant.file', 'applicant_id', string='File')
+    job_type = fields.Selection([
+        ('internal', 'Internal'),
+        ('external', 'External'),
+    ], string='Type', related='job_id.job_type')
     psikotes = fields.Binary('Psikotes')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
     qualified = fields.Boolean(string='Qualified')
+    gender = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
+    birth = fields.Char(string='Place, Date of Birth')
+    age = fields.Integer(string='Age', default=False)
+    no_ktp = fields.Char(string='No. KTP', default=False)
+    address = fields.Text(string='Address')
+    work_experience = fields.Char(string='Work Experience (year)')
 
     def button_process(self):
         for process in self:
@@ -85,7 +95,7 @@ class HrFileTemplateLine(models.Model):
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    code = fields.Char('Code', compute="_compute_code")
+    code = fields.Char('Code', compute="_compute_code", store=True)
     job_ids = fields.Many2many('hr.job.order', string='Job Order')
     job_type = fields.Selection([
         ('internal', 'Internal'),
@@ -97,10 +107,13 @@ class HrJob(models.Model):
     date_finish = fields.Date('Date Finish')
     date_dif = fields.Integer('Day Difference')
     state = fields.Selection(selection_add=[("finish", "Finish")])
+    address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
+    salary_expected = fields.Float('Expected Salary')
+    qualification = fields.Char(string='Qualification')
 
     def _compute_code(self):
         for code in self:
-            self.code = '%s/%s/%s/%s' % (self.department_id.name, self.date_start, self.address_id.name, self.name)
+            self.code = '%s/%s/%s/%s' % (code.env.user.name, code.date_start, code.address_id.name, code.name)
     
     def set_open(self):
         date_finish = fields.Datetime.today().strftime("%Y-%m-%d")
@@ -135,6 +148,17 @@ class HrJob(models.Model):
             value.website_published = False
         # vals['website_published'] = self.file_template_id.browse(vals['file_template_id']).publish_on_website
         return value
+
+    def close_dialog(self):
+        form_view = self.env.ref('hr.view_hr_job_form')
+        return {
+            'name': _('Job'),
+            'res_model': 'hr.job',
+            'res_id': self.id,
+            'views': [(form_view.id, 'form'),],
+            'type': 'ir.actions.act_window',
+            'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': 'true'},
+        }
 
     class HrRecruitmentStage(models.Model):
         _inherit = 'hr.recruitment.stage'
