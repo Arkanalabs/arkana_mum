@@ -16,8 +16,8 @@
 				<field name="job_type" readonly="1"/>
 			</field>
 			<field name="address_id" position="after">
+				<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
 				<field name="qualification"/>
-				<field name="salary_expected" />
 			</field>
 			<field name="user_id" position="after">
 				<field name="job_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
@@ -123,6 +123,9 @@
 				<button string="Process" name="button_process" type="object"
                         class="oe_highlight"/>
 			</button>
+			<xpath expr="//field[@name='kanban_state']" position="after">
+				<field name="image_applicant" widget="image" class="oe_avatar" modifiers="{}" style="margin-right:35px;" options="{'size': [100,120]}"/>
+			</xpath>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
 			</field>
@@ -151,6 +154,7 @@
 				</notebook>
 			</xpath>
 			<field name="type_id" position="after">
+				<field name="marital_status"/>
 				<field name="psikotes"/>
 				<field name="gender"/>
 				<field name="birth"/>

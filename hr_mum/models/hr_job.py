@@ -39,7 +39,14 @@ class HrApplicant(models.Model):
     age = fields.Integer(string='Age', default=False)
     no_ktp = fields.Char(string='No. KTP', default=False)
     address = fields.Text(string='Address')
+    # marital_status = fields.Char(string='Marital Status')
+    marital_status = fields.Selection([
+        ("single","Single"),
+        ("married","Married"),
+        ("widow","Widow"),
+        ("widower","Widower")], string='Marital Status')
     work_experience = fields.Char(string='Work Experience (year)')
+    image_applicant = fields.Image(string="Image")
 
     def button_process(self):
         for process in self:
@@ -109,7 +116,7 @@ class HrJob(models.Model):
     state = fields.Selection(selection_add=[("finish", "Finish")])
     address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
     salary_expected = fields.Float('Expected Salary')
-    qualification = fields.Char(string='Qualification')
+    qualification = fields.Text(string='Qualification')
 
     def _compute_code(self):
         for code in self:
