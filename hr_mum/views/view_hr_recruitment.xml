@@ -128,6 +128,7 @@
 			</xpath>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
+				<field name="user_applicant_id" invisible="1"/>
 			</field>
 			<xpath expr="//sheet/group" position="after">
 				<notebook colspan="4">
