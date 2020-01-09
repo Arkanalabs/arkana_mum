@@ -30,6 +30,7 @@ class HrApplicant(models.Model):
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
     psikotes = fields.Binary('Psikotes')
+    user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
@@ -107,13 +108,13 @@ class HrJob(models.Model):
     job_type = fields.Selection([
         ('internal', 'Internal'),
         ('external', 'External'),
-    ], string='Type')
+    ], string='Type', compute="_compute_type")
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
                                        'hr.file.template'].search([], limit=1))
     date_start = fields.Date('Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
     date_finish = fields.Date('Date Finish')
-    date_dif = fields.Integer('Day Difference')
     state = fields.Selection(selection_add=[("finish", "Finish")])
+    date_dif = fields.Integer('Day Difference')
     address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
     salary_expected = fields.Float('Expected Salary')
     qualification = fields.Text(string='Qualification')
@@ -121,6 +122,13 @@ class HrJob(models.Model):
     def _compute_code(self):
         for code in self:
             self.code = '%s/%s/%s/%s' % (code.env.user.name, code.date_start, code.address_id.name, code.name)
+
+    def _compute_type(self):
+        for types in self:
+            if self.env.user.has_group('base.group_system'):
+                types.job_type = 'internal'
+            else :
+                types.job_type = 'external'
     
     def set_open(self):
         date_finish = fields.Datetime.today().strftime("%Y-%m-%d")
