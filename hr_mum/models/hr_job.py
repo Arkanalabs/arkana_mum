@@ -60,7 +60,14 @@ class HrApplicant(models.Model):
                     'time_process': fields.Datetime.now()
                 })
             else:
-                raise UserError('Sorry, You are not qualified')    
+                raise UserError('Sorry, You are not qualified')
+    
+    # @api.multi
+    # def print_contract(self):
+    #     for record in self:
+    #         if not record.stage_id.name == "Contract Proposal":
+    #             self.env.ref('hr_mum.action_report_hr_applicant') = False
+                
     
 
 class HrApplicantFile(models.Model):

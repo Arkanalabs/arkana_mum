@@ -263,6 +263,97 @@
 		</field>
 	</record>
 
+	<!-- Kanban Applicant -->
+	<record model="ir.ui.view" id="hr_rec_form">
+		<field name="name">hr_rec.form</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+		<field name="arch" type="xml">
+			<xpath expr="//div[@class='oe_kanban_content']" position="replace">
+				<div class="oe_kanban_content" style="min-height: 90px;">
+					<div class="o_kanban_record_top">
+						<div class="col-md-4">
+							<field name="image_applicant" widget="image" class="o_kanban_image_fill_left o_hr_rounded_circle" />
+						</div>
+						<div class="o_kanban_record_headings">
+							<b class="o_kanban_record_title mt8" t-if="record.partner_name.raw_value">
+								<field name="partner_name"/><br/>
+							</b><t t-else="1">
+								<i class="o_kanban_record_title"><field name="name"/></i><br/>
+							</t>
+							<div class="o_kanban_record_subtitle" invisible="context.get('search_default_job_id', False)">
+								<field name="job_id"/>
+							</div>
+						</div>
+					</div>
+					<field name="categ_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+					<t t-if="record.partner_mobile.raw_value"><i class="fa fa-mobile mr4" role="img" aria-label="Mobile" title="Mobile"/><field name="partner_mobile" widget="phone"/><br/></t>
+					<div class="o_kanban_record_bottom mt4 offset-md-4" style="position: absolute; top: 50px;">
+						<div class="oe_kanban_bottom_left">
+							<div class="float-left mr4" groups="base.group_user">
+								<field name="priority" widget="priority"/>
+							</div>
+							<div class="o_kanban_inline_block mr8">
+								<field name="activity_ids" widget="kanban_activity"/>
+							</div>
+							<t t-if="record.message_needaction_counter.raw_value">
+								<span role="alert" class="oe_kanban_mail_new mr4" title="Unread Messages"><i class="fa fa-comments" role="img" aria-label="Unread messages"/><t t-raw="record.message_needaction_counter.raw_value"/></span>
+							</t>
+						</div>
+						<div class="oe_kanban_bottom_right">
+							<a name="action_get_attachment_tree_view" type="object">
+								<span title="Documents"><i class="fa fa-paperclip" role="img" aria-label="Documents"/>
+									<t t-esc="record.attachment_number.raw_value"/>
+								</span>
+							</a>
+							<div class="o_kanban_state_with_padding">
+								<field name="kanban_state" widget="kanban_state_selection"/>
+								<field name="legend_normal" invisible="1"/>
+								<field name="legend_blocked" invisible="1"/>
+								<field name="legend_done" invisible="1"/>
+							</div>
+							<img t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" t-att-title="record.user_id.value" t-att-alt="record.user_id.value" class="oe_kanban_avatar"/>
+						</div>
+					</div>
+				</div>
+			</xpath>
+			<!-- <xpath expr="//div[@class='o_kanban_record_headings']" position="before">
+				<div class="col-md-4">
+					<field name="image_applicant" widget="image" class="o_kanban_image_fill_left o_hr_rounded_circle" />
+				</div>
+			</xpath>
+			<xpath expr="//div[@class='o_kanban_record_bottom']" position="replace">
+				<div class="o_kanban_record_bottom mt4 offset-md-4" style="position: absolute; top: 50px;">
+					<div class="oe_kanban_bottom_left">
+						<div class="float-left mr4" groups="base.group_user">
+							<field name="priority" widget="priority"/>
+						</div>
+						<div class="o_kanban_inline_block mr8">
+							<field name="activity_ids" widget="kanban_activity"/>
+						</div>
+						<t t-if="record.message_needaction_counter.raw_value">
+							<span role="alert" class="oe_kanban_mail_new mr4" title="Unread Messages"><i class="fa fa-comments" role="img" aria-label="Unread messages"/><t t-raw="record.message_needaction_counter.raw_value"/></span>
+						</t>
+					</div>
+					<div class="oe_kanban_bottom_right">
+						<a name="action_get_attachment_tree_view" type="object">
+							<span title="Documents"><i class="fa fa-paperclip" role="img" aria-label="Documents"/>
+								<t t-esc="record.attachment_number.raw_value"/>
+							</span>
+						</a>
+						<div class="o_kanban_state_with_padding">
+							<field name="kanban_state" widget="kanban_state_selection"/>
+							<field name="legend_normal" invisible="1"/>
+							<field name="legend_blocked" invisible="1"/>
+							<field name="legend_done" invisible="1"/>
+						</div>
+						<img t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" t-att-title="record.user_id.value" t-att-alt="record.user_id.value" class="oe_kanban_avatar"/>
+					</div>
+				</div>
+			</xpath> -->
+		</field>
+	</record>
+
 	<record id="action_partner_recruitment" model="ir.actions.act_window">
         <field name="name">Partner</field>
         <field name="res_model">res.partner</field>
