@@ -1,0 +1,17 @@
+<odoo>
+    <data noupdate="1">
+    <!-- <record id="msg_job_position_create" model="mail.message">
+        <field name="subject">New Job Position by User</field>
+        <field name="model">hr.job</field>
+        <field name="res_id" eval="0"/>
+        <field name="body" type="xml">
+            <p>Hello,</p>
+            <p>I have checked this application but it does not match with our requirements. We don't need to proceed further and we should refuse this application.</p>
+            <p>Kind regards,</p>
+        </field>
+        <field name="message_type">notification</field>
+        <field name="subtype_id" ref="hr_recruitment.mt_job_new"/>
+        <field name="author_id" eval="0"/>
+    </record> -->
+    </data>
+</odoo>

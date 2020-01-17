@@ -15,6 +15,8 @@
     'data': [
         'data/service_cron.xml',
         'data/config_data.xml',
+        'data/message_data.xml',
+        'data/template_mail_notif_contract.xml',
         'security/ir.model.access.csv',
         'security/mum_security.xml',
         'views/view_hr_recruitment.xml',

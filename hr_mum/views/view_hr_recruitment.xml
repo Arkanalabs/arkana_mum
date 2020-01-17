@@ -77,6 +77,7 @@
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="job_type"/>
+				<field name="user_id" required="1"/>
 				<field name="address_id"/>
 			</field>
 		</field>
@@ -121,7 +122,7 @@
 		<field name="arch" type="xml">
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
-                        class="oe_highlight"/>
+                        class="oe_highlight" />
 			</button>
 			<xpath expr="//field[@name='kanban_state']" position="after">
 				<field name="image_applicant" widget="image" class="oe_avatar" modifiers="{}" style="margin-right:35px;" options="{'size': [100,120]}"/>
@@ -229,6 +230,7 @@
 		</field>
 	</record>
 
+	<!-- Recruitment -->
 	<record model="ir.ui.view" id="recruitment_stage_tree">
 		<field name="name">hr.recruitment.stage.tree</field>
 		<field name="model">hr.recruitment.stage</field>
@@ -260,6 +262,30 @@
 			<xpath expr="//label[@name='address_name']" position="inside">
 				<b attrs="{'invisible': [('type', '!=', 'recruitment')]}">Recruitment Address</b>
 			</xpath>
+		</field>
+	</record>
+
+	<!-- Contract -->
+	<record model="ir.ui.view" id="view_contract_month_form">
+		<field name="name">	hr.contract.form</field>
+		<field name="model">hr.contract</field>
+		<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+		<field name="arch" type="xml">
+			<field name="date_end" position="after">
+				<field name="month_end"/>
+			</field>
+		</field>
+	</record>
+
+	<!-- Project -->
+	<record model="ir.ui.view" id="project_one_month_form">
+		<field name="name">project.project.form</field>
+		<field name="model">project.project</field>
+		<field name="inherit_id" ref="project.edit_project"/>
+		<field name="arch" type="xml">
+			<field name="partner_id" position="after">
+				<field name="date_start"/>
+			</field>
 		</field>
 	</record>
 

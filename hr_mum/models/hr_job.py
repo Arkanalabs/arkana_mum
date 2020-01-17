@@ -4,9 +4,10 @@ from odoo.exceptions import UserError
 
 import time
 import math
+from datetime import date
 from datetime import datetime
 from datetime import time as datetime_time
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 
 import babel, logging
 
@@ -29,6 +30,7 @@ class HrApplicant(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
+    user_id = fields.Many2one(related='job_id.user_id')
     psikotes = fields.Binary('Psikotes')
     user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')
@@ -52,16 +54,19 @@ class HrApplicant(models.Model):
     def button_process(self):
         for process in self:
             stage_id = process.stage_id.search([('sequence', '>', self.stage_id.sequence)], limit=1)
-            if self.qualified:
+            if self.qualified and stage_id:
                 process.stage_id = stage_id
                 self.env['hr.applicant.time'].create({
                     'applicant_id': process.id,
                     'name': self.stage_id.name,
                     'time_process': fields.Datetime.now()
                 })
-            else:
-                raise UserError('Sorry, You are not qualified')    
-    
+            # elif process.stage_id == process.stage_id.search([])[-1]:
+            #     raise UserError('Sorry, This is the last process')    
+            elif not stage_id:
+                raise UserError('Sorry, This is the last stage')
+            else :
+                raise UserError('Sorry, You are not qualified')
 
 class HrApplicantFile(models.Model):
     _name = 'hr.applicant.file'
@@ -103,12 +108,20 @@ class HrFileTemplateLine(models.Model):
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
+    @api.model
+    def _default_type(self):
+        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+            return 'internal'
+        else :
+            return 'external'
+    
     code = fields.Char('Code', compute="_compute_code", store=True)
     job_ids = fields.Many2many('hr.job.order', string='Job Order')
     job_type = fields.Selection([
         ('internal', 'Internal'),
         ('external', 'External'),
-    ], string='Type', compute="_compute_type")
+    ], string='Type', default=_default_type)
+    user_id = fields.Many2one('res.users', string='Responsible', default=lambda x: x.env.user.id)
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
                                        'hr.file.template'].search([], limit=1))
     date_start = fields.Date('Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
@@ -123,13 +136,6 @@ class HrJob(models.Model):
         for code in self:
             self.code = '%s/%s/%s/%s' % (code.env.user.name, code.date_start, code.address_id.name, code.name)
 
-    def _compute_type(self):
-        for types in self:
-            if self.env.user.has_group('base.group_system'):
-                types.job_type = 'internal'
-            else :
-                types.job_type = 'external'
-    
     def set_open(self):
         date_finish = fields.Datetime.today().strftime("%Y-%m-%d")
         # d1 = datetime.strptime(str(self.date_start),'%Y-%m-%d') 
@@ -161,7 +167,9 @@ class HrJob(models.Model):
             value.website_published = True
         else:
             value.website_published = False
-        # vals['website_published'] = self.file_template_id.browse(vals['file_template_id']).publish_on_website
+    
+        if value.user_id:
+            value.notification_action()
         return value
 
     def close_dialog(self):
@@ -174,12 +182,84 @@ class HrJob(models.Model):
             'type': 'ir.actions.act_window',
             'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': 'true'},
         }
+    
+    def notification_action(self):
+        # notification = {
+        #         'mail_message_id': self.env['mail.notification'].mail_message_id.id,
+        #         'res_partner_id': self.user_id.partner_id.browse(3),
+     	#         'notification_type': 'inbox',
+        #         'notification_status': 'ready',
+        #     }
+        # create_notif = self.env['mail.notification'].create(notification).ids
 
+        message = self.env['mail.message'].create({'message_type':"notification",
+            'subject': "New Job Position",
+            'subtype_id': self.env.ref("hr_recruitment.mt_job_new").id, # subject type
+            'body': "New job position %s" % (self.name),   
+            'model': self._name,
+            'res_id': self.id,
+        })
+        
+        self.env['mail.notification'].create({
+                'res_partner_id': self.env.ref('base.partner_admin').id,
+                'notification_type': 'inbox',
+                'notification_status': 'ready',   
+                'mail_message_id': message.id,
+            })
+
+    class HrContract(models.Model):
+        _inherit = 'hr.contract'
+
+        month_end = fields.Integer(string='End Month', default=4)
+        
+        @api.model
+        def _notif_contract(self): 
+            contract_ids = self.search([('state', '=', 'open')])
+            for contract in contract_ids:
+                if contract.date_end:
+                    _logger.warning('===================> Stop Recruitment %s <===================' % (contract.name))
+                    before_three_months = contract.date_end - relativedelta(months=+3)
+                    before_two_months = contract.date_end - relativedelta(months=+2)
+                    before_one_months = contract.date_end - relativedelta(months=+1)
+
+                    if before_three_months == date.today() \
+                        or before_two_months == date.today() or before_one_months == date.today():
+                        contract.month_end -= 1
+                        template = self.env.ref('hr_mum.template_mail_notif_contract')
+                        template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
+
+    
     class HrRecruitmentStage(models.Model):
         _inherit = 'hr.recruitment.stage'
 
         progress = fields.Char(string='Progress')
  
+    class Project(models.Model):
+        _inherit = 'project.project'
+
+        date_start = fields.Date('Date Start', default=fields.Date.today())
+        
+        @api.model
+        def _create_task_project(self):
+            project_ids = self.search([])
+            for project in project_ids:
+                 _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))
+                 if project.date_start:
+                    after_one_months = project.date_start + relativedelta(months=+1)
+                    if after_one_months:
+                        project.env['project.task'].create([
+                            {
+                               'project_id': project.id,
+                               'name': 'Invoice',
+                               'user_id': False
+                            },
+                            {
+                               'project_id': project.id,
+                               'name': 'Rekap Absensi',
+                               'user_id': False
+                            },
+                        ])
+
     class Partner(models.Model):
         _inherit = 'res.partner'
 
