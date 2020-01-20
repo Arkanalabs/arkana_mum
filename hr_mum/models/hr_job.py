@@ -68,6 +68,12 @@ class HrApplicant(models.Model):
             else :
                 raise UserError('Sorry, You are not qualified')
 
+    # def create_employee_from_applicant(self):
+    #     if applicant.partner_name or contact_name:
+    #         employee = self.env['hr.employee'].create({
+    #             'image_1920': self.image_applicant
+    #         })
+
 class HrApplicantFile(models.Model):
     _name = 'hr.applicant.file'
     _description = 'File'
