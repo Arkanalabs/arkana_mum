@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'HR MUM',
-    'summary': 'HR MUM',
+    'summary': 'Custom HR for MUM',
     'license': 'AGPL-3',
     'version': '13.0',
     'category': 'Human Resources',
