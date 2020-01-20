@@ -286,6 +286,8 @@
 			<field name="partner_id" position="after">
 				<field name="date_start" invisible="1"/>
 			</field>
+		</field>
+	</record>
 	<!-- Kanban Applicant -->
 	<record model="ir.ui.view" id="hr_rec_form">
 		<field name="name">hr_rec.form</field>
