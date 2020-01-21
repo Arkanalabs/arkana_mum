@@ -3,7 +3,7 @@
 		<field name="name">Template Mail Notifikasi Deadline Contract</field>
 		<field name="email_from">${(object.env.user.email or '')|safe}</field>
 		<field name="subject">Deadline Contract</field>
-		<field name="email_to">trianperfecto@gmail.com</field>
+		<field name="email_to">${object.partner_id.email}</field>
 		<field name="email_cc"/>
 		<field name="model_id" ref="hr_contract.model_hr_contract"/>
 		<field name="auto_delete" eval="False"/>
