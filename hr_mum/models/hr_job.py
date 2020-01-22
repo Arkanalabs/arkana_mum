@@ -55,10 +55,11 @@ class HrApplicant(models.Model):
     @api.depends('birth')
     def _age_compute(self):
         for rec in self:
-            birth = rec.birth.strftime("%Y-%m-%d")
-            d1 = datetime.strptime(birth, "%Y-%m-%d").date()
-            d2 = date.today()
-            rec.age = relativedelta(d2, d1).years
+            if self.birth:
+                birth = rec.birth.strftime("%Y-%m-%d")
+                d1 = datetime.strptime(birth, "%Y-%m-%d").date()
+                d2 = date.today()
+                rec.age = relativedelta(d2, d1).years
 
     def button_process(self):
         for process in self:
