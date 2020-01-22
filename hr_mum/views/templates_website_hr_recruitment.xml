@@ -55,7 +55,7 @@
           </div>
           <div class="col-lg-7 col-md-8">
               <input type="text" name="place_of_birth" class="form-control o_website_form_input" placeholder="Place" required="1"/>
-              <input type="text" name="birth" class="form-control o_website_form_input o_website_form_date" placeholder="mm / dd / yyyy" />
+              <input type="text" name="birth" class="form-control o_website_form_input o_website_form_date" placeholder="Date of Birth (mm/dd/yyyy)" />
           </div>
       </div>
       <div class="form-group row form-field">
