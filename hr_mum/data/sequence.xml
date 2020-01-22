@@ -1,0 +1,9 @@
+<odoo>
+    <record id="contract_sequence" model="ir.sequence">
+        <field name="name">Kode Kontrak Number</field>
+        <field name="code">kontrak_number</field>
+        <field eval="4" name="padding"/>
+        <field name="prefix">PKWT-</field>
+        <field name="suffix">/MUM-BIS/%(month)s/%(year)s</field>
+    </record>
+</odoo>
