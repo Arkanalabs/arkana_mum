@@ -38,8 +38,9 @@ class HrApplicant(models.Model):
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
     qualified = fields.Boolean(string='Qualified')
     gender = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
-    birth = fields.Char(string='Place, Date of Birth')
-    age = fields.Integer(string='Age', default=False)
+    place_of_birth = fields.Char(string='Place')
+    birth = fields.Date(string='Place, Date of Birth', store=True)
+    age = fields.Integer(string='Age', default=False, compute='_age_compute')
     no_ktp = fields.Char(string='No. KTP', default=False)
     address = fields.Text(string='Address')
     # marital_status = fields.Char(string='Marital Status')
@@ -50,6 +51,14 @@ class HrApplicant(models.Model):
         ("widower","Widower")], string='Marital Status')
     work_experience = fields.Char(string='Work Experience (year)')
     image_applicant = fields.Image(string="Image")
+
+    @api.depends('birth')
+    def _age_compute(self):
+        for rec in self:
+            birth = rec.birth.strftime("%Y-%m-%d")
+            d1 = datetime.strptime(birth, "%Y-%m-%d").date()
+            d2 = date.today()
+            rec.age = relativedelta(d2, d1).years
 
     def button_process(self):
         for process in self:
@@ -142,6 +151,7 @@ class HrJob(models.Model):
     date_dif = fields.Integer('Day Difference')
     address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
     salary_expected = fields.Float('Expected Salary')
+    flag_salary = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
 
     @api.depends('date_start', 'address_id', 'name')
@@ -220,26 +230,35 @@ class HrJob(models.Model):
                 'mail_message_id': message.id,
             })
 
-    class HrContract(models.Model):
-        _inherit = 'hr.contract'
+class Contract(models.Model):
+    _inherit = 'hr.contract'
 
-        month_end = fields.Integer(string='End Month', default=4)
-        
-        @api.model
-        def _notif_contract(self): 
-            contract_ids = self.search([('state', '=', 'open')])
-            for contract in contract_ids:
-                if contract.date_end:
-                    _logger.warning('===================> Stop Recruitment %s <===================' % (contract.name))
-                    before_three_months = contract.date_end - relativedelta(months=+3)
-                    before_two_months = contract.date_end - relativedelta(months=+2)
-                    before_one_months = contract.date_end - relativedelta(months=+1)
+    name = fields.Char('Contract Reference', required=False)
+    month_end = fields.Integer(string='End Month', default=4)
 
-                    if before_three_months == date.today() \
-                        or before_two_months == date.today() or before_one_months == date.today():
-                        contract.month_end -= 1
-                        template = self.env.ref('hr_mum.template_mail_notif_contract')
-                        template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
+    def write(self, vals):
+        if 'state' in vals :
+            if vals.get('state') == 'open':
+                self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_number')})
+        # elif vals.get('state') == 'open':
+        #     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_number')
+        return super(Contract, self).write(vals)
+
+    @api.model
+    def _notif_contract(self): 
+        contract_ids = self.search([('state', '=', 'open')])
+        for contract in contract_ids:
+            if contract.date_end:
+                _logger.warning('===================> Stop Recruitment %s <===================' % (contract.name))
+                before_three_months = contract.date_end - relativedelta(months=+3)
+                before_two_months = contract.date_end - relativedelta(months=+2)
+                before_one_months = contract.date_end - relativedelta(months=+1)
+
+                if before_three_months == date.today() \
+                    or before_two_months == date.today() or before_one_months == date.today():
+                    contract.month_end -= 1
+                    template = self.env.ref('hr_mum.template_mail_notif_contract')
+                    template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
 
     
     class HrRecruitmentStage(models.Model):
@@ -271,6 +290,11 @@ class HrJob(models.Model):
                                'name': 'Rekap Absensi',
                                'user_id': False
                             },
+                            {
+                               'project_id': project.id,
+                               'name': 'Slip Gaji',
+                               'user_id': False
+                            }
                         ])
 
     class Partner(models.Model):

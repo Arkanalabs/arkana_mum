@@ -16,7 +16,11 @@
 				<field name="job_type" readonly="1"/>
 			</field>
 			<field name="address_id" position="after">
-				<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+				<label for="salary_expected"/>
+				<div class="o_row">
+					<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+					<field name="flag_salary"/><span class="text-muted">(If true, then appear on the website)</span>
+				</div>
 				<field name="qualification"/>
 			</field>
 			<field name="user_id" position="after">
@@ -159,7 +163,11 @@
 				<field name="marital_status"/>
 				<field name="psikotes"/>
 				<field name="gender"/>
-				<field name="birth"/>
+				<label for="birth"/>
+				<div class="o_row">
+					<field name="place_of_birth" nolabel="1" placeholder="Place"/>
+					<field name="birth" nolabel="1" placeholder="Date of Birth"/>
+				</div>
 				<field name="age"/>
 				<field name="no_ktp"/>
 				<field name="address"/>
@@ -271,6 +279,9 @@
 		<field name="model">hr.contract</field>
 		<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
 		<field name="arch" type="xml">
+			<field name="name" position="attributes">
+				<attribute name="required">0</attribute>
+			</field>
 			<field name="date_end" position="after">
 				<field name="month_end" invisible="1"/>
 			</field>
