@@ -131,6 +131,7 @@ class HrFileTemplateLine(models.Model):
 
 class HrJob(models.Model):
     _inherit = 'hr.job'
+    _order = 'create_date desc'
 
     @api.model
     def _default_type(self):
