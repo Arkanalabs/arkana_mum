@@ -60,6 +60,9 @@ class HrApplicant(models.Model):
                 d1 = datetime.strptime(birth, "%Y-%m-%d").date()
                 d2 = date.today()
                 rec.age = relativedelta(d2, d1).years
+            else:
+                rec.age = 0
+            
 
     def button_process(self):
         for process in self:
