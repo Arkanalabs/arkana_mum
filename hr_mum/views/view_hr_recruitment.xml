@@ -305,6 +305,9 @@
 		<field name="model">hr.applicant</field>
 		<field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
 		<field name="arch" type="xml">
+			<xpath expr="//kanban" position="attributes">
+				<attribute name="records_draggable">0</attribute>
+			</xpath>
 			<xpath expr="//div[@class='oe_kanban_content']" position="replace">
 				<div class="oe_kanban_content" style="min-height: 90px;">
 					<div class="o_kanban_record_top">
