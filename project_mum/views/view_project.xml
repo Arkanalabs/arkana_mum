@@ -1,0 +1,21 @@
+<odoo>
+	<!-- Job -->
+	<record model="ir.ui.view" id="view_task_mum_kanban"> 
+		<field name="name">project.task.kanban</field> 
+		<field name="model">project.task</field> 
+		<field name="inherit_id" ref="project.view_task_kanban" /> 
+		<field name="arch" type="xml">
+			<xpath expr="//kanban" position="attributes">
+				<attribute name="records_draggable">0</attribute>
+			</xpath>
+			<xpath expr="//div[@class='oe_kanban_bottom_right']" position="replace">
+				<div class="oe_kanban_bottom_right" t-if="!selection_mode">
+					<button name="action_to_approve" type="object" style="margin-left: 6px;" 
+						class="oe_highlight" groups="project.group_project_user">To Approve</button>
+					<button name="action_done" type="object" style="margin-left: 6px;" 
+						class="oe_highlight" groups="project.group_project_manager">Done</button>
+				</div>
+			</xpath>
+		</field>
+	</record>
+</odoo>
