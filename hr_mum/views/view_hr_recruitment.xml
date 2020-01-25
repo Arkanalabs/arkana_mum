@@ -195,15 +195,6 @@
 	</record>
 
 	<!-- File Template -->
-	<record id="action_file_template" model="ir.actions.act_window">
-        <field name="name">File Template</field>
-        <field name="res_model">hr.file.template</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
-        <field name="domain">[]</field>
-        <field name="help"></field>
-    </record>
-
 	<record model="ir.ui.view" id="file_template_view_form"> 
 		<field name="name">hr.file.template.form</field> 
 		<field name="model">hr.file.template</field> 
@@ -212,7 +203,7 @@
 				<sheet>
 					<div class="oe_title">
 						<h1>
-							<field name="name" placeholder="Employee's Name" />
+							<field name="name" placeholder="Template's Name" />
 						</h1>
 					</div>
 					<separator string="Documents"/>
@@ -237,6 +228,15 @@
 			</tree>
 		</field>
 	</record>
+
+	<record id="action_file_template" model="ir.actions.act_window">
+        <field name="name">File Template</field>
+        <field name="res_model">hr.file.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="help"></field>
+    </record>
 
 	<!-- Recruitment -->
 	<record model="ir.ui.view" id="recruitment_stage_tree">
@@ -295,10 +295,54 @@
 		<field name="inherit_id" ref="project.edit_project"/>
 		<field name="arch" type="xml">
 			<field name="partner_id" position="after">
-				<field name="date_start" invisible="1"/>
+				<field name="date_start"/>
+				<field name="project_task_ids" widget="many2many_tags"/>				
 			</field>
 		</field>
 	</record>
+
+	<!-- Project Task Template -->
+	<record model="ir.ui.view" id="project_task_template_tree">
+		<field name="name">project.task.template.tree</field>
+		<field name="model">project.task.template</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="name"/>
+				<field name="is_active"/>
+			</tree>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="project_task_template_form">
+		<field name="name">project.task.template.form</field>
+		<field name="model">project.task.template</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<h1>
+							<field name="name" placeholder="Task Name" />
+						</h1>
+					</div>
+					<group>
+						<group>
+							<field name="is_active"/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_project_task_template" model="ir.actions.act_window">
+        <field name="name">Automated Task</field>
+        <field name="res_model">project.task.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="help"></field>
+    </record>
+	
 	<!-- Kanban Applicant -->
 	<record model="ir.ui.view" id="hr_rec_form">
 		<field name="name">hr_rec.form</field>
@@ -356,40 +400,6 @@
 					</div>
 				</div>
 			</xpath>
-			<!-- <xpath expr="//div[@class='o_kanban_record_headings']" position="before">
-				<div class="col-md-4">
-					<field name="image_applicant" widget="image" class="o_kanban_image_fill_left o_hr_rounded_circle" />
-				</div>
-			</xpath>
-			<xpath expr="//div[@class='o_kanban_record_bottom']" position="replace">
-				<div class="o_kanban_record_bottom mt4 offset-md-4" style="position: absolute; top: 50px;">
-					<div class="oe_kanban_bottom_left">
-						<div class="float-left mr4" groups="base.group_user">
-							<field name="priority" widget="priority"/>
-						</div>
-						<div class="o_kanban_inline_block mr8">
-							<field name="activity_ids" widget="kanban_activity"/>
-						</div>
-						<t t-if="record.message_needaction_counter.raw_value">
-							<span role="alert" class="oe_kanban_mail_new mr4" title="Unread Messages"><i class="fa fa-comments" role="img" aria-label="Unread messages"/><t t-raw="record.message_needaction_counter.raw_value"/></span>
-						</t>
-					</div>
-					<div class="oe_kanban_bottom_right">
-						<a name="action_get_attachment_tree_view" type="object">
-							<span title="Documents"><i class="fa fa-paperclip" role="img" aria-label="Documents"/>
-								<t t-esc="record.attachment_number.raw_value"/>
-							</span>
-						</a>
-						<div class="o_kanban_state_with_padding">
-							<field name="kanban_state" widget="kanban_state_selection"/>
-							<field name="legend_normal" invisible="1"/>
-							<field name="legend_blocked" invisible="1"/>
-							<field name="legend_done" invisible="1"/>
-						</div>
-						<img t-att-src="kanban_image('res.users', 'image_128', record.user_id.raw_value)" t-att-title="record.user_id.value" t-att-alt="record.user_id.value" class="oe_kanban_avatar"/>
-					</div>
-				</div>
-			</xpath> -->
 		</field>
 	</record>
 
@@ -415,4 +425,11 @@
 		sequence="40"
 		action="action_partner_recruitment"
 		parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+
+	<menuitem name="Automated Task"
+		id="menu_project_task"
+		groups="base.group_user"
+		sequence="5"
+		action="action_project_task_template"
+		parent="project.menu_project_config"/>
 </odoo>
