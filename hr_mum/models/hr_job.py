@@ -62,7 +62,6 @@ class HrApplicant(models.Model):
                 rec.age = relativedelta(d2, d1).years
             else:
                 rec.age = 0
-            
 
     def button_process(self):
         for process in self:
@@ -151,9 +150,9 @@ class HrJob(models.Model):
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
                                        'hr.file.template'].search([], limit=1))
     date_start = fields.Date('Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
-    date_finish = fields.Date('Date Finish')
+    date_finish = fields.Date('Date Finish', readonly=True)
     state = fields.Selection(selection_add=[("finish", "Finish")])
-    date_dif = fields.Integer('Day Difference')
+    date_dif = fields.Integer('Day Difference', readonly=True)
     address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
     salary_expected = fields.Float('Expected Salary')
     flag_salary = fields.Boolean(string='Flag')
@@ -274,34 +273,37 @@ class Contract(models.Model):
     class Project(models.Model):
         _inherit = 'project.project'
 
-        date_start = fields.Date('Date Start', default=fields.Date.today())
-        
+        project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain=[('is_active', '=', True)])
+        date_start = fields.Date('Date Start', default=fields.Date.today(), readonly=True)
+
         @api.model
         def _create_task_project(self):
             project_ids = self.search([])
             for project in project_ids:
-                 _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))
+                 _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))  
                  if project.date_start:
                     after_one_months = project.date_start + relativedelta(months=+1)
                     if after_one_months:
-                        project.env['project.task'].create([
-                            {
-                               'project_id': project.id,
-                               'name': 'Invoice',
-                               'user_id': False
-                            },
-                            {
-                               'project_id': project.id,
-                               'name': 'Rekap Absensi',
-                               'user_id': False
-                            },
-                            {
-                               'project_id': project.id,
-                               'name': 'Slip Gaji',
-                               'user_id': False
-                            }
-                        ])
+                        task = project.project_task_ids
+                        if task:
+                            for rec in task:
+                                # stage = project.env['project.task.type'].search([('sequence', '=', 1), ('fold', '=', True)], limit=1)
+                                project.env['project.task'].create([
+                                    {
+                                    'project_id': project.id,
+                                    'name': rec.name,
+                                    'user_id': False,
+                                    },
+                                ])
+            
+    class ProjectTaskTemplate(models.Model):
+        _name = 'project.task.template'
 
+        name = fields.Char(string='Task Name')
+        is_active = fields.Boolean(string='Active')
+        project_id = fields.Many2one('project.project', string="Project")
+        
+    
     class Partner(models.Model):
         _inherit = 'res.partner'
 
