@@ -7,13 +7,18 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@id='user_default_rights']" position="inside">
                 <div class="col-12 col-lg-6 o_setting_box">
-                    <div class="o_setting_left_pane">
-                        <field name="otp_enable"/>
-                    </div>
                     <div class="o_setting_right_pane">
-                        <label string="Enable OTP" for="otp_enable"/>
-                        <div class="text-muted">
-                            Enable Login with OTP
+                        <label for="atd_period"/>
+                        <span class="fa fa-lg fa-building-o" title="Attendance Settings." role="img" aria-label="Set attendance computation."/>
+                        <div class="row">
+                            <div class="text-muted col-lg-8">
+                                Set default computation for attendance
+                            </div>
+                        </div>
+                        <div class="content-group">
+                            <div class="mt16">
+                                <field name="atd_period" required="1" readonly="0" class="o_light_label" />
+                            </div>
                         </div>
                     </div>
                 </div>
