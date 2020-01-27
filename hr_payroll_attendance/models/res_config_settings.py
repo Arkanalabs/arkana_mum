@@ -18,6 +18,6 @@ class ResConfigSettings(models.TransientModel):
     atd_period = fields.Selection([
         ('previous', 'Previous'),
         ('current', 'Current'),
-    ], string='Period', related='company_id.atd_period')
+    ], string='Period', related='company_id.atd_period', store=True, readonly=False)
     # atd_date_from = fields.Integer('Date form', related='company_id.atd_date_from')
     # atd_date_to = fields.Integer('Date to', related='company_id.atd_date_to')
