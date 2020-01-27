@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="apply_mum" inherit_id="website_hr_recruitment.apply" customize_show="True" name="Apply with File">
+    <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="attributes">
+        <attribute name="class">d-none</attribute>
+    </xpath>
+    <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="after">
+        <t t-foreach="job.sudo().file_template_id.file_ids" t-as="line">
+            <div t-if="line.is_required" class="form-group row form-field o_website_form_required_custom">
+              <div class="col-lg-3 col-md-4 text-right">
+                <label class="col-form-label" for="Resume"><span t-field="line.name"/></label>
+              </div>
+              <div class="col-lg-7 col-md-8">
+                <input type="file" class="form-control o_website_form_input" t-name="line.name" required=""/>
+              </div>
+            </div>
+            <div t-else="" class="form-group row form-field o_website_form_custom">
+              <div class="col-lg-3 col-md-4 text-right">
+                <label class="col-form-label" for="Resume"><span t-field="line.name"/></label>
+              </div>
+              <div class="col-lg-7 col-md-8">
+                <input type="file" class="form-control o_website_form_input" t-name="line.name"/>
+              </div>
+            </div>
+        </t>
+    </xpath>
+    <xpath expr="//form[@id='hr_recruitment_form']/div[3]" position="after">
+      <div class="form-group row form-field o_website_form_required_custom">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="marital_status">Marital Status</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <!-- <input type="radio" class="form-control o_website_form_input" name="marital_status" required=""/> -->
+              <select class="form-control o_website_form_input" name="marital_status">
+                   <option value="single">Single</option>
+                   <option value="married">Married</option>
+                   <option value="widow">Widow</option>
+                   <option value="widower">Widower</option>
+              </select>
+          </div>
+      </div>
+      <div class="form-group row form-field o_website_form_required_custom">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="image_applicant">Your Photo</label>
+          </div>          
+          <div class="col-lg-7 col-md-8 img-upload-section">
+              <input type="file" name="image_applicant" accept="image/*" id="menu_images"  onchange="loadFile(event)" style="display: block;"/>
+              <img id="output" style="margin-top: 10px; width: 100px; height: 100px;"/>
+              <script>
+                var loadFile = function(event) {
+                  var output = document.getElementById('output');
+                  output.src = URL.createObjectURL(event.target.files[0]);
+                };
+              </script>
+          </div>
+      </div>
+    </xpath>
+</template>		
+
+<template id="index_mum" inherit_id="website_hr_recruitment.index" name="Info Job Offers">
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/a/span" position="after">
+    <style>
+      li.media{
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+        padding: 10px;
+        border-left: 4px solid #7C7BAD;
+      }
+    </style>
+    <span>(<t t-esc="job.address_id.name"/>)</span>
+  </xpath>
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Expected Salary : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Qualification : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+  </xpath>
+</template>
+
+<template id="detail_mum" inherit_id="website_hr_recruitment.detail">
+  <xpath expr="//div[@id='wrap']/section/div/h1" position="replace">
+    <!-- <h1 class="mb0 mt0" t-field="job.name"/> -->
+    <h1><t t-esc="job.name"/> (<t t-esc="job.address_id.name"/>)</h1>
+  </xpath>
+  <xpath expr="//div[@id='wrap']/div[2]" position="replace">
+    <section class="mb32">
+      <div class="container">
+        <p class="mt0 lead"><t t-esc="job.description" /></p>
+      </div>
+    </section>
+  </xpath>
+</template>
+
+<!-- <template id="mum_website_description" inherit_id="website_hr_recruitment.default_website_description">
+  <xpath expr="//div[@id='wrap']/div[2]" position="replace">
+    <p class="mt0 lead">apa hyayayahhayayhahha</p>
+  </xpath>
+</template> -->
+</odoo>
