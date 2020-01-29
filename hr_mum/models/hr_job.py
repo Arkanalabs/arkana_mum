@@ -21,7 +21,7 @@ class HrJobOrder(models.Model):
     name = fields.Char(string='Name', required=True)
 
 
-class HrApplicant(models.Model):
+class Applicant(models.Model):
     _inherit = 'hr.applicant'
 
     file_ids = fields.One2many(
@@ -31,12 +31,12 @@ class HrApplicant(models.Model):
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
     user_id = fields.Many2one(related='job_id.user_id')
+    # stage_id = fields.Many2one(readonly=True)
     psikotes = fields.Binary('Psikotes')
     user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
-    qualified = fields.Boolean(string='Qualified')
     gender = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
@@ -45,13 +45,36 @@ class HrApplicant(models.Model):
     address = fields.Text(string='Address')
     # marital_status = fields.Char(string='Marital Status')
     marital_status = fields.Selection([
-        ("single","Single"),
-        ("married","Married"),
-        ("widow","Widow"),
-        ("widower","Widower")], string='Marital Status')
+        ("single","Lajang"),
+        ("married","Menikah"),
+        ], string='Marital Status')
     work_experience = fields.Char(string='Work Experience (year)')
     image_applicant = fields.Image(string="Image")
+    stage_end = fields.Boolean(string='Stage End')
 
+    @api.model
+    def create(self, vals):
+        rec = super(Applicant, self).create(vals)
+        if rec.image_applicant:
+            if (len(rec.image_applicant) / 1024.0 / 1024.0) >= 2:
+                raise UserError('Ukuran dokumen maksimal 2MB')
+        for file in rec.file_ids:
+            if file.file:
+                if (len(file.file) / 1024.0 / 1024.0) >= 2:
+                    raise UserError('Ukuran dokumen maksimal 2MB')
+        return rec
+    # @api.model
+    # def create(self, vals):
+    #     if vals.get('image_applicant'):
+    #         raise UserError('Ukuran dokumen maksimal 2MB')
+    #     return super(HrApplicant, self).create(vals)
+
+    def reset_applicant(self):
+        """ Reinsert the applicant into the recruitment pipe in the previous stage"""
+        # default_stage_id = self.stage_id.search([('sequence', '<', self.stage_id.id)], limit=1)
+        default_stage_id = self.stage_id
+        self.write({'active': True, 'stage_id': default_stage_id.id})
+    
     @api.depends('birth')
     def _age_compute(self):
         for rec in self:
@@ -66,7 +89,10 @@ class HrApplicant(models.Model):
     def button_process(self):
         for process in self:
             stage_id = process.stage_id.search([('sequence', '>', self.stage_id.sequence)], limit=1)
-            if self.qualified and stage_id:
+            stage_end = process.stage_id.search([], order='sequence desc', limit=2)[1]
+            if process.stage_id == stage_end:
+                process.stage_end = True
+            if stage_id:
                 process.stage_id = stage_id
                 self.env['hr.applicant.time'].create({
                     'applicant_id': process.id,
@@ -75,16 +101,14 @@ class HrApplicant(models.Model):
                 })
             # elif process.stage_id == process.stage_id.search([])[-1]:
             #     raise UserError('Sorry, This is the last process')    
-            elif not stage_id:
-                raise UserError('Sorry, This is the last stage')
-            else :
-                raise UserError('Sorry, You are not qualified')
+            # elif not stage_id:
+            #     raise UserError('Sorry, This is the last stage')
 
     def create_employee_from_applicant(self):
         self = self.with_context({
             'image_applicant': self.image_applicant
         })
-        
+
         return super(HrApplicant, self).create_employee_from_applicant()
 
 class HrEmployee(models.Model):
@@ -136,16 +160,18 @@ class HrJob(models.Model):
     _inherit = 'hr.job'
     _order = 'create_date desc'
 
-    @api.model
-    def _default_type(self):
-        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
-            return [('internal', 'Internal'), ('external', 'External')]
-        else :
-            return [('external', 'External')]
+    # @api.model
+    # def _default_type(self):
+    #     if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+    #         return [('internal', 'Internal'), ('external', 'External')]
+    #     else :
+    #         return [('external', 'External')]
     
     code = fields.Char('Code', compute="_compute_code", store=True)
     job_ids = fields.Many2many('hr.job.order', string='Job Order')
-    job_type = fields.Selection(_default_type, string='Type')
+    job_type = fields.Selection([
+        ('internal', 'Internal'), ('external', 'External')
+    ],default='internal', string='Type')
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda x: x.env.user.id)
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
                                        'hr.file.template'].search([], limit=1))
@@ -153,10 +179,12 @@ class HrJob(models.Model):
     date_finish = fields.Date('Date Finish', readonly=True)
     state = fields.Selection(selection_add=[("finish", "Finish")])
     date_dif = fields.Integer('Day Difference', readonly=True)
-    address_id = fields.Many2one('res.partner', 'Job Location', domain=[('type', '=', 'recruitment')])
+    # address_id = fields.Many2one('res.partner', 'Address')
+    job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     salary_expected = fields.Float('Expected Salary')
     flag_salary = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
+    alias_name = fields.Char('Email Alias', invisible=True)
 
     @api.depends('date_start', 'address_id', 'name')
     def _compute_code(self):
@@ -287,12 +315,13 @@ class Contract(models.Model):
                         task = project.project_task_ids
                         if task:
                             for rec in task:
-                                # stage = project.env['project.task.type'].search([('sequence', '=', 1), ('fold', '=', True)], limit=1)
+                                stage = project.env['project.task.type'].search([], order='sequence', limit=1)
                                 project.env['project.task'].create([
                                     {
                                     'project_id': project.id,
                                     'name': rec.name,
                                     'user_id': False,
+                                    'stage_id': stage.id
                                     },
                                 ])
             
@@ -302,12 +331,18 @@ class Contract(models.Model):
         name = fields.Char(string='Task Name')
         is_active = fields.Boolean(string='Active')
         project_id = fields.Many2one('project.project', string="Project")
-        
-    
-    class Partner(models.Model):
-        _inherit = 'res.partner'
 
-        # rekrutment = fields.Boolean('Rekrutment')
-        type = fields.Selection(selection_add=[("recruitment", "Recruitment")])
+    class HrJobLocation(models.Model):
+        _name = 'hr.job.location'
+
+        name = fields.Char(string='Location')
+        user_id = fields.Many2one('res.users', 'User Name')
+    
+    # class Partner(models.Model):
+    #     _inherit = 'res.partner'
+
+    #     # rekrutment = fields.Boolean('Rekrutment')
+    #     type = fields.Selection(selection_add=[("recruitment", "Recruitment")], default="recruitment")
+    #     user_id = fields.Many2one("res.users", "User")
     
         
