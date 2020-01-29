@@ -4,6 +4,9 @@
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="attributes">
         <attribute name="class">d-none</attribute>
     </xpath>
+    <!-- <xpath expr="//form[@id='hr_recruitment_form']/div[2]" position="after">
+      <label class="col-form-label" for="partner_name">Nama Kamu</label>
+    </xpath> -->
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="after">
         <t t-foreach="job.sudo().file_template_id.file_ids" t-as="line">
             <div t-if="line.is_required" class="form-group row form-field o_website_form_required_custom">
@@ -27,7 +30,7 @@
     <xpath expr="//form[@id='hr_recruitment_form']/div[3]" position="after">
       <div class="form-group row form-field">
           <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="gender">Your Gender</label>
+              <label class="col-form-label" for="gender">Jenis Kelamin</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <select class="form-control o_website_form_input" name="gender">
@@ -51,7 +54,7 @@
       </div> -->
       <div class="form-group row form-field o_website_form_required_custom">
           <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="birth">Place, Date of Birth</label>
+              <label class="col-form-label" for="birth">Tempat, Tanggal Lahir</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <input type="text" name="place_of_birth" class="form-control o_website_form_input" placeholder="Place" required="1"/>
@@ -60,15 +63,13 @@
       </div>
       <div class="form-group row form-field">
           <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="marital_status">Marital Status</label>
+              <label class="col-form-label" for="marital_status">Status Pernikahan</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <!-- <input type="radio" class="form-control o_website_form_input" name="marital_status" required=""/> -->
               <select class="form-control o_website_form_input" name="marital_status">
-                   <option value="single">Single</option>
-                   <option value="married">Married</option>
-                   <option value="widow">Widow</option>
-                   <option value="widower">Widower</option>
+                   <option value="single">Lajang</option>
+                   <option value="married">Menikah</option>
               </select>
           </div>
       </div>
@@ -103,9 +104,9 @@
   </xpath>
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
     <div t-if="job.flag_salary">
-      <span class="col-lg-7 col-md-8 row mt-1"><b>Expected Salary : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
+      <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
     </div>
-    <span class="col-lg-7 col-md-8 row mt-1"><b>Qualification : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
   </xpath>
 </template>
 
