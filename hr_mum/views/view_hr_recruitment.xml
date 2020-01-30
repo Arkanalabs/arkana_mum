@@ -85,7 +85,7 @@
 			<field name="name" position="after">
 				<field name="job_type"/>
 				<field name="user_id" required="1"/>
-				<field name="job_location_id" required="1"/>
+				<field name="job_location_id" />
 			</field>
 		</field>
 	</record>

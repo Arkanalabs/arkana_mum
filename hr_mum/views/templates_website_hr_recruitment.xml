@@ -100,7 +100,7 @@
         border-left: 4px solid #7C7BAD;
       }
     </style>
-    <span>(<t t-esc="job.address_id.name"/>)</span>
+    <span>(<t t-esc="job.job_location_id.name"/>)</span>
   </xpath>
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
     <div t-if="job.flag_salary">
