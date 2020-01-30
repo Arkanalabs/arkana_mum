@@ -43,7 +43,7 @@
         <record id="job_location_admin" model="ir.rule">
             <field name="name">Job Location Filter by Admin </field>
             <field name="model_id" ref="hr_mum.model_hr_job_location"/>
-            <field name="groups" eval="[(4, ref('base.group_no_one'))]"/>
+            <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
             <field name="domain_force">[(1,'=',1)]</field>
         </record>
         <record id="job_rule_user_web" model="ir.rule">
