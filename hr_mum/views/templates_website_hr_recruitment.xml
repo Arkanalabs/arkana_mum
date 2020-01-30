@@ -113,7 +113,7 @@
 <template id="detail_mum" inherit_id="website_hr_recruitment.detail">
   <xpath expr="//div[@id='wrap']/section/div/h1" position="replace">
     <!-- <h1 class="mb0 mt0" t-field="job.name"/> -->
-    <h1><t t-esc="job.name"/> (<t t-esc="job.address_id.name"/>)</h1>
+    <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
   </xpath>
   <xpath expr="//div[@id='wrap']/div[2]" position="replace">
     <section class="mb32">

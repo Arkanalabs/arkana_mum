@@ -108,8 +108,7 @@ class Applicant(models.Model):
         self = self.with_context({
             'image_applicant': self.image_applicant
         })
-
-        return super(HrApplicant, self).create_employee_from_applicant()
+        return super(Applicant, self).create_employee_from_applicant()
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
