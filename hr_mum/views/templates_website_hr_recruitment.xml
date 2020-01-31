@@ -8,6 +8,9 @@
       <label class="col-form-label" for="partner_name">Nama Kamu</label>
     </xpath> -->
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="after">
+        <!-- <div style="margin-left: 50px;">
+          <label>(Max 2mb)</label>
+        </div> -->
         <t t-foreach="job.sudo().file_template_id.file_ids" t-as="line">
             <div t-if="line.is_required" class="form-group row form-field o_website_form_required_custom">
               <div class="col-lg-3 col-md-4 text-right">
@@ -73,7 +76,7 @@
               </select>
           </div>
       </div>
-      <div class="form-group row form-field o_website_form_required_custom">
+      <div class="form-group row form-field">
           <div class="col-lg-3 col-md-4 text-right">
               <label class="col-form-label" for="image_applicant">Your Photo</label>
           </div>          
@@ -86,6 +89,7 @@
                   output.src = URL.createObjectURL(event.target.files[0]);
                 };
               </script>
+              <label>(Max 2mb)</label>
           </div>
       </div>
     </xpath>
