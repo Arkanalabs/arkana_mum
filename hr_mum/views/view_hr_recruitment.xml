@@ -27,6 +27,16 @@
 				</div>
 				<field name="qualification"/>
 			</field>
+			<field name="no_of_recruitment" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="no_of_recruitment" position="after">
+				<label for="no_of_recruitment"/>
+				<div class="o_row">
+					<field name="no_of_recruitment"/>
+					<field name="flag_employee"/><span class="text-muted">(Publish or Unpublish)</span>
+				</div>
+			</field>
 			<field name="user_id" position="after">
 				<field name="job_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
 				<field name="file_template_id"/>
@@ -187,6 +197,9 @@
 			<xpath expr="//field[@name='kanban_state']" position="after">
 				<field name="image_applicant" widget="image" class="oe_avatar" modifiers="{}" style="margin-right:35px;" options="{'size': [100,120]}"/>
 			</xpath>
+			<field name="partner_mobile" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
 				<field name="stage_end" />
@@ -216,7 +229,11 @@
 					</page>
 				</notebook>
 			</xpath>
+			<field name="type_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="type_id" position="after">
+				<field name="degree"/>
 				<field name="marital_status"/>
 				<field name="psikotes"/>
 				<field name="gender"/>
@@ -318,24 +335,71 @@
 		</field>
 	</record>
 	
-	<!-- Partner -->
-	<!-- <record model="ir.ui.view" id="view_res_partner_form">
-		<field name="name">res.partner.form</field>
-		<field name="model">res.partner</field>
-		<field name="inherit_id" ref="base.view_partner_form"/>
+	<!-- Employee -->
+	<record model="ir.ui.view" id="view_employee_form3">
+		<field name="name">hr.employee.form</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr.view_employee_form"/>
 		<field name="arch" type="xml">
-			<field name="type" position="attributes">
-				<attribute name="readonly">1</attribute>
+			<field name="gender" position="attributes">
+				<attribute name="invisible">1</attribute>
 			</field>
-			<xpath expr="//label[@name='address_name']" position="inside">
-				<b attrs="{'invisible': [('type', '!=', 'recruitment')]}">Recruitment Address</b>
-			</xpath>
-			<field name="vat" position="after">
-				<field name="user_id"/>
+			<field name="gender" position="after">
+				<field name="gender_employee"/>
+			</field>
+			<field name="address_home_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="address_home_id" position="after">
+				<field name="address"/>
+				<field name="phone_employee" widget="phone"/>
+			</field>
+			<field name="marital" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="marital" position="after">
+				<field name="marital_status"/>
+			</field>
+			<field name="parent_id" position="after">
+				<field name="nip"/>
+			</field>
+			<field name="departure_description" position="after">
+				<field name="departure_date"/>
+			</field>
+			<field name="phone" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="bank_account_id" position="after">
+				<field name="bank_name"/>
+				<field name="bank_no_rec"/>
 			</field>
 		</field>
-	</record> -->
+	</record>
 
+	<record model="ir.ui.view" id="view_hr_employee_form2_inherit">
+		<field name="name">hr.hr.employee.view.form2</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form2"/>
+		<field name="arch" type="xml">
+			<!-- <field name="bank_account_id" position"attributes">
+				<attribute name="invisible">1</attribute>
+			</field> -->
+			<field name="bank_account_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_hr_departure_wizard_view_form_inherit">
+		<field name="name">hr.departure.wizard.view.form</field>
+		<field name="model">hr.departure.wizard</field>
+		<field name="inherit_id" ref="hr.hr_departure_wizard_view_form"/>
+		<field name="arch" type="xml">
+			<field name="departure_reason" position="after">
+				<field name="departure_date"/>
+			</field>
+		</field>
+	</record>
 	<!-- Contract -->
 	<record model="ir.ui.view" id="view_contract_month_form">
 		<field name="name">	hr.contract.form</field>
@@ -411,7 +475,7 @@
 		<field name="name">hr_rec.form</field>
 		<field name="model">hr.applicant</field>
 		<field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
-		<field name="arch" type="xml">
+		<field name="arch" type="xml">	
 			<xpath expr="//kanban" position="attributes">
 				<attribute name="records_draggable">0</attribute>
 			</xpath>

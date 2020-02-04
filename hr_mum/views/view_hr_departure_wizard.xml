@@ -1,0 +1,14 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_departure_wizard_view_form1">
+		    <field name="name">hr.departure.wizard.view.form</field>
+		    <field name="model">hr.departure.wizard</field>
+		    <field name="inherit_id" ref="hr.hr_departure_wizard_view_form "/>
+		    <field name="arch" type="xml">
+		    	<field name="date_end" position="after">
+		    		<field name="month_end" invisible="1"/>
+		    	</field>
+		    </field>
+	</record>
+    </data>
+</odoo>

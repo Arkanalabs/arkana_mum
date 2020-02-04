@@ -41,8 +41,16 @@ class Applicant(models.Model):
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
     age = fields.Integer(string='Age', default=False, compute='_age_compute')
-    no_ktp = fields.Char(string='No. KTP', default=False)
+    no_ktp = fields.Char(string='No. KTP', required=True)
     address = fields.Text(string='Address')
+    degree = fields.Selection([
+        ("smp","SMP"),
+        ("sma","SMA"),
+        ("d3","D3"),
+        ("d4","D4"),
+        ("s1","S1"),
+        ("s2","S2"),
+        ("s3","S2"),], string='Degree')
     # marital_status = fields.Char(string='Marital Status')
     marital_status = fields.Selection([
         ("single","Lajang"),
@@ -106,17 +114,57 @@ class Applicant(models.Model):
 
     def create_employee_from_applicant(self):
         self = self.with_context({
-            'image_applicant': self.image_applicant
+            'image_applicant': self.image_applicant,
+            'no_ktp': self.no_ktp,
+            'birth': self.birth,
+            'place_of_birth': self.place_of_birth,
+            'address': self.address,
+            'phone': self.partner_phone,
+            'gender': self.gender
         })
         return super(Applicant, self).create_employee_from_applicant()
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+    _sql_constraints = [
+        ('No. KTP', 'unique(identification_id)', 'No. KTP sudah pernah didaftarkan.'),
+        ('NIP', 'unique(nip)', 'NIP sudah pernah digunakan.')]
 
+    identification_id = fields.Char(string='No. KTP')
+    marital_status = fields.Selection([
+        ("single","Lajang"),
+        ("married","Menikah"),
+        ], string='Marital Status')
+    gender_employee = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
+    address = fields.Text(string='Address')
+    nip = fields.Char(string='NIP')
+    departure_date = fields.Date('Departure Date')
+    bank_name = fields.Char('Bank Name')
+    bank_no_rec = fields.Char('No Account Bank')
+    phone_employee = fields.Char('Phone')
+    
     @api.model
     def create(self, vals):
-        vals['image_1920'] = self.env.context.get('image_applicant', False)
+        vals.update({
+            'image_1920': self.env.context.get('image_applicant', False), 
+            'identification_id': self.env.context.get('no_ktp', False), 
+            'birthday': self.env.context.get('birth', False), 
+            'place_of_birth': self.env.context.get('place_of_birth', False), 
+            'address': self.env.context.get('address', False),
+            'phone_employee': self.env.context.get('phone', False),
+            'gender_employee': self.env.context.get('gender', False) 
+            })
         return super(HrEmployee, self).create(vals)
+
+class HrDepartureWizard(models.TransientModel):
+    _inherit = 'hr.departure.wizard'
+
+    departure_date = fields.Date(string='Departure Date', default=fields.Date.today())
+    
+    def action_register_departure(self):
+        employee = self.employee_id
+        employee.departure_date = self.departure_date
+        return super(HrDepartureWizard, self).action_register_departure()
 
 class HrApplicantFile(models.Model):
     _name = 'hr.applicant.file'
@@ -182,6 +230,7 @@ class HrJob(models.Model):
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     salary_expected = fields.Float('Expected Salary')
     flag_salary = fields.Boolean(string='Flag')
+    flag_employee = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
     alias_name = fields.Char('Email Alias', invisible=True)
 
@@ -310,7 +359,7 @@ class Contract(models.Model):
                  _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))  
                  if project.date_start:
                     after_one_months = project.date_start + relativedelta(months=+1)
-                    if after_one_months:
+                    if after_one_months == date.today():
                         task = project.project_task_ids
                         if task:
                             for rec in task:

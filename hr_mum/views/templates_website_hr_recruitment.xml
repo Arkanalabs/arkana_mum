@@ -8,9 +8,6 @@
       <label class="col-form-label" for="partner_name">Nama Kamu</label>
     </xpath> -->
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="after">
-        <!-- <div style="margin-left: 50px;">
-          <label>(Max 2mb)</label>
-        </div> -->
         <t t-foreach="job.sudo().file_template_id.file_ids" t-as="line">
             <div t-if="line.is_required" class="form-group row form-field o_website_form_required_custom">
               <div class="col-lg-3 col-md-4 text-right">
@@ -42,26 +39,39 @@
               </select>
           </div>
       </div>
-      <!-- <div class="form-group row form-field o_website_form_required_custom">
-          <div class="form-group row form-field d-none">
-            <div class="col-lg-3 col-md-4">
-                <label class="col-form-label" for="type_id">Your Degree</label>
-            </div>
-            <div class="col-lg-7 col-md-8">
-                <select id="chair" required="True" class="form-control" style="width: 432px; height: 35px;">            
-                  <t t-foreach="chair_details" t-as="chair">                
-                  <option t-att-value="chair.id" t-esc="chair.name"/></t>        
-                </select>
-            </div>        
+      <div class="form-group row form-field o_website_form_required_custom">
+          <!-- <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="type_id">Your Degree</label>
           </div>
-      </div> -->
+          <div class="col-lg-7 col-md-8">
+              <select id="type" required="True" class="form-control o_website_form_input" name="type_id">            
+                <t t-foreach="type_id" t-as="type">                
+                <option t-att-value="type.id" t-esc="type.name"/></t>        
+              </select>
+          </div>-->
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="degree">Gelar Anda</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <select class="form-control o_website_form_input" name="degree">
+                   <option value="smp">SMP</option>
+                   <option value="sma">SMA</option>
+                   <option value="d3">D3</option>
+                   <option value="d4">D4</option>
+                   <option value="s1">S1</option>
+                   <option value="s2">S2</option>
+                   <option value="s3">S3</option>
+              </select>
+          </div>
+      </div>
       <div class="form-group row form-field o_website_form_required_custom">
           <div class="col-lg-3 col-md-4 text-right">
               <label class="col-form-label" for="birth">Tempat, Tanggal Lahir</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <input type="text" name="place_of_birth" class="form-control o_website_form_input" placeholder="Place" required="1"/>
-              <input type="text" name="birth" class="form-control o_website_form_input o_website_form_date" placeholder="Date of Birth (mm/dd/yyyy)" />
+              <input type="text" name="birth" class="form-control o_website_form_input o_website_form_date" placeholder="Date of Birth"/>
+              <span>Format: (MM/DD/YYYY)</span>
           </div>
       </div>
       <div class="form-group row form-field">
@@ -106,11 +116,18 @@
     </style>
     <span>(<t t-esc="job.job_location_id.name"/>)</span>
   </xpath>
+  
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
     <div t-if="job.flag_salary">
       <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
     </div>
     <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+  </xpath>
+
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/small" position="replace">
+      <small t-if="job.no_of_recruitment &gt; 1 and job.flag_employee ">
+          <t t-esc="job.no_of_recruitment"/> open positions
+      </small>
   </xpath>
 </template>
 
@@ -119,6 +136,14 @@
     <!-- <h1 class="mb0 mt0" t-field="job.name"/> -->
     <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
   </xpath>
+  
+  <xpath expr="//div[@id='wrap']/section/div/h1" position="after">
+    <div t-if="job.flag_salary">
+      <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
+    </div>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+  </xpath>
+  
   <xpath expr="//div[@id='wrap']/div[2]" position="replace">
     <section class="mb32">
       <div class="container">
@@ -126,6 +151,7 @@
       </div>
     </section>
   </xpath>
+
 </template>
 
 <!-- <template id="mum_website_description" inherit_id="website_hr_recruitment.default_website_description">

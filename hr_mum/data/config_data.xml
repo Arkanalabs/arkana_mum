@@ -9,6 +9,7 @@
             'gender',
             'birth',
             'place_of_birth',
+            'degree',
             ]"/>
         </function>
     </data>
