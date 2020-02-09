@@ -23,7 +23,7 @@ class HrJobOrder(models.Model):
 
 class Applicant(models.Model):
     _inherit = 'hr.applicant'
-
+    
     file_ids = fields.One2many(
         'hr.applicant.file', 'applicant_id', string='File')
     job_type = fields.Selection([
@@ -32,7 +32,9 @@ class Applicant(models.Model):
     ], string='Type', related='job_id.job_type')
     user_id = fields.Many2one(related='job_id.user_id')
     # stage_id = fields.Many2one(readonly=True)
+    flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
     psikotes = fields.Binary('Psikotes')
+    file_psikotes = fields.Char('File Psikotes')
     user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
@@ -44,13 +46,9 @@ class Applicant(models.Model):
     no_ktp = fields.Char(string='No. KTP', required=True)
     address = fields.Text(string='Address')
     degree = fields.Selection([
-        ("smp","SMP"),
-        ("sma","SMA"),
-        ("d3","D3"),
-        ("d4","D4"),
-        ("s1","S1"),
-        ("s2","S2"),
-        ("s3","S2"),], string='Degree')
+        ("smp","SMP"),("sma","SMA"),("smk","SMK"),("d1","D1"),("d2","D2"),
+        ("d3","D3"),("d4","D4"),("s1","S1"),("s2","S2"),
+        ("s3","S3"),], string='Degree')
     # marital_status = fields.Char(string='Marital Status')
     marital_status = fields.Selection([
         ("single","Lajang"),
@@ -58,24 +56,41 @@ class Applicant(models.Model):
         ], string='Marital Status')
     work_experience = fields.Char(string='Work Experience (year)')
     image_applicant = fields.Image(string="Image")
+    file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
+    stage_early = fields.Boolean(string='Stage Early', compute='_compute_stage_early')
 
     @api.model
     def create(self, vals):
         rec = super(Applicant, self).create(vals)
         if rec.image_applicant:
+            allowed_extension = ['img', 'jpg', 'png', 'jpeg']
             if (len(rec.image_applicant) / 1024.0 / 1024.0) >= 2:
                 raise UserError('Ukuran dokumen maksimal 2MB')
+            if rec.file_name:
+                if not rec.file_name.split('.')[-1].lower() in allowed_extension:
+                    raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
         for file in rec.file_ids:
             if file.file:
                 if (len(file.file) / 1024.0 / 1024.0) >= 2:
                     raise UserError('Ukuran dokumen maksimal 2MB')
+                # if not self.file_name.split('.')[-1].lower() in allowed_extension:
+                #     raise UserError('Dokumen harus berformat *.pdf/*.img/*.jpg/*.jpeg/*.png !')
         return rec
-    # @api.model
-    # def create(self, vals):
-    #     if vals.get('image_applicant'):
-    #         raise UserError('Ukuran dokumen maksimal 2MB')
-    #     return super(HrApplicant, self).create(vals)
+
+    def _compute_flag_admin(self):
+      for rec in self:
+        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+            rec.flag_admin = True
+        else :
+            rec.flag_admin = False
+    
+    def _compute_stage_early(self):
+        for rec in self:
+            if self.stage_id.search([('sequence', '=', 1)]) == self.stage_id:
+                rec.stage_early = True
+            else :
+                rec.stage_early = False
 
     def reset_applicant(self):
         """ Reinsert the applicant into the recruitment pipe in the previous stage"""
@@ -87,12 +102,28 @@ class Applicant(models.Model):
     def _age_compute(self):
         for rec in self:
             if self.birth:
+                # rec.age = (datetime.now().year - rec.birth.year)
                 birth = rec.birth.strftime("%Y-%m-%d")
                 d1 = datetime.strptime(birth, "%Y-%m-%d").date()
                 d2 = date.today()
                 rec.age = relativedelta(d2, d1).years
             else:
                 rec.age = 0
+
+    def button_rollback(self):
+        for rec in self:
+            stage_id = rec.stage_id.search([('sequence', '<', self.stage_id.sequence)], order='sequence desc', limit=1)
+            stage_early = rec.stage_id.search([], order='sequence', limit=2)[1]
+            rec.stage_end = False
+            if rec.stage_id == stage_early:
+                rec.stage_early = True
+            if stage_id:
+                rec.stage_id = stage_id
+                self.env['hr.applicant.time'].create({
+                    'applicant_id': rec.id,
+                    'name': "Rollback to %s" % (self.stage_id.name),
+                    'time_process': fields.Datetime.now()
+                })
 
     def button_process(self):
         for process in self:
@@ -102,6 +133,7 @@ class Applicant(models.Model):
                 process.stage_end = True
             if stage_id:
                 process.stage_id = stage_id
+                process.stage_early = False
                 self.env['hr.applicant.time'].create({
                     'applicant_id': process.id,
                     'name': self.stage_id.name,
@@ -131,6 +163,10 @@ class HrEmployee(models.Model):
         ('NIP', 'unique(nip)', 'NIP sudah pernah digunakan.')]
 
     identification_id = fields.Char(string='No. KTP')
+    job_type = fields.Selection([
+        ('internal', 'Internal'),
+        ('external', 'External'),
+    ], string='Type', related='job_id.job_type')
     marital_status = fields.Selection([
         ("single","Lajang"),
         ("married","Menikah"),
@@ -181,6 +217,7 @@ class HrApplicantTime(models.Model):
     name = fields.Char(string='Name')
     time_process = fields.Datetime('Time')
     applicant_id = fields.Many2one('hr.applicant', 'Applicant')
+    ket = fields.Text(string='Keterangan')
 
 class HrFileTemplate(models.Model):
     _name = 'hr.file.template'
@@ -314,12 +351,26 @@ class Contract(models.Model):
     _inherit = 'hr.contract'
 
     name = fields.Char('Contract Reference', required=False)
+    job_type = fields.Selection([
+        ('internal', 'Internal'),
+        ('external', 'External'),
+    ], string='Type', related='job_id.job_type')
+    contract_type = fields.Selection([
+        ("pkwt","PKWT"),
+        ("phl","PHL"),
+        ("tetap","TETAP")
+    ], string='Contract Type', required=True)
     month_end = fields.Integer(string='End Month', default=4)
 
     def write(self, vals):
         if 'state' in vals :
             if vals.get('state') == 'open':
-                self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_number')})
+                if self.contract_type == 'pkwt':
+                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
+                elif self.contract_type == 'phl':
+                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
+                else:   
+                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':
         #     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_number')
         return super(Contract, self).write(vals)
@@ -348,7 +399,7 @@ class Contract(models.Model):
  
     class Project(models.Model):
         _inherit = 'project.project'
-
+        
         project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain=[('is_active', '=', True)])
         date_start = fields.Date('Date Start', default=fields.Date.today(), readonly=True)
 
@@ -359,7 +410,8 @@ class Contract(models.Model):
                  _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))  
                  if project.date_start:
                     after_one_months = project.date_start + relativedelta(months=+1)
-                    if after_one_months == date.today():
+                    if after_one_months:
+                        # after_one_months == date.today()
                         task = project.project_task_ids
                         if task:
                             for rec in task:

@@ -66,3 +66,24 @@ class WebsiteHrRecruitmentInherit(WebsiteHrRecruitment):
             'department_id': department,
             'office_id': office_id,
         })
+
+        @http.route('''/jobs/apply/<model("hr.job", "[('website_id', 'in', (False, current_website_id))]"):job>''', type='http', auth="public", website=True)
+        def jobs_apply(self, job, **kwargs):
+            if not job.can_access_from_current_website():
+                raise NotFound()
+
+            Applicant = env['hr.applicant']
+            # List Applicant 
+            applicant = Applicant.sudo().search([])
+
+            error = {}
+            default = {}
+            if 'website_hr_recruitment_error' in request.session:
+                error = request.session.pop('website_hr_recruitment_error')
+                default = request.session.pop('website_hr_recruitment_default')
+            return request.render("website_hr_recruitment.apply", {
+                'job': job,
+                'error': error,
+                'default': default,
+                'applicant': applicant,
+            })

@@ -41,21 +41,24 @@
       </div>
       <div class="form-group row form-field o_website_form_required_custom">
           <!-- <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="type_id">Your Degree</label>
+              <label class="col-form-label" for="type_id">Pendidikan Terakhir</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <select id="type" required="True" class="form-control o_website_form_input" name="type_id">            
-                <t t-foreach="type_id" t-as="type">                
+                <t t-foreach="applicant.type_id" t-as="type">                
                 <option t-att-value="type.id" t-esc="type.name"/></t>        
               </select>
-          </div>-->
+          </div> -->
           <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="degree">Gelar Anda</label>
+              <label class="col-form-label" for="degree">Pendidikan Terakhir</label>
           </div>
           <div class="col-lg-7 col-md-8">
               <select class="form-control o_website_form_input" name="degree">
                    <option value="smp">SMP</option>
                    <option value="sma">SMA</option>
+                   <option value="smk">SMK</option>
+                   <option value="d1">D1</option>
+                   <option value="d2">D2</option>
                    <option value="d3">D3</option>
                    <option value="d4">D4</option>
                    <option value="s1">S1</option>
@@ -68,10 +71,11 @@
           <div class="col-lg-3 col-md-4 text-right">
               <label class="col-form-label" for="birth">Tempat, Tanggal Lahir</label>
           </div>
-          <div class="col-lg-7 col-md-8">
+          <div class="col-lg-3 col-md-4 ">
               <input type="text" name="place_of_birth" class="form-control o_website_form_input" placeholder="Place" required="1"/>
-              <input type="text" name="birth" class="form-control o_website_form_input o_website_form_date" placeholder="Date of Birth"/>
-              <span>Format: (MM/DD/YYYY)</span>
+          </div>
+          <div class="col-lg-4 col-md-4">
+              <input type="date" name="birth" class="form-control o_website_form_date datepicker" placeholder="Date of Birth"/>
           </div>
       </div>
       <div class="form-group row form-field">

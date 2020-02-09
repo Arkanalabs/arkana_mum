@@ -10,6 +10,7 @@
             'birth',
             'place_of_birth',
             'degree',
+            'file_ids',
             ]"/>
         </function>
     </data>

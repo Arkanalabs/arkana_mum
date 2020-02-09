@@ -190,19 +190,21 @@
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
                         class="oe_highlight" attrs="{'invisible': [('stage_end', '=', True)]}" />
+				<button string="Rollback" name="button_rollback" type="object"
+						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|',('flag_admin', '=', False), ('stage_early', '=', True)]}"/>
 			</button>
 			<xpath expr="//field[@name='stage_id']" position="attributes">
 				<attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
+				<!-- <attribute name="attrs">{'invisible': [('active', '=', False),('emp_id', '=', False)], 'readonly': [('flag_admin', '=', False)]}</attribute> -->
 			</xpath>
 			<xpath expr="//field[@name='kanban_state']" position="after">
-				<field name="image_applicant" widget="image" class="oe_avatar" modifiers="{}" style="margin-right:35px;" options="{'size': [100,120]}"/>
+				<field name="image_applicant" widget="image" filename="file_name" class="oe_avatar" modifiers="{}" style="margin-right:35px;" options="{'size': [100,120]}"/>
 			</xpath>
 			<field name="partner_mobile" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
-				<field name="stage_end" />
 				<field name="user_applicant_id" invisible="1"/>
 			</field>
 			<xpath expr="//sheet/group" position="after">
@@ -223,6 +225,7 @@
 								<tree>
 									<field name="time_process" readonly="1"/>
 									<field name="name" string="Process" readonly="1"/>
+									<!-- <field name="ket"/> -->
 								</tree>
 							</field>
 						</group>
@@ -235,8 +238,10 @@
 			<field name="type_id" position="after">
 				<field name="degree"/>
 				<field name="marital_status"/>
-				<field name="psikotes"/>
-				<field name="gender"/>
+				<field name="psikotes" filename="file_psikotes" widget="binary"/>
+				<field name="file_name"/>
+				<field name="file_psikotes" invisible="1"/>
+				<field name="gender"/>	
 				<label for="birth"/>
 				<div class="o_row">
 					<field name="place_of_birth" nolabel="1" placeholder="Place"/>
@@ -249,7 +254,10 @@
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
-				<field name="progress"/>
+				<field name="progress" invisible="1"/>
+				<field name="flag_admin" invisible="1"/>
+				<field name="stage_early" invisible="1"/>
+				<field name="stage_end" invisible="1"/>
 			</field>
 		</field>
 	</record>
@@ -341,6 +349,9 @@
 		<field name="model">hr.employee</field>
 		<field name="inherit_id" ref="hr.view_employee_form"/>
 		<field name="arch" type="xml">
+			<field name="job_id" position="before">
+				<field name="job_type"/>
+			</field>
 			<field name="gender" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
@@ -411,6 +422,10 @@
 			</field>
 			<field name="date_end" position="after">
 				<field name="month_end" invisible="1"/>
+			</field>
+			<field name="department_id" position="after">
+				<field name="job_type"/>
+				<field name="contract_type"/>
 			</field>
 		</field>
 	</record>
