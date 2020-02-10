@@ -189,9 +189,9 @@
 			</button>
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
-                        class="oe_highlight" attrs="{'invisible': [('stage_end', '=', True)]}" />
+                        class="oe_highlight" attrs="{'invisible': ['|',('stage_end', '=', True), ('flag_archive', '=', True)]}" />
 				<button string="Rollback" name="button_rollback" type="object"
-						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|',('flag_admin', '=', False), ('stage_early', '=', True)]}"/>
+						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True)]}"/>
 			</button>
 			<xpath expr="//field[@name='stage_id']" position="attributes">
 				<attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
@@ -256,6 +256,7 @@
 			<field name="source_id" position="after">
 				<field name="progress" invisible="1"/>
 				<field name="flag_admin" invisible="1"/>
+				<field name="flag_archive" invisible="1"/>
 				<field name="stage_early" invisible="1"/>
 				<field name="stage_end" invisible="1"/>
 			</field>

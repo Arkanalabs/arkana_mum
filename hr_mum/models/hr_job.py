@@ -33,6 +33,7 @@ class Applicant(models.Model):
     user_id = fields.Many2one(related='job_id.user_id')
     # stage_id = fields.Many2one(readonly=True)
     flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
+    flag_archive = fields.Boolean(string='Flag Archive')
     psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
     user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
@@ -96,7 +97,15 @@ class Applicant(models.Model):
         """ Reinsert the applicant into the recruitment pipe in the previous stage"""
         # default_stage_id = self.stage_id.search([('sequence', '<', self.stage_id.id)], limit=1)
         default_stage_id = self.stage_id
-        self.write({'active': True, 'stage_id': default_stage_id.id})
+        self.write({
+            'active': True, 
+            'stage_id': default_stage_id.id,
+            'flag_archive': False,
+        })
+    
+    def archive_applicant(self):
+        self.flag_archive = True
+        self.write({'active': False})
     
     @api.depends('birth')
     def _age_compute(self):
@@ -144,6 +153,7 @@ class Applicant(models.Model):
             # elif not stage_id:
             #     raise UserError('Sorry, This is the last stage')
 
+    
     def create_employee_from_applicant(self):
         self = self.with_context({
             'image_applicant': self.image_applicant,
