@@ -254,12 +254,12 @@ class Job(models.Model):
     _inherit = 'hr.job'
     _order = 'create_date desc'
 
-    # @api.model 
-    # def _default_type(self):
-    #     if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
-    #         return [('internal', 'Internal'), ('external', 'External')]
-    #     else :
-    #         return [('external', 'External')]
+    @api.model
+    def _default_flag_admin(self):
+        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+            return True
+        else:
+            return False
     
     code = fields.Char('Code', compute="_compute_code", store=True)
     job_ids = fields.Many2many('hr.job.order', string='Job Order')
@@ -276,7 +276,7 @@ class Job(models.Model):
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     salary_expected = fields.Float('Expected Salary')
-    flag_for_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
+    flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
     flag_employee = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
@@ -299,13 +299,6 @@ class Job(models.Model):
             if vals.get('state') == 'finish' :
                 self.website_published = False
         return super(Job, self).write(vals)
-
-    def _compute_flag_admin(self):
-        for rec in self:
-            if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
-                rec.flag_admin = True
-            else:
-                rec.flag_admin = False
 
     @api.depends('date_start', 'address_id', 'name')
     def _compute_code(self):
