@@ -5,9 +5,19 @@
 		<field name="model">hr.job</field> 
 		<field name="inherit_id" ref="hr.view_hr_job_form" /> 
 		<field name="arch" type="xml">
-			<button name="set_recruit" position="attributes">
+			<xpath expr="//header" position="after">
+				<div class="alert alert-danger text-center o_form_header"
+					attrs="{'invisible': [('state', '!=', 'finish')]}"
+					role="status">
+					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
+					<div>
+						<strong>10-days limit for Job Position has been expired</strong>
+					</div>
+				</div>
+			</xpath>
+			<!-- <button name="set_recruit" position="attributes">
 				<attribute name="invisible">1</attribute>
-			</button>
+			</button> -->
 			<field name="state" position="attributes">
 				<attribute name="statusbar_visible">recruit,open,finish</attribute>
 			</field>
@@ -23,7 +33,7 @@
 				<label for="salary_expected"/>
 				<div class="o_row">
 					<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-					<field name="flag_salary"/><span class="text-muted">(Publish or Unpublish)</span>
+					<field name="flag_salary"/><span class="text-muted">(Check to Publish)</span>
 				</div>
 				<field name="qualification"/>
 			</field>
@@ -34,7 +44,7 @@
 				<label for="no_of_recruitment"/>
 				<div class="o_row">
 					<field name="no_of_recruitment"/>
-					<field name="flag_employee"/><span class="text-muted">(Publish or Unpublish)</span>
+					<field name="flag_employee"/><span class="text-muted">(Check to Publish)</span>
 				</div>
 			</field>
 			<field name="user_id" position="after">
@@ -93,10 +103,17 @@
 		<field name="inherit_id" ref="hr_recruitment.hr_job_simple_form" /> 
 		<field name="arch" type="xml">
 			<field name="name" position="after">
-				<field name="job_type"/>
-				<field name="user_id" required="1"/>
-				<field name="job_location_id" />
+				<field name="job_type" required="1"/>
+				<field name="user_id" required="1" attrs="{'invisible': [('flag_for_admin', '=', False)]}"/>
+				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
+				<field name="flag_for_admin" invisible="1"/>
 			</field>
+			<xpath expr="//label[@for='alias_name']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+			<xpath expr="//div[@name='alias_def']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
 		</field>
 	</record>
 
@@ -239,7 +256,7 @@
 				<field name="degree"/>
 				<field name="marital_status"/>
 				<field name="psikotes" filename="file_psikotes" widget="binary"/>
-				<field name="file_name"/>
+				<field name="file_name" invisible="1"/>
 				<field name="file_psikotes" invisible="1"/>
 				<field name="gender"/>	
 				<label for="birth"/>

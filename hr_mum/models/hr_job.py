@@ -250,11 +250,11 @@ class HrFileTemplateLine(models.Model):
     template_id = fields.Many2one('hr.file.template', ondelete='cascade')
 
 
-class HrJob(models.Model):
+class Job(models.Model):
     _inherit = 'hr.job'
     _order = 'create_date desc'
 
-    # @api.model
+    # @api.model 
     # def _default_type(self):
     #     if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
     #         return [('internal', 'Internal'), ('external', 'External')]
@@ -276,10 +276,36 @@ class HrJob(models.Model):
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     salary_expected = fields.Float('Expected Salary')
+    flag_for_admin = fields.Boolean(string='Flag Admin', compute='flag_for_admin')
     flag_salary = fields.Boolean(string='Flag')
     flag_employee = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
     alias_name = fields.Char('Email Alias', invisible=True)
+    
+    @api.model
+    def create(self, vals):
+        value = super(Job, self).create(vals)
+        if value.job_type == 'internal':
+            value.website_published = True
+        else:
+            value.website_published = False
+    
+        if value.user_id:
+            value.notification_action()
+        return value
+    
+    def write(self, vals):
+        if 'state' in vals:
+            if vals.get('state') == 'finish' :
+                self.website_published = False
+        return super(Job, self).write(vals)
+
+    def _compute_flag_admin(self):
+        for rec in self:
+            if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+                rec.flag_admin = True
+            else:
+                rec.flag_admin = False
 
     @api.depends('date_start', 'address_id', 'name')
     def _compute_code(self):
@@ -297,7 +323,7 @@ class HrJob(models.Model):
             'date_dif': date_days
         })
         # date_dif = self.date_start - self.date_finish
-        return super(HrJob, self).set_open()
+        return super(Job, self).set_open()
 
     @api.model
     def _auto_stop_reqruitment(self): 
@@ -309,18 +335,8 @@ class HrJob(models.Model):
             if interval_time.days > 10 :
                 _logger.warning('===================> Stop Recruitment %s <===================' % (job.name))
                 job.state = 'finish'
+                job.date_finish = fields.Datetime.today()
     
-    @api.model
-    def create(self, vals):
-        value = super(HrJob, self).create(vals)
-        if value.job_type == 'internal':
-            value.website_published = True
-        else:
-            value.website_published = False
-    
-        if value.user_id:
-            value.notification_action()
-        return value
 
     def close_dialog(self):
         form_view = self.env.ref('hr.view_hr_job_form')
