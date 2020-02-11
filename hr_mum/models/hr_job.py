@@ -276,7 +276,7 @@ class Job(models.Model):
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     salary_expected = fields.Float('Expected Salary')
-    flag_for_admin = fields.Boolean(string='Flag Admin', compute='flag_for_admin')
+    flag_for_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
     flag_salary = fields.Boolean(string='Flag')
     flag_employee = fields.Boolean(string='Flag')
     qualification = fields.Text(string='Qualification')
