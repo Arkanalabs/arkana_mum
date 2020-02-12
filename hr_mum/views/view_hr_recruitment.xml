@@ -226,7 +226,7 @@
 			</field>
 			<xpath expr="//sheet/group" position="after">
 				<notebook colspan="4">
-					<page string='Documents'>
+					<!-- <page string='Documents'>
 						<group>
 							<field name="file_ids" nolabel="1">
 								<tree editable="bottom">
@@ -235,7 +235,7 @@
 								</tree>
 							</field>
 						</group>
-					</page>
+					</page> -->
 					<page string='Processing Time'>
 						<group>
 							<field name="time_ids" readonly="1" nolabel="1">

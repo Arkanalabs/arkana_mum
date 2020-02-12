@@ -24,8 +24,8 @@ class HrJobOrder(models.Model):
 class Applicant(models.Model):
     _inherit = 'hr.applicant'
     
-    file_ids = fields.One2many(
-        'hr.applicant.file', 'applicant_id', string='File')
+    # file_ids = fields.One2many(
+    #     'hr.applicant.file', 'applicant_id', string='File')
     job_type = fields.Selection([
         ('internal', 'Internal'),
         ('external', 'External'),
@@ -71,10 +71,10 @@ class Applicant(models.Model):
             if rec.file_name:
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
                     raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
-        for file in rec.file_ids:
-            if file.file:
-                if (len(file.file) / 1024.0 / 1024.0) >= 2:
-                    raise UserError('Ukuran dokumen maksimal 2MB')
+        # for file in rec.file_ids:
+        #     if file.file:
+        #         if (len(file.file) / 1024.0 / 1024.0) >= 2:
+        #             raise UserError('Ukuran dokumen maksimal 2MB')
                 # if not self.file_name.split('.')[-1].lower() in allowed_extension:
                 #     raise UserError('Dokumen harus berformat *.pdf/*.img/*.jpg/*.jpeg/*.png !')
         return rec
@@ -170,7 +170,7 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
     _sql_constraints = [
         ('No. KTP', 'unique(identification_id)', 'No. KTP sudah pernah didaftarkan.'),
-        ('NIP', 'unique(nip)', 'NIP sudah pernah digunakan.')]
+        ('NIP (Nomor Induk Pegawai)', 'unique(nip)', 'NIP sudah pernah digunakan.')]
 
     identification_id = fields.Char(string='No. KTP')
     job_type = fields.Selection([
@@ -183,7 +183,7 @@ class HrEmployee(models.Model):
         ], string='Marital Status')
     gender_employee = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
     address = fields.Text(string='Address')
-    nip = fields.Char(string='NIP')
+    nip = fields.Char(string='NIP (Nomor Induk Pegawai)')
     departure_date = fields.Date('Departure Date')
     bank_name = fields.Char('Bank Name')
     bank_no_rec = fields.Char('No Account Bank')
