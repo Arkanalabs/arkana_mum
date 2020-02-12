@@ -34,7 +34,7 @@ class Applicant(models.Model):
     # stage_id = fields.Many2one(readonly=True)
     flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
     flag_archive = fields.Boolean(string='Flag Archive')
-    psikotes = fields.Binary('Psikotes')
+    # psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
     user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')

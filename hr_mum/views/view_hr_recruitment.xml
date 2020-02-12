@@ -255,9 +255,9 @@
 			<field name="type_id" position="after">
 				<field name="degree"/>
 				<field name="marital_status"/>
-				<field name="psikotes" filename="file_psikotes" widget="binary"/>
+				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
+				<!-- <field name="file_psikotes" invisible="1"/> -->
 				<field name="file_name" invisible="1"/>
-				<field name="file_psikotes" invisible="1"/>
 				<field name="gender"/>	
 				<label for="birth"/>
 				<div class="o_row">
