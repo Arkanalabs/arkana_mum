@@ -210,6 +210,9 @@
 				<button string="Rollback" name="button_rollback" type="object"
 						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True)]}"/>
 			</button>
+			<button name="action_makeMeeting" position="before">
+				<button string="Download Offering Letter" name="act_download_offering_letter" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('flag_ol', '=', False)]}"/>
+			</button>
 			<xpath expr="//field[@name='stage_id']" position="attributes">
 				<attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
 				<!-- <attribute name="attrs">{'invisible': [('active', '=', False),('emp_id', '=', False)], 'readonly': [('flag_admin', '=', False)]}</attribute> -->
@@ -226,16 +229,6 @@
 			</field>
 			<xpath expr="//sheet/group" position="after">
 				<notebook colspan="4">
-					<!-- <page string='Documents'>
-						<group>
-							<field name="file_ids" nolabel="1">
-								<tree editable="bottom">
-									<field name="name" />
-									<field name="file" />
-								</tree>
-							</field>
-						</group>
-					</page> -->
 					<page string='Processing Time'>
 						<group>
 							<field name="time_ids" readonly="1" nolabel="1">
@@ -243,6 +236,30 @@
 									<field name="time_process" readonly="1"/>
 									<field name="name" string="Process" readonly="1"/>
 									<!-- <field name="ket"/> -->
+								</tree>
+							</field>
+						</group>
+					</page>
+					<page string='Job Information'>
+						<group>
+							<group>
+								<field name="effective_date"/>
+								<field name="contract_period"/>
+							</group>
+							<group>
+								<label for="base_salary"/>
+									<div class="o_row" name="base_salary">
+										<field name="base_salary" nolabel="1"/>
+										<span>/ month</span>
+									</div>
+								<field name="fasility"/>
+							</group>
+						</group>
+						<group string="Fringe Benefits">
+							<field name="benefits_ids" nolabel="1">
+								<tree editable="bottom">
+									<field name="name" />
+									<field name="wage" />
 								</tree>
 							</field>
 						</group>
@@ -265,7 +282,7 @@
 					<field name="birth" nolabel="1" placeholder="Date of Birth"/>
 				</div>
 				<field name="age"/>
-				<field name="no_ktp"/>
+				<field name="no_ktp" attrs="{'required': [('stage_end', '=', True)]}"/>
 				<field name="address"/>
 				<field name="work_experience"/>
 				<field name="sequence_stage" invisible="1"/>
@@ -274,6 +291,7 @@
 				<field name="progress" invisible="1"/>
 				<field name="flag_admin" invisible="1"/>
 				<field name="flag_archive" invisible="1"/>
+				<field name="flag_ol" invisible="1"/>
 				<field name="stage_early" invisible="1"/>
 				<field name="stage_end" invisible="1"/>
 			</field>

@@ -26,9 +26,11 @@
                     <script>
                         var uploadField = document.getElementById("file");
                         uploadField.onchange = function(){
-                          if(this.files[0].size > 2097152){
-                            alert("Ukuran File Max-2Mb!");
-                            this.value = "";
+                          if(this.files[0]){
+                            if(this.files[0].size > 2097152){
+                              alert("Ukuran File Max-2Mb!");
+                              this.value = "";
+                            };
                           };
                         };
 
@@ -67,12 +69,12 @@
           </div>
           <div class="col-lg-7 col-md-8">
               <select class="form-control o_website_form_input" name="gender">
-                   <option value="pria">Pria</option>
-                   <option value="wanita">Wanita</option>
+                   <option value="Pria">Pria</option>
+                   <option value="Wanita">Wanita</option>
               </select>
           </div>
       </div>
-      <div class="form-group row form-field o_website_form_required_custom">
+      <div class="form-group row form-field">
           <!-- <div class="col-lg-3 col-md-4 text-right">
               <label class="col-form-label" for="type_id">Pendidikan Terakhir</label>
           </div>
@@ -123,17 +125,21 @@
               </select>
           </div>
       </div>
-      <div class="form-group row form-field">
+      <div class="form-group row form-field o_website_form_required_custom">
           <div class="col-lg-3 col-md-4 text-right">
-              <label class="col-form-label" for="image_applicant">Your Photo</label>
+              <label class="col-form-label" for="image_applicant">Photo Anda</label>
           </div>          
           <div class="col-lg-7 col-md-8 img-upload-section">
-              <input type="file" name="image_applicant" accept="image/*" id="menu_images" onchange="loadFile(event)" style="display: block;" />
+              <input type="file" class="form-control o_website_form_input" name="image_applicant" accept="image/*" onchange="loadFile(event)" style="display: block;height:auto;" required="1"/>
               <img id="output" style="margin-top: 10px; width: 100px; height: 100px;"/>
               <script>
                 var loadFile = function(event) {
                   var output = document.getElementById('output');
                   output.src = URL.createObjectURL(event.target.files[0]);
+                  if(event.target.files[0].size > 2097152){
+                      alert("Ukuran File Max-2Mb!");
+                      output.src = "";
+                    };
                 };
               </script>
               <label class="col-lg-3 col-md-4">(Max 2MB)</label>
@@ -143,6 +149,22 @@
 </template>		
 
 <template id="index_mum" inherit_id="website_hr_recruitment.index" name="Info Job Offers">
+  <xpath expr="//div[@id='wrap']/div/section/div/div/div" position="after">
+    <div class="col-lg-12 text-center mb16">
+      <script>
+        function redirect() {
+            location.href = '/jobs?search=' + document.getElementById('search').value;
+            return false;
+        }
+      </script>
+
+      <form onsubmit="return redirect();">
+        <input class="oe_search_box" id="search" type="text" />
+        <input type="submit" value="Search"/>
+      </form>
+    </div>
+  </xpath>
+  
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/a/span" position="after">
     <style>
       li.media{
@@ -158,7 +180,7 @@
     <div t-if="job.flag_salary">
       <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
     </div>
-    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-raw="job.qualification"/></span>
   </xpath>
 
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/small" position="replace">
@@ -178,13 +200,13 @@
     <div t-if="job.flag_salary">
       <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
     </div>
-    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-esc="job.qualification"/></span>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-raw="job.qualification"/></span>
   </xpath>
   
   <xpath expr="//div[@id='wrap']/div[2]" position="replace">
     <section class="mb32">
       <div class="container">
-        <p class="mt0 lead"><t t-esc="job.description" /></p>
+        <p class="mt0 lead"><t t-raw="job.description" /></p>
       </div>
     </section>
   </xpath>

@@ -20,6 +20,7 @@
         'data/template_mail_notif_contract.xml',
         'security/ir.model.access.csv',
         'security/mum_security.xml',
+        'report/report_hr_mum.xml',
         'views/view_hr_recruitment.xml',
         'views/templates_website_hr_recruitment.xml',
     ],

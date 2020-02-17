@@ -23,9 +23,12 @@ class WebsiteHrRecruitmentInherit(WebsiteHrRecruitment):
         Country = env['res.country']
         Jobs = env['hr.job']
 
-        # List jobs available to current UID
-        domain = request.website.website_domain()
-        job_ids = Jobs.search(domain, order="create_date desc").ids
+        if kwargs.get('search', False):
+            job_ids = Jobs.search(['|',('name', 'ilike', kwargs.get('search')), ('job_location_id.name', 'ilike', kwargs.get('search'))]).ids
+        else:
+            # List jobs available to current UID
+            domain = request.website.website_domain()
+            job_ids = Jobs.search(domain, order="create_date desc").ids
         # Browse jobs as superuser, because address is restricted
         jobs = Jobs.sudo().browse(job_ids)
 

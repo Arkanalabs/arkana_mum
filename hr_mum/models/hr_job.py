@@ -8,6 +8,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time as datetime_time
 from dateutil.relativedelta import relativedelta
+from odoo.tools import html_translate
 
 import babel, logging
 
@@ -19,7 +20,6 @@ class HrJobOrder(models.Model):
     _order = 'name desc, id desc'
 
     name = fields.Char(string='Name', required=True)
-
 
 class Applicant(models.Model):
     _inherit = 'hr.applicant'
@@ -33,6 +33,7 @@ class Applicant(models.Model):
     user_id = fields.Many2one(related='job_id.user_id')
     # stage_id = fields.Many2one(readonly=True)
     flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
+    flag_ol = fields.Boolean(string='Flag', compute='_compute_flag_ol')
     flag_archive = fields.Boolean(string='Flag Archive')
     # psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
@@ -40,11 +41,11 @@ class Applicant(models.Model):
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
-    gender = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
+    gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
     age = fields.Integer(string='Age', default=False, compute='_age_compute')
-    no_ktp = fields.Char(string='No. KTP', required=True)
+    no_ktp = fields.Char(string='No. KTP')
     address = fields.Text(string='Address')
     degree = fields.Selection([
         ("smp","SMP"),("sma","SMA"),("smk","SMK"),("d1","D1"),("d2","D2"),
@@ -60,6 +61,11 @@ class Applicant(models.Model):
     file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
     stage_early = fields.Boolean(string='Stage Early', compute='_compute_stage_early')
+    benefits_ids = fields.One2many('hr.applicant.benefits', 'applicant_id', 'Benefits')
+    base_salary = fields.Integer(string='Base Salary')
+    contract_period = fields.Integer(string='Contract Period', default=1)
+    effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
+    fasility = fields.Text(string='Fasility')
 
     @api.model
     def create(self, vals):
@@ -85,6 +91,13 @@ class Applicant(models.Model):
             rec.flag_admin = True
         else :
             rec.flag_admin = False
+    
+    def _compute_flag_ol(self):
+      for rec in self:
+        if self.stage_id.name == 'Offering Letter':
+            rec.flag_ol = True
+        else :
+            rec.flag_ol = False
     
     def _compute_stage_early(self):
         for rec in self:
@@ -153,6 +166,11 @@ class Applicant(models.Model):
             # elif not stage_id:
             #     raise UserError('Sorry, This is the last stage')
 
+    def act_download_offering_letter(self):
+        self.ensure_one()
+        res = self.env.ref("hr_mum.mum_offering_letter_py3o").with_context({
+            'discard_logo_check': True}).report_action(self)
+        return res
     
     def create_employee_from_applicant(self):
         self = self.with_context({
@@ -181,7 +199,7 @@ class HrEmployee(models.Model):
         ("single","Lajang"),
         ("married","Menikah"),
         ], string='Marital Status')
-    gender_employee = fields.Selection([("pria","Pria"),("wanita","Wanita")], string='Gender')
+    gender_employee = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
     address = fields.Text(string='Address')
     nip = fields.Char(string='NIP (Nomor Induk Pegawai)')
     departure_date = fields.Date('Departure Date')
@@ -220,6 +238,14 @@ class HrApplicantFile(models.Model):
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
     file = fields.Binary(string='File')
     is_required = fields.Boolean(string='Required')
+
+class HrApplicantFile(models.Model):
+    _name = 'hr.applicant.benefits'
+    _description = 'Benefits Info'
+
+    name = fields.Char(string='Name')
+    applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
+    wage = fields.Integer(string='Wage')
 
 class HrApplicantTime(models.Model):
     _name = 'hr.applicant.time'
@@ -279,13 +305,14 @@ class Job(models.Model):
     flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
     flag_employee = fields.Boolean(string='Flag')
-    qualification = fields.Text(string='Qualification')
+    qualification = fields.Html(string='Qualification', translate=html_translate, sanitize=False)
     alias_name = fields.Char('Email Alias', invisible=True)
+    description = fields.Html('Description', translate=html_translate, sanitize=False)
     
     @api.model
     def create(self, vals):
         value = super(Job, self).create(vals)
-        if value.job_type == 'internal':
+        if value.job_type == 'internal' or value.flag_for_admin == True:
             value.website_published = True
         else:
             value.website_published = False
