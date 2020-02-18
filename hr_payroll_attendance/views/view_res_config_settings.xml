@@ -8,7 +8,7 @@
             <xpath expr="//div[@id='user_default_rights']" position="inside">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_right_pane">
-                        <label for="atd_period"/>
+                        <label for="atd_period" string="Attendance Period"/>
                         <span class="fa fa-lg fa-building-o" title="Attendance Settings." role="img" aria-label="Set attendance computation."/>
                         <div class="row">
                             <div class="text-muted col-lg-8">
