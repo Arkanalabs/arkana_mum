@@ -62,10 +62,12 @@ class Applicant(models.Model):
     stage_end = fields.Boolean(string='Stage End')
     stage_early = fields.Boolean(string='Stage Early', compute='_compute_stage_early')
     benefits_ids = fields.One2many('hr.applicant.benefits', 'applicant_id', 'Benefits')
-    base_salary = fields.Integer(string='Base Salary')
+    base_salary = fields.Monetary(string='Base Salary')
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
     contract_period = fields.Integer(string='Contract Period', default=1)
     effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
     fasility = fields.Text(string='Fasility')
+    thp_total = fields.Monetary(string='Total THP', compute='_compute_thp')
 
     @api.model
     def create(self, vals):
@@ -105,6 +107,14 @@ class Applicant(models.Model):
                 rec.stage_early = True
             else :
                 rec.stage_early = False
+
+    @api.depends('benefits_ids.wage')
+    def _compute_thp(self):
+        for rec in self:
+            thp = 0.0
+            for benefits in rec.benefits_ids:
+                thp += benefits.wage
+            rec.thp_total = thp + rec.base_salary
 
     def reset_applicant(self):
         """ Reinsert the applicant into the recruitment pipe in the previous stage"""
@@ -243,9 +253,12 @@ class HrApplicantFile(models.Model):
     _name = 'hr.applicant.benefits'
     _description = 'Benefits Info'
 
-    name = fields.Char(string='Name')
+    name = fields.Char(string='Type')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
-    wage = fields.Integer(string='Wage')
+    wage = fields.Monetary(string='Wage')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    number = fields.Integer(string='Numb', default=10)
 
 class HrApplicantTime(models.Model):
     _name = 'hr.applicant.time'

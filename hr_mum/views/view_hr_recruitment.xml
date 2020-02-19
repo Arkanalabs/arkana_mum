@@ -240,11 +240,15 @@
 							</field>
 						</group>
 					</page>
-					<page string='Job Information'>
+					<page string='Job Contract'>
 						<group>
 							<group>
 								<field name="effective_date"/>
-								<field name="contract_period"/>
+								<label for="contract_period"/>
+									<div class="o_row">
+										<field name="contract_period" nolabel="1"/>
+										<span>year</span>
+									</div>
 							</group>
 							<group>
 								<label for="base_salary"/>
@@ -252,6 +256,7 @@
 										<field name="base_salary" nolabel="1"/>
 										<span>/ month</span>
 									</div>
+								<field name="currency_id" invisible="1"/>
 								<field name="fasility"/>
 							</group>
 						</group>
@@ -260,8 +265,15 @@
 								<tree editable="bottom">
 									<field name="name" />
 									<field name="wage" />
+									<field name="currency_id" invisible="1" />
 								</tree>
 							</field>
+							<group class="oe_subtotal_footer oe_right">
+                                <div class="oe_subtotal oe_inline">
+                                    <label for="thp_total"/>
+                                </div>
+                                <field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            </group>
 						</group>
 					</page>
 				</notebook>

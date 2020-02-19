@@ -59,7 +59,7 @@
             </div>
         </t>
         <div class="col-lg-10 col-md-18 text-right">
-          <label class="col-form-label">* Format Pdf max-size 2MB !</label>
+          <label class="col-form-label">Format File Upload ".Pdf" max-size 2MB !</label>
         </div>
     </xpath>
     <xpath expr="//form[@id='hr_recruitment_form']/div[3]" position="after">
@@ -157,10 +157,15 @@
             return false;
         }
       </script>
-
       <form onsubmit="return redirect();">
-        <input class="oe_search_box" id="search" type="text" />
-        <input type="submit" value="Search"/>
+        <!-- <input id="search" type="text" />
+        <input type="submit" value="Search"/> -->
+        <div t-attf-class="input-group #{_classes}">
+          <input id="search" type="text" name="search" class="oe_search_box col-md-4 offset-md-4" placeholder="Search..."/>
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-primary oe_search_button" aria-label="Search" title="Search" value="Search"><i class="fa fa-search"/></button>
+          </div>
+        </div>
       </form>
     </div>
   </xpath>
