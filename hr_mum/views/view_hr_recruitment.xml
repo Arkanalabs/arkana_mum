@@ -282,12 +282,12 @@
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="type_id" position="after">
-				<field name="degree"/>
-				<field name="marital_status"/>
+				<field name="degree_applicant"/>
+				<field name="marital_status_applicant"/>
 				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
 				<!-- <field name="file_psikotes" invisible="1"/> -->
 				<field name="file_name" invisible="1"/>
-				<field name="gender"/>	
+				<field name="gender_applicant"/>	
 				<label for="birth"/>
 				<div class="o_row">
 					<field name="place_of_birth" nolabel="1" placeholder="Place"/>
@@ -400,24 +400,30 @@
 			<field name="job_id" position="before">
 				<field name="job_type"/>
 			</field>
-			<field name="gender" position="attributes">
-				<attribute name="invisible">1</attribute>
-			</field>
 			<field name="gender" position="after">
-				<field name="gender_employee"/>
+				<field name="employee_gender"/>
 			</field>
-			<field name="address_home_id" position="attributes">
-				<attribute name="invisible">1</attribute>
+			<field name="study_field" position="before">
+				<field name="degree_employee"/>
 			</field>
 			<field name="address_home_id" position="after">
 				<field name="address"/>
 				<field name="phone_employee" widget="phone"/>
 			</field>
+			<field name="gender" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="address_home_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="marital" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
+			<field name="certificate" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="marital" position="after">
-				<field name="marital_status"/>
+				<field name="marital_status_employee"/>
 			</field>
 			<field name="parent_id" position="after">
 				<field name="nip"/>

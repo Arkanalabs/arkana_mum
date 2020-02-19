@@ -41,20 +41,21 @@ class Applicant(models.Model):
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
-    gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
+    gender_applicant = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
     age = fields.Integer(string='Age', default=False, compute='_age_compute')
     no_ktp = fields.Char(string='No. KTP')
     address = fields.Text(string='Address')
-    degree = fields.Selection([
-        ("smp","SMP"),("sma","SMA"),("smk","SMK"),("d1","D1"),("d2","D2"),
-        ("d3","D3"),("d4","D4"),("s1","S1"),("s2","S2"),
-        ("s3","S3"),], string='Degree')
+    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
+        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
+        ("S3","S3"),("Lainnya","Lainnya")]
+    degree_applicant = fields.Selection(degree, string='Degree')
     # marital_status = fields.Char(string='Marital Status')
-    marital_status = fields.Selection([
-        ("single","Lajang"),
-        ("married","Menikah"),
+    marital_status_applicant = fields.Selection([
+        ("Lajang","Lajang"),
+        ("Menikah","Menikah"),
+        ("Duda/Janda","Duda/Janda"),
         ], string='Marital Status')
     work_experience = fields.Char(string='Work Experience (year)')
     image_applicant = fields.Image(string="Image")
@@ -190,7 +191,9 @@ class Applicant(models.Model):
             'place_of_birth': self.place_of_birth,
             'address': self.address,
             'phone': self.partner_phone,
-            'gender': self.gender
+            'gender': self.gender_applicant,
+            'degree': self.degree_applicant,
+            'marital': self.marital_status_applicant,
         })
         return super(Applicant, self).create_employee_from_applicant()
 
@@ -205,17 +208,22 @@ class HrEmployee(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
-    marital_status = fields.Selection([
-        ("single","Lajang"),
-        ("married","Menikah"),
-        ], string='Marital Status')
-    gender_employee = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
+    marital_status_employee = fields.Selection([
+        ("Lajang","Lajang"),
+        ("Menikah","Menikah"),
+        ("Duda/Janda","Duda/Janda"),
+        ], string='Status Marital')
+    employee_gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender Employee')
     address = fields.Text(string='Address')
     nip = fields.Char(string='NIP (Nomor Induk Pegawai)')
     departure_date = fields.Date('Departure Date')
     bank_name = fields.Char('Bank Name')
     bank_no_rec = fields.Char('No Account Bank')
     phone_employee = fields.Char('Phone')
+    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
+        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
+        ("S3","S3"),("Lainnya","Lainnya")] 
+    degree_employee = fields.Selection(degree, string='Degree')
     
     @api.model
     def create(self, vals):
@@ -226,7 +234,9 @@ class HrEmployee(models.Model):
             'place_of_birth': self.env.context.get('place_of_birth', False), 
             'address': self.env.context.get('address', False),
             'phone_employee': self.env.context.get('phone', False),
-            'gender_employee': self.env.context.get('gender', False) 
+            'employee_gender': self.env.context.get('gender', False), 
+            'degree_employee': self.env.context.get('degree', False),
+            'marital_status_employee': self.env.context.get('marital', False),
             })
         return super(HrEmployee, self).create(vals)
 
