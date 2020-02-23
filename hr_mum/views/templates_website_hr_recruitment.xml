@@ -59,8 +59,13 @@
             </div>
         </t>
         <div class="col-lg-10 col-md-18 text-right">
-          <label class="col-form-label">Format File Upload ".Pdf" max-size 2MB !</label>
+          <label class="col-form-label">Format File Pdf max-size 2MB !</label>
         </div>
+    </xpath>
+    <xpath expr="//div[@id='wrap']/h2" position="after">
+      <div class="col-lg-10 col-md-18 text-right">
+        <label style="font-weight: bold;">* Wajib Diisi !</label>
+      </div>
     </xpath>
     <xpath expr="//form[@id='hr_recruitment_form']/div[3]" position="after">
       <div class="form-group row form-field">

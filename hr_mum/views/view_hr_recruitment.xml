@@ -227,8 +227,66 @@
 				<field name="job_type"/>
 				<field name="user_applicant_id" invisible="1"/>
 			</field>
+			<field name="availability" position="after">
+				<label for="contract_period"/>
+				<div class="o_row">
+					<field name="contract_period" nolabel="1"/>
+					<span>year</span>
+				</div>
+				<field name="fasility"/>
+				<field name="currency_id" invisible="1" />
+				<field name="flag_benefits"/>
+				<!-- <label for="benefits_ids" invisible="1"/>
+					<div>
+						<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+							<tree editable="bottom">
+								<field name="name" />
+								<field name="wage" />
+								<field name="currency_id" invisible="1" />
+							</tree>
+						</field>
+						<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+							<div class="oe_subtotal oe_inline">
+								<label for="thp_total"/>
+							</div>
+							<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+						</group>
+					</div> -->
+			</field>
+			<xpath expr="//sheet/group/group[4]" position="after">
+				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+					<tree editable="bottom" >
+						<field name="name" />
+						<field name="wage" />
+						<field name="currency_id" invisible="1" />
+					</tree>
+				</field>
+				<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+					<div class="oe_subtotal oe_inline">
+						<label for="thp_total"/>
+					</div>
+					<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+				</group>
+			</xpath>
 			<xpath expr="//sheet/group" position="after">
 				<notebook colspan="4">
+					<!-- <page string='Fringe Benefits'>
+						<group>
+							<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+								<tree editable="bottom" >
+									<field name="name" />
+									<field name="wage" />
+									<field name="currency_id" invisible="1" />
+								</tree>
+							</field>
+							<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+								<div class="oe_subtotal oe_inline">
+									<label for="thp_total"/>
+								</div>
+								<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+							</group>
+						</group>
+					</page> -->
 					<page string='Processing Time'>
 						<group>
 							<field name="time_ids" readonly="1" nolabel="1">
@@ -238,42 +296,6 @@
 									<!-- <field name="ket"/> -->
 								</tree>
 							</field>
-						</group>
-					</page>
-					<page string='Job Contract'>
-						<group>
-							<group>
-								<field name="effective_date"/>
-								<label for="contract_period"/>
-									<div class="o_row">
-										<field name="contract_period" nolabel="1"/>
-										<span>year</span>
-									</div>
-							</group>
-							<group>
-								<label for="base_salary"/>
-									<div class="o_row" name="base_salary">
-										<field name="base_salary" nolabel="1"/>
-										<span>/ month</span>
-									</div>
-								<field name="currency_id" invisible="1"/>
-								<field name="fasility"/>
-							</group>
-						</group>
-						<group string="Fringe Benefits">
-							<field name="benefits_ids" nolabel="1">
-								<tree editable="bottom">
-									<field name="name" />
-									<field name="wage" />
-									<field name="currency_id" invisible="1" />
-								</tree>
-							</field>
-							<group class="oe_subtotal_footer oe_right">
-                                <div class="oe_subtotal oe_inline">
-                                    <label for="thp_total"/>
-                                </div>
-                                <field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-                            </group>
 						</group>
 					</page>
 				</notebook>
@@ -471,6 +493,12 @@
 		<field name="model">hr.contract</field>
 		<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
 		<field name="arch" type="xml">
+			<xpath expr="//div[@name='button_box']" position="replace">
+				<div class="oe_button_box" name="button_box">
+					<button string="Download Contract" name="act_download_report_contract"
+					icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('state', '!=', 'open')]}"/>
+				</div>
+			</xpath>
 			<field name="name" position="attributes">
 				<attribute name="required">0</attribute>
 			</field>
@@ -598,6 +626,17 @@
 			</xpath>
 		</field>
 	</record>
+
+	<!-- <record model="ir.ui.view" id="payroll_structure_type_inherit">
+		<field name="name">hr.payroll.structure.type.form</field>
+		<field name="model">hr.payroll.structure.type</field>
+		<field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+		<field name="arch" type="xml">
+			<field name="wage_type" position="after">
+				<field name="emp_id"/>
+			</field>
+		</field>
+	</record> -->
 
 	<record id="action_job_location_recruitment" model="ir.actions.act_window">
         <field name="name">Job Location</field>

@@ -69,6 +69,10 @@ class Applicant(models.Model):
     effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
     fasility = fields.Text(string='Fasility')
     thp_total = fields.Monetary(string='Total THP', compute='_compute_thp')
+    salary_proposed = fields.Monetary("Proposed Salary")
+    salary_expected = fields.Monetary("Expected Salary")
+    flag_benefits = fields.Boolean("Show Benefits")
+    benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
 
     @api.model
     def create(self, vals):
@@ -184,6 +188,7 @@ class Applicant(models.Model):
         return res
     
     def create_employee_from_applicant(self):
+        res = super(Applicant, self).create_employee_from_applicant()
         self = self.with_context({
             'image_applicant': self.image_applicant,
             'no_ktp': self.no_ktp,
@@ -195,7 +200,46 @@ class Applicant(models.Model):
             'degree': self.degree_applicant,
             'marital': self.marital_status_applicant,
         })
-        return super(Applicant, self).create_employee_from_applicant()
+        
+        work_entry_type = self.env['hr.work.entry.type'].search([('name', '=', 'Attendance')])
+        payroll_type = self.env['hr.payroll.structure.type'].create({
+            'emp_id': self.emp_id.id,
+            'name': 'Gaji %s' % (self.emp_id.name),
+            'wage_type': 'monthly',
+            'default_schedule_pay': 'monthly',
+            'default_work_entry_type_id': work_entry_type.id
+        })
+
+        # contract = self.env['hr.contract'].search([])
+        self.env['hr.contract'].create({
+            'employee_id': self.emp_id.id,
+            'job_id': self.job_id.id,
+            'wage': self.salary_proposed,
+            'job_type': self.job_type,
+            'structure_type_id': payroll_type.id
+        })
+
+        structure_id = self.env['hr.payroll.structure'].create({
+            'name': 'Gaji %s' % (self.emp_id.name),
+            'type_id': payroll_type.id,
+        })
+
+        allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
+        if self.benefits_ids:
+            for rec in self.benefits_ids:
+                self.env['hr.salary.rule'].create({
+                    'struct_id': structure_id.id,
+                    'category_id': allowance.id,
+                    'code': rec.name,
+                    'name': rec.name,
+                    'amount_fix': rec.wage,
+                })        
+        return res
+
+class HrPayrollStructureType(models.Model):
+    _inherit = 'hr.payroll.structure.type'
+
+    emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
@@ -263,7 +307,7 @@ class HrApplicantFile(models.Model):
     _name = 'hr.applicant.benefits'
     _description = 'Benefits Info'
 
-    name = fields.Char(string='Type')
+    name = fields.Char(string='Type Benefits')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
     wage = fields.Monetary(string='Wage')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -428,7 +472,7 @@ class Contract(models.Model):
         ("pkwt","PKWT"),
         ("phl","PHL"),
         ("tetap","TETAP")
-    ], string='Contract Type', required=True)
+    ], string='Contract Type')
     month_end = fields.Integer(string='End Month', default=4)
 
     def write(self, vals):
@@ -459,6 +503,18 @@ class Contract(models.Model):
                     contract.month_end -= 1
                     template = self.env.ref('hr_mum.template_mail_notif_contract')
                     template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
+
+    def act_download_report_contract(self):
+        self.ensure_one()
+        if self.contract_type == 'pkwt':
+            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        elif self.contract_type == 'phl':
+            res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        else:
+            False
+        return res
 
     
     class HrRecruitmentStage(models.Model):
