@@ -73,6 +73,7 @@ class Applicant(models.Model):
     salary_expected = fields.Monetary("Expected Salary")
     flag_benefits = fields.Boolean("Show Benefits")
     benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
+    availability = fields.Date(default=fields.Date.today())
 
     @api.model
     def create(self, vals):
