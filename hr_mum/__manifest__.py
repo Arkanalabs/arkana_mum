@@ -23,6 +23,7 @@
         'data/sequence.xml',
         'data/template_mail_notif_contract.xml',
         'views/view_hr_recruitment.xml',
+        'views/view_survey.xml',
         'views/templates_website_hr_recruitment.xml',
     ],
     'demo': [],

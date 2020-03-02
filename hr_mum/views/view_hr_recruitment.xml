@@ -227,6 +227,9 @@
 				<field name="job_type"/>
 				<field name="user_applicant_id" invisible="1"/>
 			</field>
+			<field name="job_id" position="after">
+				<field name="job_location_id"/>
+			</field>
 			<field name="availability" position="after">
 				<label for="contract_period"/>
 				<div class="o_row">
@@ -236,22 +239,6 @@
 				<field name="fasility"/>
 				<field name="currency_id" invisible="1" />
 				<field name="flag_benefits"/>
-				<!-- <label for="benefits_ids" invisible="1"/>
-					<div>
-						<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
-							<tree editable="bottom">
-								<field name="name" />
-								<field name="wage" />
-								<field name="currency_id" invisible="1" />
-							</tree>
-						</field>
-						<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
-							<div class="oe_subtotal oe_inline">
-								<label for="thp_total"/>
-							</div>
-							<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-						</group>
-					</div> -->
 			</field>
 			<xpath expr="//sheet/group/group[4]" position="after">
 				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
@@ -318,7 +305,11 @@
 				<field name="age"/>
 				<field name="no_ktp" attrs="{'required': [('stage_end', '=', True)]}"/>
 				<field name="address"/>
-				<field name="work_experience"/>
+				<label for="work_experience"/>
+				<div class="o_row">
+					<field name="work_experience" nolabel="1"/>
+					<span>year</span>
+				</div>
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
@@ -422,6 +413,9 @@
 			<field name="job_id" position="before">
 				<field name="job_type"/>
 			</field>
+			<field name="work_location" position="replace">
+				<field name="job_location_id"/>
+			</field>
 			<field name="gender" position="after">
 				<field name="employee_gender"/>
 			</field>
@@ -499,6 +493,13 @@
 					icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('state', '!=', 'open')]}"/>
 				</div>
 			</xpath>
+			<xpath expr="//group[@name='duration_group']/div[1]" position="after">
+				<label for="date_interval"/>
+				<div class="o_row">
+					<field name="date_interval" nolabel="1"/>
+					<span>year</span>
+				</div>
+			</xpath>
 			<field name="name" position="attributes">
 				<attribute name="required">0</attribute>
 			</field>
@@ -508,6 +509,9 @@
 			<field name="department_id" position="after">
 				<field name="job_type"/>
 				<field name="contract_type"/>
+			</field>
+			<field name="wage_type" position="before">
+				<field name="benefits_ids"/>
 			</field>
 		</field>
 	</record>

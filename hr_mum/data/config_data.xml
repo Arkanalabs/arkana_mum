@@ -4,12 +4,12 @@
         <function model="ir.model.fields" name="formbuilder_whitelist">
             <value>hr.applicant</value>
             <value eval="[
-            'marital_status',
+            'marital_status_applicant',
             'image_applicant',
-            'gender',
+            'gender_applicant',
             'birth',
             'place_of_birth',
-            'degree',
+            'degree_applicant',
             'file_ids',
             ]"/>
         </function>

@@ -57,7 +57,7 @@ class Applicant(models.Model):
         ("Menikah","Menikah"),
         ("Duda/Janda","Duda/Janda"),
         ], string='Marital Status')
-    work_experience = fields.Char(string='Work Experience (year)')
+    work_experience = fields.Char(string='Work Experience')
     image_applicant = fields.Image(string="Image")
     file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
@@ -74,7 +74,8 @@ class Applicant(models.Model):
     flag_benefits = fields.Boolean("Show Benefits")
     benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
     availability = fields.Date(default=fields.Date.today())
-
+    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+  
     @api.model
     def create(self, vals):
         rec = super(Applicant, self).create(vals)
@@ -221,7 +222,7 @@ class Applicant(models.Model):
         })
 
         structure_id = self.env['hr.payroll.structure'].create({
-            'name': 'Gaji %s' % (self.emp_id.name),
+            'name': 'Salary Structures %s' % (self.emp_id.name),
             'type_id': payroll_type.id,
         })
 
@@ -253,6 +254,7 @@ class HrEmployee(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
+    job_location_id = fields.Many2one('hr.job.location', 'Work Location', related='job_id.job_location_id')
     marital_status_employee = fields.Selection([
         ("Lajang","Lajang"),
         ("Menikah","Menikah"),
@@ -293,6 +295,10 @@ class HrDepartureWizard(models.TransientModel):
     def action_register_departure(self):
         employee = self.employee_id
         employee.departure_date = self.departure_date
+        employee.contract_id.active = False
+        employee.contract_id.search([('employee_id', '=', employee.contract_id.employee_id.id)]).write({
+            'active': False,
+        })
         return super(HrDepartureWizard, self).action_register_departure()
 
 class HrApplicantFile(models.Model):
@@ -313,6 +319,7 @@ class HrApplicantFile(models.Model):
     wage = fields.Monetary(string='Wage')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    contract_id = fields.Many2one('hr.contract', 'Contract', ondelete='cascade')
     number = fields.Integer(string='Numb', default=10)
 
 class HrApplicantTime(models.Model):
@@ -472,9 +479,21 @@ class Contract(models.Model):
     contract_type = fields.Selection([
         ("pkwt","PKWT"),
         ("phl","PHL"),
-        ("tetap","TETAP")
-    ], string='Contract Type')
+        # ("tetap","TETAP")
+    ], string='Contract Type', required=True)
     month_end = fields.Integer(string='End Month', default=4)
+    date_now = fields.Date(string='Date_now', default=fields.Date.today())
+    date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
+    benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
+
+    @api.depends('date_start', 'date_end')
+    def _date_interval(self):
+        for rec in self:
+            if rec.date_end and rec.date_start:
+                years = rec.date_end.year - rec.date_start.year
+                rec.date_interval = years
+            else:
+                rec.date_interval = 0
 
     def write(self, vals):
         if 'state' in vals :
@@ -483,8 +502,8 @@ class Contract(models.Model):
                     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
                 elif self.contract_type == 'phl':
                     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
-                else:   
-                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
+                # else:   
+                #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':
         #     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_number')
         return super(Contract, self).write(vals)
@@ -507,14 +526,19 @@ class Contract(models.Model):
 
     def act_download_report_contract(self):
         self.ensure_one()
+        if self.contract_type == 'phl':
+            res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        elif self.contract_type == 'pkwt':
+            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        return res
+    
+    def act_download_report_pkwt(self):
+        self.ensure_one()
         if self.contract_type == 'pkwt':
             res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
                 'discard_logo_check': True}).report_action(self)
-        elif self.contract_type == 'phl':
-            res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        else:
-            False
         return res
 
     
