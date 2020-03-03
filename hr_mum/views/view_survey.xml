@@ -25,9 +25,9 @@
             </field>
         </record>
     
-        <template id="survey_mum" inherit_id="survey.survey" name="Applicant Survey">
+        <!-- <template id="survey_mum" inherit_id="survey.survey" name="Applicant Survey">
             <xpath expr="//div[@id='oe_structure_survey_survey_1']" position="after">
-                <!-- <div class="from-group row form-field">
+                <div class="from-group row form-field">
                     <div class="col-lg-3 col-md-4 text-right">
                         <label class="col-form-label" for="applicant_id">Nama Applicant</label>
                     </div>
@@ -37,7 +37,7 @@
                           <option t-att-value="app.id" t-esc="app.name"/></t>        
                         </select>
                     </div>
-                </div> -->
+                </div>
                 <div class="form-group row form-field o_website_form_required_custom">
                     <div class="col-lg-3 col-md-4 text-right">
                         <label class="col-form-label" for="email">Alamat E-mail</label>
@@ -53,6 +53,6 @@
             <value eval="[
                 'email'
             ]"/>
-        </function>
+        </function> -->
     </data>
 </odoo>

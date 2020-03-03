@@ -236,7 +236,7 @@
 					<field name="contract_period" nolabel="1"/>
 					<span>year</span>
 				</div>
-				<field name="fasility"/>
+				<field name="facility"/>
 				<field name="currency_id" invisible="1" />
 				<field name="flag_benefits"/>
 			</field>
@@ -510,9 +510,9 @@
 				<field name="job_type"/>
 				<field name="contract_type"/>
 			</field>
-			<field name="wage_type" position="before">
+			<!-- <field name="wage_type" position="before">
 				<field name="benefits_ids"/>
-			</field>
+			</field> -->
 		</field>
 	</record>
 
@@ -631,16 +631,19 @@
 		</field>
 	</record>
 
-	<!-- <record model="ir.ui.view" id="payroll_structure_type_inherit">
-		<field name="name">hr.payroll.structure.type.form</field>
-		<field name="model">hr.payroll.structure.type</field>
-		<field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+	<record model="ir.ui.view" id="view_calendar_event_form_inherit1">
+		<field name="name">calendar.event.form</field>
+		<field name="model">calendar.event</field>
+		<field name="inherit_id" ref="calendar.view_calendar_event_form"/>
 		<field name="arch" type="xml">
-			<field name="wage_type" position="after">
-				<field name="emp_id"/>
-			</field>
+			<xpath expr="//page[@name='page_invitations']" position="attributes">
+				<attribute name="groups">base.group_user</attribute>
+			</xpath>
+			<xpath expr="//page[@name='page_misc']" position="attributes">
+				<attribute name="groups">base.group_user</attribute>
+			</xpath>
 		</field>
-	</record> -->
+	</record>
 
 	<record id="action_job_location_recruitment" model="ir.actions.act_window">
         <field name="name">Job Location</field>

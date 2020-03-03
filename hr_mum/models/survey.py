@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
-    applicant_id = fields.Many2one('hr.applicant', 'Applicant')
+    applicant_id = fields.Many2one('hr.applicant', 'Applicant', compute="_domain_applicant")
     user_input_line_id = fields.Many2one('survey.user_input_line', 'User Input Line', domain=[('question_id.title', '=', 'Email Anda')])
     email = fields.Char(compute="_compute_email")
     # realted="user_input_line_id.value_text"
@@ -15,6 +15,28 @@ class SurveyUserInput(models.Model):
             email_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Email Anda')
             rec.email = email_line.value_text
     
+    def _domain_applicant(self):
+        for rec in self:
+            nama_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Nama Anda')
+            email_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Email Anda')        
+            applicant = rec.applicant_id.search([('partner_name', '=', nama_line.value_text), ('email_from', '=', email_line.value_text)])
+            rec.applicant_id = applicant.id
+        # res = {'domain' : {'user_input_line_id' : [('partner_name', '=', nama_line.value_text), ('email_from', '=', email_line.value_text)]}}
+        # return res
+    
     # def create(self, vals):
-    #     rec = super(SuperUserInput, self).create(vals)
-    #     rec.applicant
+    #     rec = super(SurveyUserInput, self).create(vals)
+    #     nama = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Nama Anda')
+    #     name_applicant = rec.applicant_id.filtered(lambda x: x.partner_name == nama.value_text)
+    #     rec.applicant_id = name_applicant.id
+
+    #     nama = self.user_input_line_ids.search([]).filtered(lambda x: x.question_id.title == 'Nama Anda')
+    #     for rec in self:
+    #         for res in nama:
+                
+    #             name_applicant = rec.applicant_id.earch([]).filtered(lambda x: x.partner_name == res.value_text)
+    #             for apply in name_applicant:
+    #                 rec.applicant_id = apply.id
+    #     # if rec.applicant_id.partner_name == nama.value_text:
+    #     #     rec.applicant_id = 
+    #     return rec

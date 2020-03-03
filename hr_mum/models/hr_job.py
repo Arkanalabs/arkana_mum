@@ -67,11 +67,11 @@ class Applicant(models.Model):
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
     contract_period = fields.Integer(string='Contract Period', default=1)
     effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
-    fasility = fields.Text(string='Fasility')
+    facility = fields.Text(string='Facility')
     thp_total = fields.Monetary(string='Total THP', compute='_compute_thp')
     salary_proposed = fields.Monetary("Proposed Salary")
     salary_expected = fields.Monetary("Expected Salary")
-    flag_benefits = fields.Boolean("Show Benefits")
+    flag_benefits = fields.Boolean("Show Allowance")
     benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
     availability = fields.Date(default=fields.Date.today())
     job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
@@ -227,12 +227,13 @@ class Applicant(models.Model):
         })
 
         allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
+        thp = self.env['hr.salary.rule.category'].search([('name', '=', 'Net')])
         if self.benefits_ids:
             for rec in self.benefits_ids:
                 self.env['hr.salary.rule'].create({
                     'struct_id': structure_id.id,
                     'category_id': allowance.id,
-                    'code': rec.name,
+                    'code': allowance.name,
                     'name': rec.name,
                     'amount_fix': rec.wage,
                 })        
@@ -314,7 +315,7 @@ class HrApplicantFile(models.Model):
     _name = 'hr.applicant.benefits'
     _description = 'Benefits Info'
 
-    name = fields.Char(string='Type Benefits')
+    name = fields.Char(string='Type Allowance')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
     wage = fields.Monetary(string='Wage')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
