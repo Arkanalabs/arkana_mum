@@ -222,7 +222,7 @@ class Applicant(models.Model):
         })
 
         structure_id = self.env['hr.payroll.structure'].create({
-            'name': 'Salary Structures %s' % (self.emp_id.name),
+            'name': self.emp_id.name,
             'type_id': payroll_type.id,
         })
 
@@ -243,6 +243,21 @@ class HrPayrollStructureType(models.Model):
     _inherit = 'hr.payroll.structure.type'
 
     emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
+
+class HrSalaryRule(models.Model):
+    _inherit = 'hr.salary.rule'
+
+    thp = fields.Monetary(string='Salary THP')
+    flag_category = fields.Boolean(string='Category', compute='_compute_category')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+
+    def _compute_category(self):
+        for rec in self:
+            if rec.category_id.name ==  'Net':
+                rec.flag_category = True
+            else:
+                rec.flag_category = False
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'

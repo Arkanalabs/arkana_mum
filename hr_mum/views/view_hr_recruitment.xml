@@ -516,6 +516,19 @@
 		</field>
 	</record>
 
+	<record model="ir.ui.view" id="hr_salary_rule_form_mum">
+		<field name="name">hr.salary.rule.form.mum</field>
+		<field name="model">hr.salary.rule</field>
+		<field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+		<field name="arch" type="xml">
+			<field name="amount_python_compute" position="after">
+				<field name="thp" attrs="{'invisible': [('flag_category', '!=', True), ('amount_select', '!=', 'code')]}"/>
+				<field name="flag_category" invisible="1" />
+				<field name="currency_id" invisible="1" />
+			</field>
+		</field>
+	</record>
+
 	<!-- Project -->
 	<record model="ir.ui.view" id="project_one_month_form">
 		<field name="name">project.project.form</field>

@@ -5,7 +5,6 @@ class SurveyUserInput(models.Model):
     _inherit = 'survey.user_input'
 
     applicant_id = fields.Many2one('hr.applicant', 'Applicant', compute="_domain_applicant")
-    user_input_line_id = fields.Many2one('survey.user_input_line', 'User Input Line', domain=[('question_id.title', '=', 'Email Anda')])
     email = fields.Char(compute="_compute_email")
     # realted="user_input_line_id.value_text"
     # compute="_compute_email"
@@ -15,14 +14,26 @@ class SurveyUserInput(models.Model):
             email_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Email Anda')
             rec.email = email_line.value_text
     
+    # @api.constrains('applicant_id')
     def _domain_applicant(self):
         for rec in self:
             nama_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Nama Anda')
             email_line = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Email Anda')        
+            expected_salary = rec.user_input_line_ids.filtered(lambda x: x.question_id.title == 'Berapa gaji yang diharapkan jika Anda diterima sebagai karyawan?')
             applicant = rec.applicant_id.search([('partner_name', '=', nama_line.value_text), ('email_from', '=', email_line.value_text)])
+            applicant.salary_expected = expected_salary.value_number
             rec.applicant_id = applicant.id
-        # res = {'domain' : {'user_input_line_id' : [('partner_name', '=', nama_line.value_text), ('email_from', '=', email_line.value_text)]}}
-        # return res
+            # if applicant in rec.applicant_id.search([]):
+            # else:
+            #     raise UserError('Mohon maaf tidak bisa ..')
+
+    
+    # @api.model
+    # def create(self, vals):
+    #     survey = super(SurveyUserInput, self).create(vals)
+    #     if not survey.applicant_id:
+    #         raise UserError('Mohon maaf tidak bisa ..')
+    #     return survey
     
     # def create(self, vals):
     #     rec = super(SurveyUserInput, self).create(vals)

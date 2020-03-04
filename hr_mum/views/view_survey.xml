@@ -11,10 +11,10 @@
                 </xpath>
                 <field name="partner_id" position="after">
                     <field name="applicant_id"/>
-                    <field name="user_input_line_id"/>
                 </field>
                 <field name="answer_type" position="before">
                     <field name="value_text"/>
+                    <field name="value_number"/>
                 </field>
                 <field name="answer_is_correct" position="attributes">
                     <attribute name="invisible">1</attribute>
