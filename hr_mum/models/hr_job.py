@@ -243,6 +243,7 @@ class HrPayrollStructureType(models.Model):
     _inherit = 'hr.payroll.structure.type'
 
     emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
+    active = fields.Boolean('Active', default=True)
 
 class HrSalaryRule(models.Model):
     _inherit = 'hr.salary.rule'
@@ -270,7 +271,7 @@ class HrEmployee(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
-    job_location_id = fields.Many2one('hr.job.location', 'Work Location', related='job_id.job_location_id')
+    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
     marital_status_employee = fields.Selection([
         ("Lajang","Lajang"),
         ("Menikah","Menikah"),
@@ -311,8 +312,14 @@ class HrDepartureWizard(models.TransientModel):
     def action_register_departure(self):
         employee = self.employee_id
         employee.departure_date = self.departure_date
-        employee.contract_id.active = False
-        employee.contract_id.search([('employee_id', '=', employee.contract_id.employee_id.id)]).write({
+        employee.contract_id.structure_type_id.active = False
+        employee.contract_id.search([('employee_id', '=', employee.id)]).write({
+            'active': False,
+        })
+        employee.contract_id.structure_type_id.search([('emp_id', '=', employee.id)]).write({
+            'active': False,
+        })
+        employee.contract_id.structure_type_id.default_struct_id.search([('type_id.emp_id', '=', employee.id)]).write({
             'active': False,
         })
         return super(HrDepartureWizard, self).action_register_departure()

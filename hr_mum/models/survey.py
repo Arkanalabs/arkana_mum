@@ -6,8 +6,6 @@ class SurveyUserInput(models.Model):
 
     applicant_id = fields.Many2one('hr.applicant', 'Applicant', compute="_domain_applicant")
     email = fields.Char(compute="_compute_email")
-    # realted="user_input_line_id.value_text"
-    # compute="_compute_email"
 
     def _compute_email(self):
         for rec in self:
