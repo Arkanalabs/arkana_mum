@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="invoice_supplier_form">
+            <field name="name">survey.user_input.form</field>
+            <field name="model">survey.user_input</field>
+            <field name="inherit_id" ref="survey.survey_user_input_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <field name="partner_id" position="after">
+                    <field name="applicant_id"/>
+                </field>
+                <field name="answer_type" position="before">
+                    <field name="value_text"/>
+                    <field name="value_number"/>
+                </field>
+                <field name="answer_is_correct" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="answer_score" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
+    
+        <!-- <template id="survey_mum" inherit_id="survey.survey" name="Applicant Survey">
+            <xpath expr="//div[@id='oe_structure_survey_survey_1']" position="after">
+                <div class="from-group row form-field">
+                    <div class="col-lg-3 col-md-4 text-right">
+                        <label class="col-form-label" for="applicant_id">Nama Applicant</label>
+                    </div>
+                    <div class="col-lg-7 col-md-8">
+                        <select id="applicant" required="True" class="form-control o_website_form_input" name="applicant_id">            
+                          <t t-foreach="survey.applicant_id" t-as="app">                
+                          <option t-att-value="app.id" t-esc="app.name"/></t>        
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row form-field o_website_form_required_custom">
+                    <div class="col-lg-3 col-md-4 text-right">
+                        <label class="col-form-label" for="email">Alamat E-mail</label>
+                    </div>
+                    <div class="col-lg-3 col-md-4">
+                        <input type="text" name="email" class="form-control o_website_form_input" required="1"/>
+                    </div>
+                </div>
+              </xpath>
+        </template>
+        <function model="ir.model.fields" name="formbuilder_whitelist">
+            <value>survey.user_input</value>
+            <value eval="[
+                'email'
+            ]"/>
+        </function> -->
+    </data>
+</odoo>

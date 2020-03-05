@@ -1,15 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 	<record id="mum_offering_letter_py3o" model="ir.actions.report">
-      <field name="name">Offering Letter</field>
-      <field name="type">ir.actions.report</field>
-      <field name="model">hr.applicant</field>
-      <field name="report_name">hr_mum.py3o_offering_letter</field>
-      <field name="report_type">py3o</field>
-      <field name="py3o_filetype">doc</field>
-      <field name="module">hr_mum</field>
-      <field name="py3o_template_fallback">report/report_mum/arkana_mum_report.odt</field>
-      <field name="binding_model_id" eval="False"/>
-      <field name="binding_type">report</field>
-    </record>
+    <field name="name">Offering Letter</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.applicant</field>
+    <field name="report_name">hr_mum.py3o_offering_letter</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/arkana_mum_report.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
+	
+  <record id="mum_phl_py3o" model="ir.actions.report">
+    <field name="name">PHL</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.contract</field>
+    <field name="report_name">hr_mum.py3o_phl</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/report_phl.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
+	
+  <record id="mum_pkwt_py3o" model="ir.actions.report">
+    <field name="name">PKWT</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.contract</field>
+    <field name="report_name">hr_mum.pkwt_py3o</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/pkwtnew.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
 </odoo>

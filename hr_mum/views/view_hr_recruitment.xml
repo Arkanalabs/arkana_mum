@@ -29,7 +29,7 @@
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="address_id" position="after">
-				<field name="job_location_id"/>
+				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
 				<label for="salary_expected"/>
 				<div class="o_row">
 					<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -227,8 +227,53 @@
 				<field name="job_type"/>
 				<field name="user_applicant_id" invisible="1"/>
 			</field>
+			<field name="job_id" position="after">
+				<field name="job_location_id"/>
+			</field>
+			<field name="availability" position="after">
+				<label for="contract_period"/>
+				<div class="o_row">
+					<field name="contract_period" nolabel="1"/>
+					<span>year</span>
+				</div>
+				<field name="facility"/>
+				<field name="currency_id" invisible="1" />
+				<field name="flag_benefits"/>
+			</field>
+			<xpath expr="//sheet/group/group[4]" position="after">
+				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+					<tree editable="bottom" >
+						<field name="name" />
+						<field name="wage" />
+						<field name="currency_id" invisible="1" />
+					</tree>
+				</field>
+				<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+					<div class="oe_subtotal oe_inline">
+						<label for="thp_total"/>
+					</div>
+					<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+				</group>
+			</xpath>
 			<xpath expr="//sheet/group" position="after">
 				<notebook colspan="4">
+					<!-- <page string='Fringe Benefits'>
+						<group>
+							<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+								<tree editable="bottom" >
+									<field name="name" />
+									<field name="wage" />
+									<field name="currency_id" invisible="1" />
+								</tree>
+							</field>
+							<group class="oe_subtotal_footer oe_right" attrs="{'invisible': [('flag_benefits', '=', False)]}">
+								<div class="oe_subtotal oe_inline">
+									<label for="thp_total"/>
+								</div>
+								<field name="thp_total" style="font-size: 15px; font-weight: bold;" nolabel="1" class="oe_subtotal" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+							</group>
+						</group>
+					</page> -->
 					<page string='Processing Time'>
 						<group>
 							<field name="time_ids" readonly="1" nolabel="1">
@@ -240,42 +285,18 @@
 							</field>
 						</group>
 					</page>
-					<page string='Job Information'>
-						<group>
-							<group>
-								<field name="effective_date"/>
-								<field name="contract_period"/>
-							</group>
-							<group>
-								<label for="base_salary"/>
-									<div class="o_row" name="base_salary">
-										<field name="base_salary" nolabel="1"/>
-										<span>/ month</span>
-									</div>
-								<field name="fasility"/>
-							</group>
-						</group>
-						<group string="Fringe Benefits">
-							<field name="benefits_ids" nolabel="1">
-								<tree editable="bottom">
-									<field name="name" />
-									<field name="wage" />
-								</tree>
-							</field>
-						</group>
-					</page>
 				</notebook>
 			</xpath>
 			<field name="type_id" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="type_id" position="after">
-				<field name="degree"/>
-				<field name="marital_status"/>
+				<field name="degree_applicant"/>
+				<field name="marital_status_applicant"/>
 				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
 				<!-- <field name="file_psikotes" invisible="1"/> -->
 				<field name="file_name" invisible="1"/>
-				<field name="gender"/>	
+				<field name="gender_applicant"/>	
 				<label for="birth"/>
 				<div class="o_row">
 					<field name="place_of_birth" nolabel="1" placeholder="Place"/>
@@ -284,7 +305,11 @@
 				<field name="age"/>
 				<field name="no_ktp" attrs="{'required': [('stage_end', '=', True)]}"/>
 				<field name="address"/>
-				<field name="work_experience"/>
+				<label for="work_experience"/>
+				<div class="o_row">
+					<field name="work_experience" nolabel="1"/>
+					<span>year</span>
+				</div>
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
@@ -388,24 +413,33 @@
 			<field name="job_id" position="before">
 				<field name="job_type"/>
 			</field>
-			<field name="gender" position="attributes">
-				<attribute name="invisible">1</attribute>
+			<field name="work_location" position="replace">
+				<field name="job_location_id"/>
 			</field>
 			<field name="gender" position="after">
-				<field name="gender_employee"/>
+				<field name="employee_gender"/>
 			</field>
-			<field name="address_home_id" position="attributes">
-				<attribute name="invisible">1</attribute>
+			<field name="study_field" position="before">
+				<field name="degree_employee"/>
 			</field>
 			<field name="address_home_id" position="after">
 				<field name="address"/>
 				<field name="phone_employee" widget="phone"/>
 			</field>
+			<field name="gender" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="address_home_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="marital" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
+			<field name="certificate" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="marital" position="after">
-				<field name="marital_status"/>
+				<field name="marital_status_employee"/>
 			</field>
 			<field name="parent_id" position="after">
 				<field name="nip"/>
@@ -453,6 +487,19 @@
 		<field name="model">hr.contract</field>
 		<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
 		<field name="arch" type="xml">
+			<xpath expr="//div[@name='button_box']" position="replace">
+				<div class="oe_button_box" name="button_box">
+					<button string="Download Contract" name="act_download_report_contract"
+					icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('state', '!=', 'open')]}"/>
+				</div>
+			</xpath>
+			<xpath expr="//group[@name='duration_group']/div[1]" position="after">
+				<label for="date_interval"/>
+				<div class="o_row">
+					<field name="date_interval" nolabel="1"/>
+					<span>year</span>
+				</div>
+			</xpath>
 			<field name="name" position="attributes">
 				<attribute name="required">0</attribute>
 			</field>
@@ -462,6 +509,22 @@
 			<field name="department_id" position="after">
 				<field name="job_type"/>
 				<field name="contract_type"/>
+			</field>
+			<!-- <field name="wage_type" position="before">
+				<field name="benefits_ids"/>
+			</field> -->
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="hr_salary_rule_form_mum">
+		<field name="name">hr.salary.rule.form.mum</field>
+		<field name="model">hr.salary.rule</field>
+		<field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+		<field name="arch" type="xml">
+			<field name="amount_python_compute" position="after">
+				<field name="thp" attrs="{'invisible': [('flag_category', '!=', True), ('amount_select', '!=', 'code')]}"/>
+				<field name="flag_category" invisible="1" />
+				<field name="currency_id" invisible="1" />
 			</field>
 		</field>
 	</record>
@@ -578,6 +641,33 @@
 					</div>
 				</div>
 			</xpath>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_calendar_event_form_inherit1">
+		<field name="name">calendar.event.form</field>
+		<field name="model">calendar.event</field>
+		<field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//page[@name='page_invitations']" position="attributes">
+				<attribute name="groups">base.group_user</attribute>
+			</xpath>
+			<xpath expr="//page[@name='page_misc']" position="attributes">
+				<attribute name="groups">base.group_user</attribute>
+			</xpath>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="hr_payroll_structure_type_view_form_mum">
+		<field name="name">hr.payroll.structure.type.form.mum</field>
+		<field name="model">hr.payroll.structure.type</field>
+		<field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//div[@name='button_box']" position="before">
+				<widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+				<field name="active" invisible="1"/>
+			</xpath>
+
 		</field>
 	</record>
 

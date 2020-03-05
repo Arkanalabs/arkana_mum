@@ -41,32 +41,41 @@ class Applicant(models.Model):
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
-    gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
+    gender_applicant = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
     age = fields.Integer(string='Age', default=False, compute='_age_compute')
     no_ktp = fields.Char(string='No. KTP')
     address = fields.Text(string='Address')
-    degree = fields.Selection([
-        ("smp","SMP"),("sma","SMA"),("smk","SMK"),("d1","D1"),("d2","D2"),
-        ("d3","D3"),("d4","D4"),("s1","S1"),("s2","S2"),
-        ("s3","S3"),], string='Degree')
+    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
+        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
+        ("S3","S3"),("Lainnya","Lainnya")]
+    degree_applicant = fields.Selection(degree, string='Degree')
     # marital_status = fields.Char(string='Marital Status')
-    marital_status = fields.Selection([
-        ("single","Lajang"),
-        ("married","Menikah"),
+    marital_status_applicant = fields.Selection([
+        ("Lajang","Lajang"),
+        ("Menikah","Menikah"),
+        ("Duda/Janda","Duda/Janda"),
         ], string='Marital Status')
-    work_experience = fields.Char(string='Work Experience (year)')
+    work_experience = fields.Char(string='Work Experience')
     image_applicant = fields.Image(string="Image")
     file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
     stage_early = fields.Boolean(string='Stage Early', compute='_compute_stage_early')
     benefits_ids = fields.One2many('hr.applicant.benefits', 'applicant_id', 'Benefits')
-    base_salary = fields.Integer(string='Base Salary')
+    base_salary = fields.Monetary(string='Base Salary')
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
     contract_period = fields.Integer(string='Contract Period', default=1)
     effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
-    fasility = fields.Text(string='Fasility')
-
+    facility = fields.Text(string='Facility')
+    thp_total = fields.Monetary(string='Total THP', compute='_compute_thp')
+    salary_proposed = fields.Monetary("Proposed Salary")
+    salary_expected = fields.Monetary("Expected Salary")
+    flag_benefits = fields.Boolean("Show Allowance")
+    benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
+    availability = fields.Date(default=fields.Date.today())
+    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+  
     @api.model
     def create(self, vals):
         rec = super(Applicant, self).create(vals)
@@ -105,6 +114,14 @@ class Applicant(models.Model):
                 rec.stage_early = True
             else :
                 rec.stage_early = False
+
+    @api.depends('benefits_ids.wage')
+    def _compute_thp(self):
+        for rec in self:
+            thp = 0.0
+            for benefits in rec.benefits_ids:
+                thp += benefits.wage
+            rec.thp_total = thp + rec.base_salary
 
     def reset_applicant(self):
         """ Reinsert the applicant into the recruitment pipe in the previous stage"""
@@ -173,6 +190,7 @@ class Applicant(models.Model):
         return res
     
     def create_employee_from_applicant(self):
+        res = super(Applicant, self).create_employee_from_applicant()
         self = self.with_context({
             'image_applicant': self.image_applicant,
             'no_ktp': self.no_ktp,
@@ -180,9 +198,67 @@ class Applicant(models.Model):
             'place_of_birth': self.place_of_birth,
             'address': self.address,
             'phone': self.partner_phone,
-            'gender': self.gender
+            'gender': self.gender_applicant,
+            'degree': self.degree_applicant,
+            'marital': self.marital_status_applicant,
         })
-        return super(Applicant, self).create_employee_from_applicant()
+        
+        work_entry_type = self.env['hr.work.entry.type'].search([('name', '=', 'Attendance')])
+        payroll_type = self.env['hr.payroll.structure.type'].create({
+            'emp_id': self.emp_id.id,
+            'name': 'Gaji %s' % (self.emp_id.name),
+            'wage_type': 'monthly',
+            'default_schedule_pay': 'monthly',
+            'default_work_entry_type_id': work_entry_type.id
+        })
+
+        # contract = self.env['hr.contract'].search([])
+        self.env['hr.contract'].create({
+            'employee_id': self.emp_id.id,
+            'job_id': self.job_id.id,
+            'wage': self.salary_proposed,
+            'job_type': self.job_type,
+            'structure_type_id': payroll_type.id
+        })
+
+        structure_id = self.env['hr.payroll.structure'].create({
+            'name': self.emp_id.name,
+            'type_id': payroll_type.id,
+        })
+
+        allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
+        thp = self.env['hr.salary.rule.category'].search([('name', '=', 'Net')])
+        if self.benefits_ids:
+            for rec in self.benefits_ids:
+                self.env['hr.salary.rule'].create({
+                    'struct_id': structure_id.id,
+                    'category_id': allowance.id,
+                    'code': allowance.name,
+                    'name': rec.name,
+                    'amount_fix': rec.wage,
+                })        
+        return res
+
+class HrPayrollStructureType(models.Model):
+    _inherit = 'hr.payroll.structure.type'
+
+    emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
+    active = fields.Boolean('Active', default=True)
+
+class HrSalaryRule(models.Model):
+    _inherit = 'hr.salary.rule'
+
+    thp = fields.Monetary(string='Salary THP')
+    flag_category = fields.Boolean(string='Category', compute='_compute_category')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+
+    def _compute_category(self):
+        for rec in self:
+            if rec.category_id.name ==  'Net':
+                rec.flag_category = True
+            else:
+                rec.flag_category = False
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
@@ -195,17 +271,23 @@ class HrEmployee(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
-    marital_status = fields.Selection([
-        ("single","Lajang"),
-        ("married","Menikah"),
-        ], string='Marital Status')
-    gender_employee = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
+    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+    marital_status_employee = fields.Selection([
+        ("Lajang","Lajang"),
+        ("Menikah","Menikah"),
+        ("Duda/Janda","Duda/Janda"),
+        ], string='Status Marital')
+    employee_gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender Employee')
     address = fields.Text(string='Address')
     nip = fields.Char(string='NIP (Nomor Induk Pegawai)')
     departure_date = fields.Date('Departure Date')
     bank_name = fields.Char('Bank Name')
     bank_no_rec = fields.Char('No Account Bank')
     phone_employee = fields.Char('Phone')
+    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
+        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
+        ("S3","S3"),("Lainnya","Lainnya")] 
+    degree_employee = fields.Selection(degree, string='Degree')
     
     @api.model
     def create(self, vals):
@@ -216,7 +298,9 @@ class HrEmployee(models.Model):
             'place_of_birth': self.env.context.get('place_of_birth', False), 
             'address': self.env.context.get('address', False),
             'phone_employee': self.env.context.get('phone', False),
-            'gender_employee': self.env.context.get('gender', False) 
+            'employee_gender': self.env.context.get('gender', False), 
+            'degree_employee': self.env.context.get('degree', False),
+            'marital_status_employee': self.env.context.get('marital', False),
             })
         return super(HrEmployee, self).create(vals)
 
@@ -228,6 +312,16 @@ class HrDepartureWizard(models.TransientModel):
     def action_register_departure(self):
         employee = self.employee_id
         employee.departure_date = self.departure_date
+        employee.contract_id.structure_type_id.active = False
+        employee.contract_id.search([('employee_id', '=', employee.id)]).write({
+            'active': False,
+        })
+        employee.contract_id.structure_type_id.search([('emp_id', '=', employee.id)]).write({
+            'active': False,
+        })
+        employee.contract_id.structure_type_id.default_struct_id.search([('type_id.emp_id', '=', employee.id)]).write({
+            'active': False,
+        })
         return super(HrDepartureWizard, self).action_register_departure()
 
 class HrApplicantFile(models.Model):
@@ -243,9 +337,13 @@ class HrApplicantFile(models.Model):
     _name = 'hr.applicant.benefits'
     _description = 'Benefits Info'
 
-    name = fields.Char(string='Name')
+    name = fields.Char(string='Type Allowance')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
-    wage = fields.Integer(string='Wage')
+    wage = fields.Monetary(string='Wage')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    contract_id = fields.Many2one('hr.contract', 'Contract', ondelete='cascade')
+    number = fields.Integer(string='Numb', default=10)
 
 class HrApplicantTime(models.Model):
     _name = 'hr.applicant.time'
@@ -404,9 +502,21 @@ class Contract(models.Model):
     contract_type = fields.Selection([
         ("pkwt","PKWT"),
         ("phl","PHL"),
-        ("tetap","TETAP")
+        # ("tetap","TETAP")
     ], string='Contract Type', required=True)
     month_end = fields.Integer(string='End Month', default=4)
+    date_now = fields.Date(string='Date_now', default=fields.Date.today())
+    date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
+    benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
+
+    @api.depends('date_start', 'date_end')
+    def _date_interval(self):
+        for rec in self:
+            if rec.date_end and rec.date_start:
+                years = rec.date_end.year - rec.date_start.year
+                rec.date_interval = years
+            else:
+                rec.date_interval = 0
 
     def write(self, vals):
         if 'state' in vals :
@@ -415,8 +525,8 @@ class Contract(models.Model):
                     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
                 elif self.contract_type == 'phl':
                     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
-                else:   
-                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
+                # else:   
+                #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':
         #     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_number')
         return super(Contract, self).write(vals)
@@ -436,6 +546,23 @@ class Contract(models.Model):
                     contract.month_end -= 1
                     template = self.env.ref('hr_mum.template_mail_notif_contract')
                     template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
+
+    def act_download_report_contract(self):
+        self.ensure_one()
+        if self.contract_type == 'phl':
+            res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        elif self.contract_type == 'pkwt':
+            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        return res
+    
+    def act_download_report_pkwt(self):
+        self.ensure_one()
+        if self.contract_type == 'pkwt':
+            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        return res
 
     
     class HrRecruitmentStage(models.Model):
