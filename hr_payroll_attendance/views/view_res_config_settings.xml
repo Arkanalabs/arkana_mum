@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.base.dki</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='user_default_rights']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_right_pane">
+                        <label for="atd_period" string="Attendance Period"/>
+                        <span class="fa fa-lg fa-building-o" title="Attendance Settings." role="img" aria-label="Set attendance computation."/>
+                        <div class="row">
+                            <div class="text-muted col-lg-8">
+                                Set default computation for attendance
+                            </div>
+                        </div>
+                        <div class="content-group">
+                            <div class="mt16">
+                                <field name="atd_period" required="1" readonly="0" class="o_light_label" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_config_settings_view_form_inherit_disposisi" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.disposisi</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="45"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Disposisi" string="Disposisi DKI" data-key="base_dki" groups="base.group_system">
+                    <h2>Disposisi LKPP DKI</h2>
+                    <div class="row mt16 o_settings_container" id="base_dki_settings">
+                        <div class="col-lg-6 col-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="year_id" string="Tahun Anggaran"/>
+                                <div class="text-muted">
+                                    Pilih tahun anggaran untuk sinkronisasi RUP dari LKKPP.
+                                </div>
+                                <br />
+                                <div>
+                                    <field name="year_id" placeholder="Tahun Anggaran" />
+                                </div>
+                                <div>
+                                    <button
+                                        name="act_synch_rup"
+                                        type="object" 
+                                        class="btn-primary"
+                                        icon="fa-refresh"
+                                        context="{'year_id': year_id}"
+                                        string=" Tarik Data" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt16 o_settings_container" id="base_dki_proxy_settings">
+                        <div class="col-lg-6 col-12 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="proxy_config" nolabel="1" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="proxy_config" string="Proxy"/>
+                                <div class="text-muted">
+                                    Centang untuk mengaktifkan proxy DKI Jakarta.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

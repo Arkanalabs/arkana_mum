@@ -4,6 +4,9 @@
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="attributes">
         <attribute name="class">d-none</attribute>
     </xpath>
+    <!-- <xpath expr="//form[@id='hr_recruitment_form']/div[2]" position="after">
+      <label class="col-form-label" for="partner_name">Nama Kamu</label>
+    </xpath> -->
     <xpath expr="//form[@id='hr_recruitment_form']/div[5]" position="after">
         <t t-foreach="job.sudo().file_template_id.file_ids" t-as="line">
             <div t-if="line.is_required" class="form-group row form-field o_website_form_required_custom">
@@ -11,7 +14,7 @@
                 <label class="col-form-label" for="Resume"><span t-field="line.name"/></label>
               </div>
               <div class="col-lg-7 col-md-8">
-                <input type="file" class="form-control o_website_form_input" t-name="line.name" required=""/>
+                <input type="file" accept=".pdf" class="form-control o_website_form_input" t-name="line.name" required=""/>
               </div>
             </div>
             <div t-else="" class="form-group row form-field o_website_form_custom">
@@ -19,10 +22,213 @@
                 <label class="col-form-label" for="Resume"><span t-field="line.name"/></label>
               </div>
               <div class="col-lg-7 col-md-8">
-                <input type="file" class="form-control o_website_form_input" t-name="line.name"/>
+                <input type="file" id="file" accept="application/pdf" class="form-control o_website_form_input" t-name="line.name"/>
+                    <script>
+                        var uploadField = document.getElementById("file");
+                        uploadField.onchange = function(){
+                          if(this.files[0]){
+                            if(this.files[0].size > 2097152){
+                              alert("Ukuran File Max-2Mb!");
+                              this.value = "";
+                            };
+                          };
+                        };
+
+                        <!-- var uploadField = document.getElementById("file");
+                        var filePath = uploadField.value;
+                        var allowedExtensions = /(\.pdf)$/i;
+                          uploadField.onchange = function(){
+                            if(!allowedExtensions.exec(filePath)){
+                                alert('Please upload file having extensions .pdf only.');
+                                uploadField.value = '';
+                                return false;
+                            };
+                        }; -->
+                        
+                        <!-- var files = document.getElementById("file");
+                        files.onchange = function(){
+                         var file= files.value;
+                         var reg = /(.*?)\.(pdf)$/;
+                         if(!file.match(reg)){
+    	                     alert("Invalid File");
+    	                     return false;
+                         }
+                         } -->
+                    </script>
               </div>
             </div>
         </t>
+        <div class="col-lg-10 col-md-18 text-right">
+          <label class="col-form-label">Format File Pdf max-size 2MB !</label>
+        </div>
     </xpath>
+    <xpath expr="//div[@id='wrap']/h2" position="after">
+      <div class="col-lg-10 col-md-18 text-right">
+        <label style="font-weight: bold;">* Wajib Diisi !</label>
+      </div>
+    </xpath>
+    <xpath expr="//form[@id='hr_recruitment_form']/div[3]" position="after">
+      <div class="form-group row form-field">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="gender_applicant">Jenis Kelamin</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <select class="form-control o_website_form_input" name="gender_applicant">
+                   <option value="Pria">Pria</option>
+                   <option value="Wanita">Wanita</option>
+              </select>
+          </div>
+      </div>
+      <div class="form-group row form-field">
+          <!-- <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="type_id">Pendidikan Terakhir</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <select id="type" required="True" class="form-control o_website_form_input" name="type_id">            
+                <t t-foreach="applicant.type_id" t-as="type">                
+                <option t-att-value="type.id" t-esc="type.name"/></t>        
+              </select>
+          </div> -->
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="degree_applicant">Pendidikan Terakhir</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <select class="form-control o_website_form_input" name="degree_applicant">
+                   <option value="SD">SD</option>
+                   <option value="SMP">SMP</option>
+                   <option value="SMA">SMA</option>
+                   <option value="SMK">SMK</option>
+                   <option value="D1">D1</option>
+                   <option value="D2">D2</option>
+                   <option value="D3">D3</option>
+                   <option value="D4">D4</option>
+                   <option value="S1">S1</option>
+                   <option value="S2">S2</option>
+                   <option value="S3">S3</option>
+                   <option value="Lainnya">Lainnya</option>
+              </select>
+          </div>
+      </div>
+      <div class="form-group row form-field o_website_form_required_custom">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="birth">Tempat, Tanggal Lahir</label>
+          </div>
+          <div class="col-lg-3 col-md-4 ">
+              <input type="text" name="place_of_birth" class="form-control o_website_form_input" placeholder="Place" required="1"/>
+          </div>
+          <div class="col-lg-4 col-md-4">
+              <input type="date" name="birth" class="form-control o_website_form_date datepicker" placeholder="Date of Birth"/>
+          </div>
+      </div>
+      <div class="form-group row form-field">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="marital_status_applicant">Status Pernikahan</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <!-- <input type="radio" class="form-control o_website_form_input" name="marital_status_applicant" required=""/> -->
+              <select class="form-control o_website_form_input" name="marital_status_applicant">
+                   <option value="Lajang">Lajang</option>
+                   <option value="Menikah">Menikah</option>
+                   <option value="Duda/Janda">Duda/Janda</option>
+              </select>
+          </div>
+      </div>
+      <div class="form-group row form-field o_website_form_required_custom">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="image_applicant">Photo Anda</label>
+          </div>          
+          <div class="col-lg-7 col-md-8 img-upload-section">
+              <input type="file" class="form-control o_website_form_input" name="image_applicant" accept="image/*" onchange="loadFile(event)" style="display: block;height:auto;" required="1"/>
+              <img id="output" style="margin-top: 10px; width: 100px; height: 100px;"/>
+              <script>
+                var loadFile = function(event) {
+                  var output = document.getElementById('output');
+                  output.src = URL.createObjectURL(event.target.files[0]);
+                  if(event.target.files[0].size > 2097152){
+                      alert("Ukuran File Max-2Mb!");
+                      output.src = "";
+                    };
+                };
+              </script>
+              <label class="col-lg-3 col-md-4">(Max 2MB)</label>
+          </div>
+      </div>
+    </xpath>
+</template>		
+
+<template id="index_mum" inherit_id="website_hr_recruitment.index" name="Info Job Offers">
+  <xpath expr="//div[@id='wrap']/div/section/div/div/div" position="after">
+    <div class="col-lg-12 text-center mb16">
+      <script>
+        function redirect() {
+            location.href = '/jobs?search=' + document.getElementById('search').value;
+            return false;
+        }
+      </script>
+      <form onsubmit="return redirect();">
+        <!-- <input id="search" type="text" />
+        <input type="submit" value="Search"/> -->
+        <div t-attf-class="input-group #{_classes}">
+          <input id="search" type="text" name="search" class="oe_search_box col-md-4 offset-md-4" placeholder="Search..."/>
+          <div class="input-group-append">
+            <button type="submit" class="btn btn-primary oe_search_button" aria-label="Search" title="Search" value="Search"><i class="fa fa-search"/></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </xpath>
+  
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/a/span" position="after">
+    <style>
+      li.media{
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+        padding: 10px;
+        border-left: 4px solid #7C7BAD;
+      }
+    </style>
+    <span>(<t t-esc="job.job_location_id.name"/>)</span>
+  </xpath>
+  
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
+    <div t-if="job.flag_salary">
+      <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
+    </div>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-raw="job.qualification"/></span>
+  </xpath>
+
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/h3/small" position="replace">
+      <small t-if="job.no_of_recruitment &gt; 1 and job.flag_employee ">
+          <t t-esc="job.no_of_recruitment"/> open positions
+      </small>
+  </xpath>
 </template>
+
+<template id="detail_mum" inherit_id="website_hr_recruitment.detail">
+  <xpath expr="//div[@id='wrap']/section/div/h1" position="replace">
+    <!-- <h1 class="mb0 mt0" t-field="job.name"/> -->
+    <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
+  </xpath>
+  
+  <xpath expr="//div[@id='wrap']/section/div/h1" position="after">
+    <div t-if="job.flag_salary">
+      <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
+    </div>
+    <span class="col-lg-7 col-md-8 row mt-1"><b>Kualifikasi : &amp;nbsp;</b><t t-raw="job.qualification"/></span>
+  </xpath>
+  
+  <xpath expr="//div[@id='wrap']/div[2]" position="replace">
+    <section class="mb32">
+      <div class="container">
+        <p class="mt0 lead"><t t-raw="job.description" /></p>
+      </div>
+    </section>
+  </xpath>
+
+</template>
+
+<!-- <template id="mum_website_description" inherit_id="website_hr_recruitment.default_website_description">
+  <xpath expr="//div[@id='wrap']/div[2]" position="replace">
+    <p class="mt0 lead">apa hyayayahhayayhahha</p>
+  </xpath>
+</template> -->
 </odoo>

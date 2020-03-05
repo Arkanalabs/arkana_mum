@@ -1,0 +1,31 @@
+<odoo> 
+    <record model="mail.template" id="template_mail_notif_contract">
+		<field name="name">Template Mail Notifikasi Deadline Contract</field>
+		<field name="email_from">${(object.env.user.email or '')|safe}</field>
+		<field name="subject">Deadline Contract</field>
+		<field name="email_to">${object.partner_id.email}</field>
+		<field name="email_cc"/>
+		<field name="model_id" ref="hr_contract.model_hr_contract"/>
+		<field name="auto_delete" eval="False"/>
+		<field name="lang"/>
+		<field name="copyvalue"/>
+		<field name="body_html">
+        <![CDATA[
+		<style>p.indent{ padding-left: 1.8em }</style>
+		<h2>Kontrak Dengan Kode <b>${object.name}</b> 
+			<br>Akan Berakhir Dalam <b>${object.month_end} Bulan</b> 
+		</h2>
+		<p> 
+			Klik tombol berikut untuk melihat form employee:
+            <div style="margin: 16px 0px 16px 0px;">
+                % set website_url = object.env['ir.config_parameter'].sudo().get_param('web.base.url')
+                <a href="${website_url}/web#id=${object.id}&action=264&active_id=1&model=hr.contract&view_type=form&menu_id=104"
+                    style="background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;">
+                    Go to Form Contract Employee
+                </a>
+            </div>
+		</p>
+        ]]>
+		</field>
+	</record>
+</odoo>

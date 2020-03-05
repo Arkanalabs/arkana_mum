@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_job_order_user,access_job_order_user,model_hr_job_order,base.group_user,1,1,1,1
+access_applicant_file_user,access_applicant_file_user,model_hr_applicant_file,base.group_user,1,1,1,1
+access_applicant_time_user,access_applicant_time_user,model_hr_applicant_time,base.group_user,1,1,1,1
+access_file_template_user,access_file_template_user,model_hr_file_template,base.group_user,1,1,1,1
+access_file_template_line_user,access_file_template_line_user,model_hr_file_template_line,base.group_user,1,1,1,1
