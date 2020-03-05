@@ -19,6 +19,8 @@ class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
     def compute_sheet(self):
+        if not self:
+            return super(HrPayslip, self).compute_sheet()
         if self.company_id.atd_period == 'current':
             date_from = self.date_from
             date_to = self.date_to
