@@ -31,13 +31,13 @@ class Applicant(models.Model):
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
     user_id = fields.Many2one(related='job_id.user_id')
+    user_applicant_id = fields.Integer(related='job_id.create_uid.id')
     # stage_id = fields.Many2one(readonly=True)
     flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
     flag_ol = fields.Boolean(string='Flag', compute='_compute_flag_ol')
     flag_archive = fields.Boolean(string='Flag Archive')
     # psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
-    user_applicant_id = fields.Integer(string='User', related='job_id.create_uid.id')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
@@ -121,7 +121,7 @@ class Applicant(models.Model):
             thp = 0.0
             for benefits in rec.benefits_ids:
                 thp += benefits.wage
-            rec.thp_total = thp + rec.base_salary
+            rec.thp_total = thp + rec.salary_proposed
 
     def reset_applicant(self):
         """ Reinsert the applicant into the recruitment pipe in the previous stage"""
@@ -503,7 +503,7 @@ class Contract(models.Model):
         ("pkwt","PKWT"),
         ("phl","PHL"),
         # ("tetap","TETAP")
-    ], string='Contract Type', required=True)
+    ], string='Contract Type')
     month_end = fields.Integer(string='End Month', default=4)
     date_now = fields.Date(string='Date_now', default=fields.Date.today())
     date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
