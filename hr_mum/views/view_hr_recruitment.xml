@@ -225,7 +225,7 @@
 			</field>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
-				<field name="user_applicant_id" invisible="1"/>
+				<!-- <field name="user_applicant_id" /> -->
 			</field>
 			<field name="job_id" position="after">
 				<field name="job_location_id"/>

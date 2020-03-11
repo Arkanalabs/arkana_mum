@@ -26,9 +26,9 @@ class HrPayslip(models.Model):
             date_to = self.date_to
         else:
             date_from_df = fields.Date.from_string(self.date_from)
+            date_to_df = fields.Date.from_string(self.date_to)
             date_from_prev_df = date_from_df - relativedelta(months=1)
             date_from = fields.Date.to_string(date_from_prev_df) + ' 00:00:01'
-            date_to_df = fields.Date.from_string(self.date_to)
             date_to_prev_df = date_to_df - relativedelta(months=1)
             date_to = fields.Date.to_string(date_to_prev_df) + ' 23:59:59'
         attendances = self.env['hr.attendance'].search([
