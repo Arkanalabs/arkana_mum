@@ -313,7 +313,6 @@ class HrEmployee(models.Model):
     
     @api.model
     def create(self, vals):
-
         vals.update({
             'image_1920': self.env.context.get('image_applicant', False), 
             'identification_id': self.env.context.get('no_ktp', False), 
@@ -554,9 +553,15 @@ class Contract(models.Model):
         if 'state' in vals :
             if vals.get('state') == 'open':
                 if self.contract_type == 'pkwt':
-                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_pkwt')
+                    # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
                 elif self.contract_type == 'phl':
-                    self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl')
+                    # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
+                code = self.company_id.code
+                name_code = str(vals['name']).split('*')
+                vals['name'] = name_code[0] + code + name_code[1]
+                self.write({'name': vals['name']})
                 # else:   
                 #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':
