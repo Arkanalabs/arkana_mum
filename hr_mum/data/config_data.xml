@@ -11,6 +11,7 @@
             'place_of_birth',
             'degree_applicant',
             'file_ids',
+            'school',
             ]"/>
         </function>
     </data>

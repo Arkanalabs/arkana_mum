@@ -1,4 +1,5 @@
 <odoo>
+    <!-- Kode Contract -->
     <record id="contract_sequence_pkwt" model="ir.sequence">
         <field name="name">Kode Kontrak PKWT</field>
         <field name="code">kontrak_pkwt</field>
@@ -22,5 +23,21 @@
         <field name="company_id" eval="False"/>
         <field name="prefix">TETAP-</field>
         <field name="suffix">/MUM-BIS/%(month)s/%(year)s</field>
+    </record>
+
+    <!-- Kode NIP -->
+    <record id="nip_sequence_int" model="ir.sequence">
+        <field name="name">Kode NIP Internal</field>
+        <field name="code">nip_internal</field>
+        <field eval="4" name="padding"/>
+        <field name="company_id" eval="False"/>
+        <field name="suffix">.%(month)s.%(y)s.M</field>
+    </record>
+    <record id="nip_sequence_ext" model="ir.sequence">
+        <field name="name">Kode NIP External</field>
+        <field name="code">nip_external</field>
+        <field eval="4" name="padding"/>
+        <field name="company_id" eval="False"/>
+        <field name="suffix">.%(month)s.%(y)s.MEXT</field>
     </record>
 </odoo>

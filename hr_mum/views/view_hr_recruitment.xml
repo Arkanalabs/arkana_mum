@@ -204,11 +204,14 @@
 			<button name="create_employee_from_applicant" position="attributes">
 				<attribute name="attrs">{'invisible': ['|','|',('emp_id', '!=', False), ('active', '=', False), ('stage_end', '=', False)]}</attribute>
 			</button>
+			<button name="archive_applicant" position="attributes">
+				<attribute name="attrs">{'invisible':['|',('flag_client', '=', True)]}</attribute>
+			</button>
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
-                        class="oe_highlight" attrs="{'invisible': ['|',('stage_end', '=', True), ('flag_archive', '=', True)]}" />
+                        class="oe_highlight" attrs="{'invisible': ['|','|',('stage_end', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}" />
 				<button string="Rollback" name="button_rollback" type="object"
-						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True)]}"/>
+						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}"/>
 			</button>
 			<button name="action_makeMeeting" position="before">
 				<button string="Download Offering Letter" name="act_download_offering_letter" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('flag_ol', '=', False)]}"/>
@@ -292,6 +295,7 @@
 			</field>
 			<field name="type_id" position="after">
 				<field name="degree_applicant"/>
+				<field name="school"/>
 				<field name="marital_status_applicant"/>
 				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
 				<!-- <field name="file_psikotes" invisible="1"/> -->
@@ -310,6 +314,7 @@
 					<field name="work_experience" nolabel="1"/>
 					<span>year</span>
 				</div>
+				<field name="career_summary"/>
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
@@ -317,6 +322,7 @@
 				<field name="flag_admin" invisible="1"/>
 				<field name="flag_archive" invisible="1"/>
 				<field name="flag_ol" invisible="1"/>
+				<field name="flag_client" invisible="1"/>
 				<field name="stage_early" invisible="1"/>
 				<field name="stage_end" invisible="1"/>
 			</field>

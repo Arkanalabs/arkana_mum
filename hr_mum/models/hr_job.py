@@ -36,6 +36,7 @@ class Applicant(models.Model):
     flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
     flag_ol = fields.Boolean(string='Flag', compute='_compute_flag_ol')
     flag_archive = fields.Boolean(string='Flag Archive')
+    flag_client = fields.Boolean(string='Flag Client', compute='_compute_flag_client')
     # psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
     progress = fields.Char(string='Progress', related='stage_id.progress')
@@ -51,13 +52,15 @@ class Applicant(models.Model):
         ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
         ("S3","S3"),("Lainnya","Lainnya")]
     degree_applicant = fields.Selection(degree, string='Degree')
+    school = fields.Char(string='University/School')
     # marital_status = fields.Char(string='Marital Status')
     marital_status_applicant = fields.Selection([
         ("Lajang","Lajang"),
         ("Menikah","Menikah"),
         ("Duda/Janda","Duda/Janda"),
         ], string='Marital Status')
-    work_experience = fields.Char(string='Work Experience')
+    work_experience = fields.Integer(string='Work Experience')
+    career_summary = fields.Text(string='Career Summary')
     image_applicant = fields.Image(string="Image")
     file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
@@ -101,6 +104,13 @@ class Applicant(models.Model):
         else :
             rec.flag_admin = False
     
+    def _compute_flag_client(self):
+      for rec in self:
+        if self.env.user.has_group('hr_mum.group_mum_client'):
+            rec.flag_client = True
+        else :
+            rec.flag_client = False
+    
     def _compute_flag_ol(self):
       for rec in self:
         if self.stage_id.name == 'Offering Letter':
@@ -110,7 +120,7 @@ class Applicant(models.Model):
     
     def _compute_stage_early(self):
         for rec in self:
-            if self.stage_id.search([('sequence', '=', 1)]) == self.stage_id:
+            if self.stage_id.search([('sequence', '=', 0)]) == self.stage_id:
                 rec.stage_early = True
             else :
                 rec.stage_early = False
@@ -190,8 +200,7 @@ class Applicant(models.Model):
         return res
     
     def create_employee_from_applicant(self):
-        res = super(Applicant, self).create_employee_from_applicant()
-        self = self.with_context({
+        res = super(Applicant, self.with_context({
             'image_applicant': self.image_applicant,
             'no_ktp': self.no_ktp,
             'birth': self.birth,
@@ -201,7 +210,20 @@ class Applicant(models.Model):
             'gender': self.gender_applicant,
             'degree': self.degree_applicant,
             'marital': self.marital_status_applicant,
-        })
+            'school': self.school,
+        })).create_employee_from_applicant()
+        # self = self.with_context({
+        #     'image_applicant': self.image_applicant,
+        #     'no_ktp': self.no_ktp,
+        #     'birth': self.birth,
+        #     'place_of_birth': self.place_of_birth,
+        #     'address': self.address,
+        #     'phone': self.partner_phone,
+        #     'gender': self.gender_applicant,
+        #     'degree': self.degree_applicant,
+        #     'marital': self.marital_status_applicant,
+        #     'school': self.school,
+        # })
         
         work_entry_type = self.env['hr.work.entry.type'].search([('name', '=', 'Attendance')])
         payroll_type = self.env['hr.payroll.structure.type'].create({
@@ -291,6 +313,7 @@ class HrEmployee(models.Model):
     
     @api.model
     def create(self, vals):
+
         vals.update({
             'image_1920': self.env.context.get('image_applicant', False), 
             'identification_id': self.env.context.get('no_ktp', False), 
@@ -301,8 +324,17 @@ class HrEmployee(models.Model):
             'employee_gender': self.env.context.get('gender', False), 
             'degree_employee': self.env.context.get('degree', False),
             'marital_status_employee': self.env.context.get('marital', False),
+            'study_school': self.env.context.get('school', False),
             })
-        return super(HrEmployee, self).create(vals)
+        
+        res = super(HrEmployee, self).create(vals)
+        
+        if res.job_type == 'internal':
+            res.nip = self.env['ir.sequence'].next_by_code('nip_internal')
+        elif res.job_type == 'external':
+            res.nip = self.env['ir.sequence'].next_by_code('nip_external')
+
+        return res
 
 class HrDepartureWizard(models.TransientModel):
     _inherit = 'hr.departure.wizard'
