@@ -255,7 +255,7 @@ class Applicant(models.Model):
                 self.env['hr.salary.rule'].create({
                     'struct_id': structure_id.id,
                     'category_id': allowance.id,
-                    'code': allowance.name,
+                    'code': rec.code,
                     'name': rec.name,
                     'amount_fix': rec.wage,
                 })        
@@ -369,6 +369,7 @@ class HrApplicantFile(models.Model):
     _description = 'Benefits Info'
 
     name = fields.Char(string='Type Allowance')
+    code = fields.Char(string='Code')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
     wage = fields.Monetary(string='Wage')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)

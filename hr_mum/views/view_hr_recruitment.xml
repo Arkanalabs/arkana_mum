@@ -263,6 +263,7 @@
 				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
 					<tree editable="bottom" >
 						<field name="name" />
+						<field name="code" required="1" />
 						<field name="wage" />
 						<field name="currency_id" invisible="1" />
 					</tree>
