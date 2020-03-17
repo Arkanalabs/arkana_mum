@@ -541,7 +541,7 @@ class Contract(models.Model):
     date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
     benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
     notif = fields.Boolean(string='Notif')
-
+    
     @api.depends('date_start', 'date_end')
     def _date_interval(self):
         for rec in self:
@@ -617,6 +617,8 @@ class Contract(models.Model):
         elif self.contract_type == 'pkwt' and self.job_type == 'external':
             res = self.env.ref("hr_mum.mum_pkwt_external_py3o").with_context({
                 'discard_logo_check': True}).report_action(self)
+        else:
+            raise UserError('Mohon maaf tidak bisa ..')
         return res
     
     def act_download_report_pkwt(self):

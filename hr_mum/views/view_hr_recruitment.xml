@@ -58,6 +58,22 @@
 		</field>
 	</record>
 
+	<record model="ir.ui.view" id="hr_job_survey_mum"> 
+		<field name="name">hr.job.form</field> 
+		<field name="model">hr.job</field> 
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/> 
+		<field name="arch" type="xml">
+			<xpath expr="//div[@name='alias_def']" position="replace">
+				<div name="alias_def" invisible="1">
+                    <field name="alias_id" class="oe_read_only" string="Email Alias" required="0"/>
+                    <div class="oe_edit_only" name="edit_alias">
+                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                    </div>
+                </div>
+			</xpath>
+		</field>
+	</record>
+
 	<record id="view_hr_job_published_button" model="ir.ui.view" >
         <field name="name">hr.job.form.published.button</field>
         <field name="model">hr.job</field>

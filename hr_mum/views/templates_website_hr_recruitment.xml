@@ -232,8 +232,9 @@
     </section>
   </xpath>
 
-  <!-- <xpath expr="//div[@id='wrap']/div/div/div/a" position="replace">
-  </xpath> -->
+  <xpath expr="//div[@id='wrap']/section/div/div/a" position="replace">
+    <a></a>
+  </xpath>
 
 </template>
 
