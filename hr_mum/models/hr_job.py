@@ -533,12 +533,14 @@ class Contract(models.Model):
     contract_type = fields.Selection([
         ("pkwt","PKWT"),
         ("phl","PHL"),
+        ("ppkwt", "PPKWT"),
         # ("tetap","TETAP")
     ], string='Contract Type')
     month_end = fields.Integer(string='End Month', default=4)
     date_now = fields.Date(string='Date_now', default=fields.Date.today())
     date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
     benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
+    notif = fields.Boolean(string='Notif')
 
     @api.depends('date_start', 'date_end')
     def _date_interval(self):
@@ -552,13 +554,25 @@ class Contract(models.Model):
     def write(self, vals):
         if 'state' in vals :
             if vals.get('state') == 'open':
-                if self.contract_type == 'pkwt':
+                if self.contract_type == 'pkwt' and self.job_type == 'internal':
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_pkwt')
                     # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
-                elif self.contract_type == 'phl':
+                elif self.contract_type == 'phl' and self.job_type == 'internal':
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl')
                     # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
+                elif self.contract_type == 'ppkwt' and self.job_type == 'internal':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt')
+                
+                elif self.contract_type == 'pkwt' and self.job_type == 'external':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_pkwt_ext')
+                elif self.contract_type == 'phl' and self.job_type == 'external':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl_ext')
+                elif self.contract_type == 'ppkwt' and self.job_type == 'external':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt_ext')
+
                 code = self.company_id.code
+                if not code :
+                    code = ''
                 name_code = str(vals['name']).split('*')
                 vals['name'] = name_code[0] + code + name_code[1]
                 self.write({'name': vals['name']})
@@ -581,16 +595,27 @@ class Contract(models.Model):
                 if before_three_months == date.today() \
                     or before_two_months == date.today() or before_one_months == date.today():
                     contract.month_end -= 1
+                    contract.notif = True
                     template = self.env.ref('hr_mum.template_mail_notif_contract')
                     template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
 
     def act_download_report_contract(self):
         self.ensure_one()
-        if self.contract_type == 'phl':
+        if self.contract_type == 'phl' and self.job_type == 'internal':
             res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
                 'discard_logo_check': True}).report_action(self)
-        elif self.contract_type == 'pkwt':
+        elif self.contract_type == 'pkwt' and self.job_type == 'internal':
             res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        elif self.contract_type == 'ppkwt' and self.job_type == 'internal':
+            res = self.env.ref("hr_mum.mum_ppkwt_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+       
+        elif self.contract_type == 'phl' and self.job_type == 'external':
+            res = self.env.ref("hr_mum.mum_phl_external_py3o").with_context({
+                'discard_logo_check': True}).report_action(self)
+        elif self.contract_type == 'pkwt' and self.job_type == 'external':
+            res = self.env.ref("hr_mum.mum_pkwt_external_py3o").with_context({
                 'discard_logo_check': True}).report_action(self)
         return res
     
