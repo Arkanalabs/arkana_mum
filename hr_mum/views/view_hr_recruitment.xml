@@ -15,9 +15,9 @@
 					</div>
 				</div>
 			</xpath>
-			<!-- <button name="set_recruit" position="attributes">
-				<attribute name="invisible">1</attribute>
-			</button> -->
+			<button name="set_recruit" position="attributes">
+				<attribute name="attrs">{'invisible':[('state', 'not in', ['finish'])]}</attribute>
+			</button>
 			<field name="state" position="attributes">
 				<attribute name="statusbar_visible">recruit,open,finish</attribute>
 			</field>
@@ -53,7 +53,7 @@
 			</field>
 			<field name="no_of_recruitment" position="before">
 				<field name="date_start"/>
-				<field name="date_finish"/>
+				<field name="date_finish" attrs="{'invisible':[('state', '!=', 'finish')]}"/>
 			</field>
 		</field>
 	</record>
@@ -557,7 +557,7 @@
 		<field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
 		<field name="arch" type="xml">
 			<field name="amount_python_compute" position="after">
-				<field name="thp" attrs="{'invisible': [('flag_category', '!=', True), ('amount_select', '!=', 'code')]}"/>
+				<field name="thp" attrs="{'invisible': [('flag_category', '=', False)]}"/>
 				<field name="flag_category" invisible="1" />
 				<field name="currency_id" invisible="1" />
 			</field>
@@ -702,7 +702,17 @@
 				<widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
 				<field name="active" invisible="1"/>
 			</xpath>
+		</field>
+	</record>
 
+	<record model="ir.ui.view" id="view_hr_employee_grade_form_mum">
+		<field name="name">hr.payroll.structure.form.mum</field>
+		<field name="model">hr.payroll.structure</field>
+		<field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+		<field name="arch" type="xml">
+			<field name="schedule_pay" position="after">
+				<field name="flag_code" readonly="1" groups="base.group_no_one"/>
+			</field>
 		</field>
 	</record>
 

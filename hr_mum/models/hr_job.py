@@ -267,6 +267,11 @@ class HrPayrollStructureType(models.Model):
     emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
     active = fields.Boolean('Active', default=True)
 
+class HrPayrollStructure(models.Model):
+    _inherit = 'hr.payroll.structure'
+
+    flag_code = fields.Boolean(string='Rules Fix')
+
 class HrSalaryRule(models.Model):
     _inherit = 'hr.salary.rule'
 
@@ -275,6 +280,7 @@ class HrSalaryRule(models.Model):
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
 
+    @api.depends('category_id')
     def _compute_category(self):
         for rec in self:
             if rec.category_id.name ==  'Net':
@@ -427,7 +433,7 @@ class Job(models.Model):
                                        'hr.file.template'].search([], limit=1))
     date_start = fields.Date('Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
     date_finish = fields.Date('Date Finish', readonly=True)
-    state = fields.Selection(selection_add=[("finish", "Finish")])
+    state = fields.Selection(selection_add=[("finish", "Recruiting Finish")])
     date_dif = fields.Integer('Day Difference', readonly=True)
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
@@ -474,6 +480,11 @@ class Job(models.Model):
         })
         # date_dif = self.date_start - self.date_finish
         return super(Job, self).set_open()
+
+    def set_recruit(self):
+        for record in self:
+            record.write({'date_start': fields.Datetime.today()})
+        return super(Job, self).set_recruit()
 
     @api.model
     def _auto_stop_reqruitment(self): 
@@ -577,6 +588,56 @@ class Contract(models.Model):
                 name_code = str(vals['name']).split('*')
                 vals['name'] = name_code[0] + code + name_code[1]
                 self.write({'name': vals['name']})
+
+                if self.contract_type != 'phl' or self.job_type != 'external':
+                    deduction = self.env['hr.salary.rule.category'].search([('name', '=', 'Deduction')])
+                    struct = self.structure_type_id.default_struct_id
+                    if not struct.flag_code:
+                        self.env['hr.salary.rule'].create({
+                            'struct_id': struct.id,
+                            'category_id': deduction.id,
+                            'amount_select': 'code',
+                            'code': 'BPJSK',
+                            'name': 'BPJS Kesehatan',
+                            'sequence': 110,
+                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
+                        })
+                        self.env['hr.salary.rule'].create({
+                            'struct_id': struct.id,
+                            'category_id': deduction.id,
+                            'amount_select': 'code',
+                            'code': 'JHT',
+                            'name': 'BPJS Jaminan Hari Tua',
+                            'sequence': 120,
+                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
+                        })
+                        self.env['hr.salary.rule'].create({
+                            'struct_id': struct.id,
+                            'category_id': deduction.id,
+                            'amount_select': 'code',
+                            'code': 'JP',
+                            'name': 'BPJS Jaminan Pensiun',
+                            'sequence': 130,
+                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
+                        })
+                        struct.rule_ids.filtered(lambda x: x.name == 'THP').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
+                        struct.flag_code = True
+                        
+                        if self.company_id.name == 'Parastar Distrindo' or self.company_id.name == 'CV Dunia Unggas' or self.company_id.name == 'PT Artha Solusi Teknologi':
+                            self.env['hr.salary.rule'].create({
+                                'struct_id': struct.id,
+                                'category_id': deduction.id,
+                                'code': 'ATTD',
+                                'name': 'Attendance',
+                                'sequence': 150,
+                                'amount_select': 'code' ,
+                                'amount_python_compute': 'result = inputs.ATTD.amount' ,
+                            })
+                            self.env['hr.payslip.input.type'].create({
+                                'name':'Attendance',
+                                'code':'ATTD',
+                                'struct_ids': [(4, struct.id)]
+                            })
                 # else:   
                 #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':
@@ -621,20 +682,13 @@ class Contract(models.Model):
         else:
             raise UserError('Mohon maaf tidak bisa ..')
         return res
-    
-    def act_download_report_pkwt(self):
-        self.ensure_one()
-        if self.contract_type == 'pkwt':
-            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        return res
 
     
     class HrRecruitmentStage(models.Model):
         _inherit = 'hr.recruitment.stage'
 
         progress = fields.Char(string='Progress')
- 
+
     class Project(models.Model):
         _inherit = 'project.project'
         
