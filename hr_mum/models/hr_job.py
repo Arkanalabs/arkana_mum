@@ -695,9 +695,9 @@ class Contract(models.Model):
     class Project(models.Model):
         _inherit = 'project.project'
         
-        project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain=[('is_active', '=', True)])
-        user_id = fields.Many2one('res.users', string='Assigned To')
-        date_start = fields.Date('Date Start', default=fields.Date.today(), readonly=True)
+        project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain="[('is_active', '=', True)]")
+        user_partner_id = fields.Many2one('res.partner', string='Assigned To', domain="[('user_ids', '!=', False)]")
+        date_start = fields.Date('Date Start', default=fields.Date.today())
 
         @api.model
         def _create_task_project(self):
@@ -710,16 +710,16 @@ class Contract(models.Model):
                     if task_ids:
                         for rec in task_ids:
                             stage = project.env['project.task.type'].search([], order='sequence', limit=1)
-                            # user_id = project.user_id.filtered(lambda x: x.name == project.name)
+                            user_id = project.user_id.search([]).filtered(lambda x: x.name == project.user_partner_id.name)
                             if rec.task_type == 'weekly':
                                 after_one_week = project.date_start + relativedelta(weeks=+1)
-                                if after_one_week == date.today():
+                                if after_one_week :
                                     _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
                                     project.env['project.task'].create([
                                         {
                                         'project_id': project.id,
                                         'name': rec.name,
-                                        'user_id': project.user_id.id,
+                                        'user_id': user_id.id,
                                         'stage_id': stage.id
                                         },
                                     ])
@@ -731,7 +731,7 @@ class Contract(models.Model):
                                         {
                                         'project_id': project.id,
                                         'name': rec.name,
-                                        'user_id': project.user_id.id,
+                                        'user_id': project.user_partner_id.id,
                                         'stage_id': stage.id
                                         },
                                     ])
