@@ -713,8 +713,7 @@ class Contract(models.Model):
                             # user_id = project.user_id.filtered(lambda x: x.name == project.name)
                             if rec.task_type == 'weekly':
                                 after_one_week = project.date_start + relativedelta(weeks=+1)
-                                if after_one_week :
-                                    # == date.today()
+                                if after_one_week == date.today():
                                     _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
                                     project.env['project.task'].create([
                                         {
@@ -726,8 +725,7 @@ class Contract(models.Model):
                                     ])
                             elif rec.task_type == 'monthly':
                                 after_one_months = project.date_start + relativedelta(months=+1)
-                                if after_one_months :
-                                    # == date.today()
+                                if after_one_months == date.today():
                                     _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
                                     project.env['project.task'].create([
                                         {

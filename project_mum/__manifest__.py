@@ -13,7 +13,7 @@
         'project',
     ],
     'data': [
-        'data/service_cron.xml',
+        # 'data/service_cron.xml',
         # 'data/config_data.xml',
         # 'data/message_data.xml',
         # 'data/template_mail_notif_contract.xml',
