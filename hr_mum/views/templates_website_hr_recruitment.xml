@@ -161,6 +161,17 @@
               <label class="col-lg-3 col-md-4">(Max 2MB)</label>
           </div>
       </div>
+      <div class="form-group row form-field">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="work_experience">Pengalaman Kerja</label>
+          </div>
+          <div class="col-lg-3 col-md-4 ">
+              <input type="number" name="work_experience" class="form-control o_website_form_input" placeholder="/ Tahun"/>
+          </div>
+          <div class="col-lg-4 col-md-4 ">
+              <textarea class="form-control o_website_form_input" name="career_summary" placeholder="Riwayat Pekerjaan"></textarea>
+          </div>
+      </div>
     </xpath>
 </template>		
 

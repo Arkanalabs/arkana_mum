@@ -12,6 +12,8 @@
             'degree_applicant',
             'file_ids',
             'school',
+            'career_summary',
+            'work_experience',
             ]"/>
         </function>
     </data>

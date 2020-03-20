@@ -7,7 +7,7 @@
 		<field name="arch" type="xml">
 			<xpath expr="//header" position="after">
 				<div class="alert alert-danger text-center o_form_header"
-					attrs="{'invisible': [('state', '!=', 'finish')]}"
+					attrs="{'invisible': [('flag_cron', '!=', True)]}"
 					role="status">
 					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
 					<div>
@@ -15,15 +15,16 @@
 					</div>
 				</div>
 			</xpath>
-			<button name="set_recruit" position="attributes">
+			<!-- <button name="set_recruit" position="attributes">
 				<attribute name="attrs">{'invisible':[('state', 'not in', ['finish'])]}</attribute>
-			</button>
+			</button> -->
 			<field name="state" position="attributes">
-				<attribute name="statusbar_visible">recruit,open,finish</attribute>
+				<attribute name="statusbar_visible">recruit,open</attribute>
 			</field>
 			<field name="department_id" position="before">
+				<field name="flag_cron" invisible="1"/>
 				<field name="code" attrs="{'invisible': [('job_type', '=', 'internal')]}"/>
-				<field name="job_type" readonly="1"/>
+				<field name="job_type" readonly="0"/>
 			</field>
 			<field name="address_id" position="attributes">
 				<attribute name="invisible">1</attribute>
@@ -53,7 +54,7 @@
 			</field>
 			<field name="no_of_recruitment" position="before">
 				<field name="date_start"/>
-				<field name="date_finish" attrs="{'invisible':[('state', '!=', 'finish')]}"/>
+				<field name="date_finish" attrs="{'invisible':[('state', '!=', 'open')]}"/>
 			</field>
 		</field>
 	</record>

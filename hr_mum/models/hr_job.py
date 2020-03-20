@@ -444,6 +444,7 @@ class Job(models.Model):
     qualification = fields.Html(string='Qualification', translate=html_translate, sanitize=False)
     alias_name = fields.Char('Email Alias', invisible=True)
     description = fields.Html('Description', translate=html_translate, sanitize=False)
+    flag_cron = fields.Boolean(string='Cron')
     
     @api.model
     def create(self, vals):
@@ -457,11 +458,11 @@ class Job(models.Model):
             value.notification_action()
         return value
     
-    def write(self, vals):
-        if 'state' in vals:
-            if vals.get('state') == 'finish' :
-                self.website_published = False
-        return super(Job, self).write(vals)
+    # def write(self, vals):
+    #     if 'state' in vals:
+    #         if vals.get('state') == 'finish' :
+    #             self.website_published = False
+    #     return super(Job, self).write(vals)
 
     @api.depends('date_start', 'address_id', 'name')
     def _compute_code(self):
@@ -484,6 +485,7 @@ class Job(models.Model):
     def set_recruit(self):
         for record in self:
             record.write({'date_start': fields.Datetime.today()})
+            record.flag_cron = False
         return super(Job, self).set_recruit()
 
     @api.model
@@ -495,8 +497,9 @@ class Job(models.Model):
             interval_time = date - job.date_start
             if interval_time.days > 10 :
                 _logger.warning('===================> Stop Recruitment %s <===================' % (job.name))
-                job.state = 'finish'
+                job.state = 'open'
                 job.date_finish = fields.Datetime.today()
+                job.flag_cron = True
     
 
     def close_dialog(self):
