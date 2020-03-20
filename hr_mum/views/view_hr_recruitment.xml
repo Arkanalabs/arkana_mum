@@ -573,7 +573,8 @@
 		<field name="arch" type="xml">
 			<field name="partner_id" position="after">
 				<field name="date_start"/>
-				<field name="project_task_ids" widget="many2many_tags"/>				
+				<field name="project_task_ids" widget="many2many_tags"/>
+				<field name="user_id"/>				
 			</field>
 		</field>
 	</record>
@@ -585,6 +586,7 @@
 		<field name="arch" type="xml">
 			<tree>
 				<field name="name"/>
+				<field name="task_type"/>
 				<field name="is_active"/>
 			</tree>
 		</field>
@@ -603,6 +605,7 @@
 					</div>
 					<group>
 						<group>
+							<field name="task_type" required="1"/>
 							<field name="is_active"/>
 						</group>
 					</group>

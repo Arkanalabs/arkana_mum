@@ -696,6 +696,7 @@ class Contract(models.Model):
         _inherit = 'project.project'
         
         project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain=[('is_active', '=', True)])
+        user_id = fields.Many2one('res.users', string='Assigned To')
         date_start = fields.Date('Date Start', default=fields.Date.today(), readonly=True)
 
         @api.model
@@ -704,27 +705,45 @@ class Contract(models.Model):
             for project in project_ids:
                  _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))  
                  if project.date_start:
-                    after_one_months = project.date_start + relativedelta(months=+1)
-                    if after_one_months:
-                        # after_one_months == date.today()
-                        task = project.project_task_ids
-                        if task:
-                            for rec in task:
-                                stage = project.env['project.task.type'].search([], order='sequence', limit=1)
-                                project.env['project.task'].create([
-                                    {
-                                    'project_id': project.id,
-                                    'name': rec.name,
-                                    'user_id': False,
-                                    'stage_id': stage.id
-                                    },
-                                ])
-            
+                    # if after_one_months == date.today():
+                    task_ids = project.project_task_ids
+                    if task_ids:
+                        for rec in task_ids:
+                            stage = project.env['project.task.type'].search([], order='sequence', limit=1)
+                            # user_id = project.user_id.filtered(lambda x: x.name == project.name)
+                            if rec.task_type == 'weekly':
+                                after_one_week = project.date_start + relativedelta(weeks=+1)
+                                if after_one_week :
+                                    # == date.today()
+                                    _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
+                                    project.env['project.task'].create([
+                                        {
+                                        'project_id': project.id,
+                                        'name': rec.name,
+                                        'user_id': project.user_id.id,
+                                        'stage_id': stage.id
+                                        },
+                                    ])
+                            elif rec.task_type == 'monthly':
+                                after_one_months = project.date_start + relativedelta(months=+1)
+                                if after_one_months :
+                                    # == date.today()
+                                    _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
+                                    project.env['project.task'].create([
+                                        {
+                                        'project_id': project.id,
+                                        'name': rec.name,
+                                        'user_id': project.user_id.id,
+                                        'stage_id': stage.id
+                                        },
+                                    ])
+        
     class ProjectTaskTemplate(models.Model):
         _name = 'project.task.template'
 
         name = fields.Char(string='Task Name')
         is_active = fields.Boolean(string='Active')
+        task_type = fields.Selection([("weekly","Weekly"),("monthly","Monthly")], string='Task Type')
         project_id = fields.Many2one('project.project', string="Project")
 
     class HrJobLocation(models.Model):
