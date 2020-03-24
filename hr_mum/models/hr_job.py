@@ -585,7 +585,9 @@ class Contract(models.Model):
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl_ext')
                 elif self.contract_type == 'ppkwt' and self.job_type == 'external':
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt_ext')
-
+                else:
+                    raise UserError('Mohon untuk mengisi Contract Type terlebih dulu!')
+                
                 code = self.company_id.code
                 if not code :
                     code = ''
