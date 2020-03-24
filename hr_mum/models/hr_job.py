@@ -555,6 +555,7 @@ class Contract(models.Model):
     date_now = fields.Date(string='Date_now', default=fields.Date.today())
     date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
     benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
+    thp = fields.Monetary(string='THP')
     notif = fields.Boolean(string='Notif')
     
     @api.depends('date_start', 'date_end')
