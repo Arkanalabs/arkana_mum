@@ -586,7 +586,7 @@ class Contract(models.Model):
                 elif self.contract_type == 'ppkwt' and self.job_type == 'external':
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt_ext')
                 else:
-                    raise UserError('Mohon untuk mengisi Contract Type terlebih dulu!')
+                    raise UserError('Mohon untuk mengisi Contract Type terlebih dulu !')
                 
                 code = self.company_id.code
                 if not code :
@@ -628,22 +628,21 @@ class Contract(models.Model):
                         })
                         struct.rule_ids.filtered(lambda x: x.name == 'THP').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
                         struct.flag_code = True
-                        
-                        if self.company_id.name == 'Parastar Distrindo' or self.company_id.name == 'CV Dunia Unggas' or self.company_id.name == 'PT Artha Solusi Teknologi':
-                            self.env['hr.salary.rule'].create({
-                                'struct_id': struct.id,
-                                'category_id': deduction.id,
-                                'code': 'ATTD',
-                                'name': 'Attendance',
-                                'sequence': 150,
-                                'amount_select': 'code' ,
-                                'amount_python_compute': 'result = inputs.ATTD.amount' ,
-                            })
-                            self.env['hr.payslip.input.type'].create({
-                                'name':'Attendance',
-                                'code':'ATTD',
-                                'struct_ids': [(4, struct.id)]
-                            })
+                                            
+                        self.env['hr.salary.rule'].create({
+                            'struct_id': struct.id,
+                            'category_id': deduction.id,
+                            'code': 'ATTD',
+                            'name': 'Attendance',
+                            'sequence': 150,
+                            'amount_select': 'code' ,
+                            'amount_python_compute': 'result = inputs.ATTD and inputs.ATTD.amount' ,
+                        })
+                        self.env['hr.payslip.input.type'].create({
+                            'name':'Attendance',
+                            'code':'ATTD',
+                            'struct_ids': [(4, struct.id)]
+                        })
                 # else:   
                 #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
         # elif vals.get('state') == 'open':

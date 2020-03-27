@@ -254,7 +254,7 @@
 				<label for="contract_period"/>
 				<div class="o_row">
 					<field name="contract_period" nolabel="1"/>
-					<span>year</span>
+					<span>month</span>
 				</div>
 				<field name="facility"/>
 				<field name="currency_id" invisible="1" />
