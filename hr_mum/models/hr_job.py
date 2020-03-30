@@ -261,6 +261,11 @@ class Applicant(models.Model):
                 })        
         return res
 
+    def action_makeMeeting(self):
+        res = super(Applicant, self).action_makeMeeting()
+        res['context']['default_applicant_id'] = self.id
+        return res 
+
 class HrPayrollStructureType(models.Model):
     _inherit = 'hr.payroll.structure.type'
 
