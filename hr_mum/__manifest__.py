@@ -25,6 +25,8 @@
         'views/view_hr_recruitment.xml',
         'views/view_survey.xml',
         'views/view_company.xml',
+        'views/view_payroll.xml',
+        'views/view_calendar.xml',
         'views/templates_website_hr_recruitment.xml',
     ],
     'demo': [],

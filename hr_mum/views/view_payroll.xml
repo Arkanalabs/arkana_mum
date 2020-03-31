@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_payroll_structure_type_view_form_mum">
+            <field name="name">hr.payroll.structure.type.form.mum</field>
+            <field name="model">hr.payroll.structure.type</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payroll_structure_type_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="before">
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
+                </xpath>
+            </field>
+    	</record>
+
+	    <record model="ir.ui.view" id="view_hr_employee_grade_form_mum">
+            <field name="name">hr.payroll.structure.form.mum</field>
+            <field name="model">hr.payroll.structure</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+            <field name="arch" type="xml">
+                <field name="schedule_pay" position="after">
+                    <field name="flag_code" readonly="1" groups="base.group_no_one"/>
+                </field>
+            </field>
+    	</record>
+    
+        <record model="ir.ui.view" id="hr_payslip_mum_form">
+            <field name="name">hr.payslip.mum.form</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page" position="attributes">
+                    <attribute name="string">Inputs</attribute>
+                </xpath>
+                <xpath expr="//notebook/page/separator" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='worked_days_line_ids']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
