@@ -78,6 +78,8 @@ class Applicant(models.Model):
     benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
     availability = fields.Date(default=fields.Date.today())
     job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+    flag_mail_on = fields.Boolean(string='Mail On')
+    flag_mail_off = fields.Boolean(string='Mail Off')
   
     @api.model
     def create(self, vals):
@@ -168,6 +170,9 @@ class Applicant(models.Model):
                 rec.stage_early = True
             if stage_id:
                 rec.stage_id = stage_id
+                rec.flag_mail_off = True
+                # rec.flag_mail_on = False
+                self = self.with_context(mail_off=True)
                 self.env['hr.applicant.time'].create({
                     'applicant_id': rec.id,
                     'name': "Rollback to %s" % (self.stage_id.name),
@@ -183,6 +188,8 @@ class Applicant(models.Model):
             if stage_id:
                 process.stage_id = stage_id
                 process.stage_early = False
+                # process.flag_mail_on = True
+                process.flag_mail_off = False
                 self.env['hr.applicant.time'].create({
                     'applicant_id': process.id,
                     'name': self.stage_id.name,
@@ -264,8 +271,23 @@ class Applicant(models.Model):
     def action_makeMeeting(self):
         res = super(Applicant, self).action_makeMeeting()
         res['context']['default_applicant_id'] = self.id
-        return res 
+        return res
 
+    # def _track_template(self, changes):
+    #     if not self._context.get('mail_off'):
+    #         res = super(Applicant, self)._track_template(changes)
+    #     else:
+    #         res = super(Applicant, self)._track_template({})
+    #     return res 
+
+
+# class MailThread(models.AbstractModel):
+#     _inherit = 'mail.thread'
+
+#     def write(self, values):
+#         if not self.env.context.get('mail_off'):
+#             return super(MailThread, self).write(values)
+        
 class HrPayrollStructureType(models.Model):
     _inherit = 'hr.payroll.structure.type'
 
@@ -505,6 +527,7 @@ class Job(models.Model):
                 job.state = 'open'
                 job.date_finish = fields.Datetime.today()
                 job.flag_cron = True
+                job.website_published = False
     
 
     def close_dialog(self):
@@ -591,7 +614,13 @@ class Contract(models.Model):
                 elif self.contract_type == 'ppkwt' and self.job_type == 'external':
                     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt_ext')
                 else:
-                    raise UserError('Mohon untuk mengisi Contract Type terlebih dulu !')
+                    raise UserError("Please fill the 'Contract Type' field before !")
+                
+                if not self.date_end:
+                    raise UserError("Please fill the 'End Date' field before !")
+                
+                if not self.employee_id.birthday:
+                    raise UserError("Please fill the 'Birthday' field on Employee's Form before !")
                 
                 code = self.company_id.code
                 if not code :
@@ -603,6 +632,7 @@ class Contract(models.Model):
                 if self.contract_type != 'phl' or self.job_type != 'external':
                     deduction = self.env['hr.salary.rule.category'].search([('name', '=', 'Deduction')])
                     struct = self.structure_type_id.default_struct_id
+                    struct.rule_ids.filtered(lambda x: x.name == 'Net Salary').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
                     if not struct.flag_code:
                         self.env['hr.salary.rule'].create({
                             'struct_id': struct.id,
@@ -631,7 +661,6 @@ class Contract(models.Model):
                             'sequence': 130,
                             'amount_python_compute': 'result = GROSS * 1 / 100' ,
                         })
-                        struct.rule_ids.filtered(lambda x: x.name == 'THP').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
                         struct.flag_code = True
                                             
                         self.env['hr.salary.rule'].create({

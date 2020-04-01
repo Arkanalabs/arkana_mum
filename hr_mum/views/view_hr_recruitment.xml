@@ -349,6 +349,8 @@
 				<field name="flag_client" invisible="1"/>
 				<field name="stage_early" invisible="1"/>
 				<field name="stage_end" invisible="1"/>
+				<field name="flag_mail_on" invisible="1"/>
+				<field name="flag_mail_off" invisible="1"/>
 			</field>
 		</field>
 	</record>
