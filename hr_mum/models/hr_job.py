@@ -273,12 +273,12 @@ class Applicant(models.Model):
         res['context']['default_applicant_id'] = self.id
         return res
 
-    # def _track_template(self, changes):
-    #     if not self._context.get('mail_off'):
-    #         res = super(Applicant, self)._track_template(changes)
-    #     else:
-    #         res = super(Applicant, self)._track_template({})
-    #     return res 
+    def _track_template(self, changes):
+        if not self._context.get('mail_off'):
+            res = super(Applicant, self)._track_template(changes)
+        else:
+            res = super(Applicant, self)._track_template({})
+        return res 
 
 
 # class MailThread(models.AbstractModel):

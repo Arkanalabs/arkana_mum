@@ -227,7 +227,7 @@
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
                         class="oe_highlight" attrs="{'invisible': ['|','|',('stage_end', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}" />
-				<button string="Rollback" name="button_rollback" type="object"
+				<button string="Rollback" name="button_rollback" type="object" context="{'mail_off': True}"
 						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}"/>
 			</button>
 			<button name="action_makeMeeting" position="before">
