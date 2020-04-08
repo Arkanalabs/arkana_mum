@@ -30,6 +30,7 @@
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="address_id" position="after">
+				<field name="partner_id"/>
 				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
 				<label for="salary_expected"/>
 				<div class="o_row">
@@ -727,6 +728,12 @@
         <field name="domain">[]</field>
         <field name="help"></field>
     </record>
+	
+	<menuitem name="Work Entries"
+		id="hr_payroll.menu_hr_payroll_work_entries_root"
+		groups="base.group_no_one"
+		sequence="60"
+		parent="hr_payroll.menu_hr_payroll_root"/>
 	
 	<menuitem name="File Template"
 		id="menu_file_template"

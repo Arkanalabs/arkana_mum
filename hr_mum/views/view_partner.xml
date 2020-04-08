@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_users_simple_form_inherit">
+            <field name="name">res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_simple_form" />
+            <field name="arch" type="xml">
+                <field name="mobile" position="after">
+                    <field name="whatsapp" placeholder="No space and + sign (e.g 62810000000)" />
+                </field>
+            </field>
+    	</record>
+
+        <record model="ir.ui.view" id="view_res_partner_form_inherit">
+            <field name="name">res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml"> 
+                <field name="user_ids" position="before">
+                    <field name="whatsapp" placeholder="No space and + sign (e.g 62810000000)" />
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

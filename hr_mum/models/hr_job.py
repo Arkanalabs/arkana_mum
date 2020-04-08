@@ -172,7 +172,7 @@ class Applicant(models.Model):
                 rec.stage_id = stage_id
                 rec.flag_mail_off = True
                 # rec.flag_mail_on = False
-                self = self.with_context(mail_off=True)
+                # self = self.with_context(mail_off=True)
                 self.env['hr.applicant.time'].create({
                     'applicant_id': rec.id,
                     'name': "Rollback to %s" % (self.stage_id.name),
@@ -472,6 +472,7 @@ class Job(models.Model):
     alias_name = fields.Char('Email Alias', invisible=True)
     description = fields.Html('Description', translate=html_translate, sanitize=False)
     flag_cron = fields.Boolean(string='Cron')
+    partner_id = fields.Many2one('res.partner', string='Partner', related='user_id.partner_id')
     
     @api.model
     def create(self, vals):
@@ -483,6 +484,13 @@ class Job(models.Model):
     
         if value.user_id:
             value.notification_action()
+        if value.partner_id.whatsapp:
+            message = "Lowongan kerja %s baru terbuat. " \
+                "Dibuat oleh %s pada tanggal %s" % (value.name, value.user_id.name, fields.date.today())
+            self.env['mail.whatsapp'].create({
+                'name': value.partner_id.whatsapp,
+                'message': message,
+                'sent': False})
         return value
     
     # def write(self, vals):
@@ -631,9 +639,11 @@ class Contract(models.Model):
 
                 if self.contract_type != 'phl' or self.job_type != 'external':
                     deduction = self.env['hr.salary.rule.category'].search([('name', '=', 'Deduction')])
+                    allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
                     struct = self.structure_type_id.default_struct_id
                     struct.rule_ids.filtered(lambda x: x.name == 'Net Salary').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
                     if not struct.flag_code:
+                        # Potongan Pajak
                         self.env['hr.salary.rule'].create({
                             'struct_id': struct.id,
                             'category_id': deduction.id,
@@ -663,18 +673,33 @@ class Contract(models.Model):
                         })
                         struct.flag_code = True
                                             
+                        # Other Inputs
                         self.env['hr.salary.rule'].create({
                             'struct_id': struct.id,
                             'category_id': deduction.id,
                             'code': 'ATTD',
-                            'name': 'Attendance',
+                            'name': 'Potongan Kehadiran',
                             'sequence': 150,
                             'amount_select': 'code' ,
                             'amount_python_compute': 'result = inputs.ATTD and inputs.ATTD.amount' ,
                         })
                         self.env['hr.payslip.input.type'].create({
-                            'name':'Attendance',
+                            'name':'Potongan Kehadiran',
                             'code':'ATTD',
+                            'struct_ids': [(4, struct.id)]
+                        })
+                        self.env['hr.salary.rule'].create({
+                            'struct_id': struct.id,
+                            'category_id': allowance.id,
+                            'code': 'INS',
+                            'name': 'Insentif Kehadiran',
+                            'sequence': 140,
+                            'amount_select': 'code' ,
+                            'amount_python_compute': 'result = inputs.INS and inputs.INS.amount' ,
+                        })
+                        self.env['hr.payslip.input.type'].create({
+                            'name':'Insentif Kehadiran',
+                            'code':'INS',
                             'struct_ids': [(4, struct.id)]
                         })
                 # else:   
@@ -749,7 +774,7 @@ class Contract(models.Model):
                             user_id = project.user_id.search([]).filtered(lambda x: x.name == project.user_partner_id.name)
                             if rec.task_type == 'weekly':
                                 after_one_week = project.date_start + relativedelta(weeks=+1)
-                                if after_one_week :
+                                if after_one_week == date.today() :
                                     _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
                                     project.env['project.task'].create([
                                         {
@@ -785,12 +810,4 @@ class Contract(models.Model):
 
         name = fields.Char(string='Location')
         user_id = fields.Many2one('res.users', 'User Name')
-    
-    # class Partner(models.Model):
-    #     _inherit = 'res.partner'
-
-    #     # rekrutment = fields.Boolean('Rekrutment')
-    #     type = fields.Selection(selection_add=[("recruitment", "Recruitment")], default="recruitment")
-    #     user_id = fields.Many2one("res.users", "User")
-    
         
