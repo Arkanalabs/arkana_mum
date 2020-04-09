@@ -38,7 +38,6 @@
     <field name="binding_model_id" eval="False"/>
     <field name="binding_type">report</field>
   </record>
-<<<<<<< HEAD
 
   <record id="mum_ppkwt_py3o" model="ir.actions.report">
     <field name="name">PPKWT</field>
@@ -78,6 +77,4 @@
     <field name="binding_model_id" eval="False"/>
     <field name="binding_type">report</field>
   </record>
-=======
->>>>>>> master
 </odoo>
