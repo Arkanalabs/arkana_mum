@@ -109,6 +109,17 @@
               </select>
           </div>
       </div>
+<<<<<<< HEAD
+      <div class="form-group row form-field">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="school">Universitas/Sekolah</label>
+          </div>
+          <div class="col-lg-7 col-md-8">
+              <input type="text" name="school" class="form-control o_website_form_input"/>
+          </div>
+      </div>
+=======
+>>>>>>> master
       <div class="form-group row form-field o_website_form_required_custom">
           <div class="col-lg-3 col-md-4 text-right">
               <label class="col-form-label" for="birth">Tempat, Tanggal Lahir</label>
@@ -151,6 +162,20 @@
                 };
               </script>
               <label class="col-lg-3 col-md-4">(Max 2MB)</label>
+<<<<<<< HEAD
+          </div>
+      </div>
+      <div class="form-group row form-field">
+          <div class="col-lg-3 col-md-4 text-right">
+              <label class="col-form-label" for="work_experience">Pengalaman Kerja</label>
+          </div>
+          <div class="col-lg-3 col-md-4 ">
+              <input type="number" name="work_experience" class="form-control o_website_form_input" placeholder="/ Tahun"/>
+          </div>
+          <div class="col-lg-4 col-md-4 ">
+              <textarea class="form-control o_website_form_input" name="career_summary" placeholder="Riwayat Pekerjaan"></textarea>
+=======
+>>>>>>> master
           </div>
       </div>
     </xpath>
@@ -224,6 +249,13 @@
     </section>
   </xpath>
 
+<<<<<<< HEAD
+  <xpath expr="//div[@id='wrap']/section/div/div/a" position="replace">
+    <a></a>
+  </xpath>
+
+=======
+>>>>>>> master
 </template>
 
 <!-- <template id="mum_website_description" inherit_id="website_hr_recruitment.default_website_description">

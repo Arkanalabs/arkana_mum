@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_calendar_event_calendar_mum">
+            <field name="name">calendar.event.mum</field>
+            <field name="model">calendar.event</field>
+            <field name="inherit_id" ref="calendar.view_calendar_event_calendar"/>
+            <field name="arch" type="xml">
+                <xpath expr="//calendar" position="attributes">
+                    <attribute name="quick_add">0</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+<<<<<<< HEAD
+=======
     <record model="ir.cron" id="auto_stop_reqruitment_cron">
         <field name="name">Auto Stop Recruitment</field>
         <field name="interval_number">1</field>
@@ -24,6 +26,7 @@
         <field name="code">model._notif_contract()</field>
     </record>
 
+>>>>>>> master
     <record model="ir.cron" id="create_task_cron">
         <field name="name">Create Task Project</field>
         <field name="interval_number">1</field>

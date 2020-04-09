@@ -14,16 +14,37 @@
             <field name="domain_force">['|',('create_uid','=', user.id), ('user_id','=', user.id)]</field>
         </record>
 
+<<<<<<< HEAD
+        <record id="job_rule_admin_position" model="ir.rule">
+            <field name="name">Job Filter by Admin </field>
+            <field name="model_id" ref="hr_mum.model_hr_job"/>
+=======
         <!-- <record id="applicant_rule_admin_web" model="ir.rule">
             <field name="name">Applicant Web Filter by Admin </field>
             <field name="model_id" ref="hr_mum.model_hr_applicant"/>
+>>>>>>> master
             <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
             <field name="domain_force">[(1,'=',1)]</field>
         </record>
-        <record id="applicant_rule_user_web" model="ir.rule">
-            <field name="name">Applicant Web Filter by User</field>
-            <field name="model_id" ref="hr_mum.model_hr_applicant"/>
+        <record id="job_rule_user_position" model="ir.rule">
+            <field name="name">Job Filter by User</field>
+            <field name="model_id" ref="hr_mum.model_hr_job"/>
             <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+<<<<<<< HEAD
+            <field name="domain_force">['|',('company_id', '=', user.company_id.id), ('create_uid','=', user.id), ('user_id','=', user.id)]</field>
+        </record>
+
+        <record id="job_location_admin" model="ir.rule">
+            <field name="name">Job Location Filter by Admin </field>
+            <field name="model_id" ref="hr_mum.model_hr_job_location"/>
+            <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_manager'))]"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+        </record>
+        <record id="job_rule_user_web" model="ir.rule">
+            <field name="name">Job Location Filter by User</field>
+            <field name="model_id" ref="hr_mum.model_hr_job_location"/>
+            <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+=======
             <field name="domain_force">[('user_applicant_id','=', user.id)]</field>
         </record> -->
 
@@ -50,7 +71,15 @@
             <field name="name">Job Location Filter by User</field>
             <field name="model_id" ref="hr_mum.model_hr_job_location"/>
             <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
+>>>>>>> master
             <field name="domain_force">[('user_id', '=', user.id)]</field>
         </record>
+
+        <!-- Group User -->
+        <record id="group_mum_client" model="res.groups">
+            <field name="name">Client</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+
     </data>
 </odoo>

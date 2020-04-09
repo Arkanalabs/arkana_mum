@@ -7,7 +7,11 @@
 		<field name="arch" type="xml">
 			<xpath expr="//header" position="after">
 				<div class="alert alert-danger text-center o_form_header"
+<<<<<<< HEAD
+					attrs="{'invisible': [('flag_cron', '!=', True)]}"
+=======
 					attrs="{'invisible': [('state', '!=', 'finish')]}"
+>>>>>>> master
 					role="status">
 					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
 					<div>
@@ -16,19 +20,31 @@
 				</div>
 			</xpath>
 			<!-- <button name="set_recruit" position="attributes">
+<<<<<<< HEAD
+				<attribute name="attrs">{'invisible':[('state', 'not in', ['finish'])]}</attribute>
+=======
 				<attribute name="invisible">1</attribute>
+>>>>>>> master
 			</button> -->
 			<field name="state" position="attributes">
-				<attribute name="statusbar_visible">recruit,open,finish</attribute>
+				<attribute name="statusbar_visible">recruit,open</attribute>
 			</field>
 			<field name="department_id" position="before">
+				<field name="flag_cron" invisible="1"/>
 				<field name="code" attrs="{'invisible': [('job_type', '=', 'internal')]}"/>
-				<field name="job_type" readonly="1"/>
+				<field name="job_type" readonly="0"/>
+			</field>
+			<field name="address_id" position="attributes">
+				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="address_id" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</field>
 			<field name="address_id" position="after">
+<<<<<<< HEAD
+				<field name="partner_id"/>
+=======
+>>>>>>> master
 				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
 				<label for="salary_expected"/>
 				<div class="o_row">
@@ -53,8 +69,28 @@
 			</field>
 			<field name="no_of_recruitment" position="before">
 				<field name="date_start"/>
+<<<<<<< HEAD
+				<field name="date_finish" attrs="{'invisible':[('state', '!=', 'open')]}"/>
+=======
 				<field name="date_finish"/>
+>>>>>>> master
 			</field>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="hr_job_survey_mum"> 
+		<field name="name">hr.job.form</field> 
+		<field name="model">hr.job</field> 
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/> 
+		<field name="arch" type="xml">
+			<xpath expr="//div[@name='alias_def']" position="replace">
+				<div name="alias_def" invisible="1">
+                    <field name="alias_id" class="oe_read_only" string="Email Alias" required="0"/>
+                    <div class="oe_edit_only" name="edit_alias">
+                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
+                    </div>
+                </div>
+			</xpath>
 		</field>
 	</record>
 
@@ -204,6 +240,20 @@
 			<button name="create_employee_from_applicant" position="attributes">
 				<attribute name="attrs">{'invisible': ['|','|',('emp_id', '!=', False), ('active', '=', False), ('stage_end', '=', False)]}</attribute>
 			</button>
+<<<<<<< HEAD
+			<button name="archive_applicant" position="attributes">
+				<attribute name="attrs">{'invisible':['|',('flag_client', '=', True)]}</attribute>
+			</button>
+			<button name="create_employee_from_applicant" position="after">
+				<button string="Process" name="button_process" type="object"
+                        class="oe_highlight" attrs="{'invisible': ['|','|',('stage_end', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}" />
+				<button string="Rollback" name="button_rollback" type="object" context="{'mail_off': True}"
+						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}"/>
+			</button>
+			<button name="action_makeMeeting" position="before">
+				<button string="Download Offering Letter" name="act_download_offering_letter" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('flag_ol', '=', False)]}"/>
+			</button>
+=======
 			<button name="create_employee_from_applicant" position="after">
 				<button string="Process" name="button_process" type="object"
                         class="oe_highlight" attrs="{'invisible': ['|',('stage_end', '=', True), ('flag_archive', '=', True)]}" />
@@ -213,6 +263,7 @@
 			<button name="action_makeMeeting" position="before">
 				<button string="Download Offering Letter" name="act_download_offering_letter" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('flag_ol', '=', False)]}"/>
 			</button>
+>>>>>>> master
 			<xpath expr="//field[@name='stage_id']" position="attributes">
 				<attribute name="options">{'clickable': False, 'fold_field': 'fold'}</attribute>
 				<!-- <attribute name="attrs">{'invisible': [('active', '=', False),('emp_id', '=', False)], 'readonly': [('flag_admin', '=', False)]}</attribute> -->
@@ -230,6 +281,24 @@
 			<field name="job_id" position="after">
 				<field name="job_location_id"/>
 			</field>
+<<<<<<< HEAD
+			<field name="salary_expected_extra" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="salary_proposed_extra" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="availability" position="after">
+				<label for="contract_period"/>
+				<div class="o_row">
+					<field name="contract_period" nolabel="1"/>
+					<span>month</span>
+				</div>
+				<field name="facility"/>
+				<field name="currency_id" invisible="1" />
+				<field name="flag_benefits"/>
+			</field>
+=======
 			<field name="availability" position="after">
 				<label for="contract_period"/>
 				<div class="o_row">
@@ -240,10 +309,15 @@
 				<field name="currency_id" invisible="1" />
 				<field name="flag_benefits"/>
 			</field>
+>>>>>>> master
 			<xpath expr="//sheet/group/group[4]" position="after">
 				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
 					<tree editable="bottom" >
 						<field name="name" />
+<<<<<<< HEAD
+						<field name="code" required="1" />
+=======
+>>>>>>> master
 						<field name="wage" />
 						<field name="currency_id" invisible="1" />
 					</tree>
@@ -292,6 +366,10 @@
 			</field>
 			<field name="type_id" position="after">
 				<field name="degree_applicant"/>
+<<<<<<< HEAD
+				<field name="school"/>
+=======
+>>>>>>> master
 				<field name="marital_status_applicant"/>
 				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
 				<!-- <field name="file_psikotes" invisible="1"/> -->
@@ -310,6 +388,10 @@
 					<field name="work_experience" nolabel="1"/>
 					<span>year</span>
 				</div>
+<<<<<<< HEAD
+				<field name="career_summary"/>
+=======
+>>>>>>> master
 				<field name="sequence_stage" invisible="1"/>
 			</field>
 			<field name="source_id" position="after">
@@ -317,8 +399,16 @@
 				<field name="flag_admin" invisible="1"/>
 				<field name="flag_archive" invisible="1"/>
 				<field name="flag_ol" invisible="1"/>
+<<<<<<< HEAD
+				<field name="flag_client" invisible="1"/>
 				<field name="stage_early" invisible="1"/>
 				<field name="stage_end" invisible="1"/>
+				<field name="flag_mail_on" invisible="1"/>
+				<field name="flag_mail_off" invisible="1"/>
+=======
+				<field name="stage_early" invisible="1"/>
+				<field name="stage_end" invisible="1"/>
+>>>>>>> master
 			</field>
 		</field>
 	</record>
@@ -454,6 +544,7 @@
 				<field name="bank_name"/>
 				<field name="bank_no_rec"/>
 			</field>
+<<<<<<< HEAD
 		</field>
 	</record>
 
@@ -471,6 +562,25 @@
 		</field>
 	</record>
 
+=======
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="view_hr_employee_form2_inherit">
+		<field name="name">hr.hr.employee.view.form2</field>
+		<field name="model">hr.employee</field>
+		<field name="inherit_id" ref="hr_contract.hr_hr_employee_view_form2"/>
+		<field name="arch" type="xml">
+			<!-- <field name="bank_account_id" position"attributes">
+				<attribute name="invisible">1</attribute>
+			</field> -->
+			<field name="bank_account_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+		</field>
+	</record>
+
+>>>>>>> master
 	<record model="ir.ui.view" id="view_hr_departure_wizard_view_form_inherit">
 		<field name="name">hr.departure.wizard.view.form</field>
 		<field name="model">hr.departure.wizard</field>
@@ -487,6 +597,20 @@
 		<field name="model">hr.contract</field>
 		<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
 		<field name="arch" type="xml">
+<<<<<<< HEAD
+			<xpath expr="//header" position="after">
+				<field name="notif" invisible="1"/>
+				<div class="alert alert-danger text-center o_form_header"
+					attrs="{'invisible': [('notif', '!=', True)]}"
+					role="status">
+					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
+					<div>
+						<strong>Kontrak Akan Berakhir Dalam ${object.month_end}</strong>
+					</div>
+				</div>
+			</xpath>
+=======
+>>>>>>> master
 			<xpath expr="//div[@name='button_box']" position="replace">
 				<div class="oe_button_box" name="button_box">
 					<button string="Download Contract" name="act_download_report_contract"
@@ -500,11 +624,46 @@
 					<span>year</span>
 				</div>
 			</xpath>
+<<<<<<< HEAD
+			<xpath expr="//div[@name='wage']" position="after">
+				<field name="thp"/>
+			</xpath>
+=======
+>>>>>>> master
 			<field name="name" position="attributes">
 				<attribute name="required">0</attribute>
 			</field>
 			<field name="date_end" position="after">
 				<field name="month_end" invisible="1"/>
+				<field name="date_now" invisible="1"/>
+			</field>
+			<field name="department_id" position="after">
+				<field name="job_type"/>
+				<field name="contract_type"/>
+			</field>
+		</field>
+	</record>
+
+	<record id="hr_contract_sign_view_form_mum" model="ir.ui.view">
+        <field name="name">hr.contract.form</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract_sign.hr_contract_sign_view_form"/>
+        <field name="arch" type="xml">
+			<xpath expr="//button[@name='291']" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</xpath>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="hr_salary_rule_form_mum">
+		<field name="name">hr.salary.rule.form.mum</field>
+		<field name="model">hr.salary.rule</field>
+		<field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+		<field name="arch" type="xml">
+			<field name="amount_python_compute" position="after">
+				<!-- <field name="thp" attrs="{'invisible': [('flag_category', '=', False)]}"/> -->
+				<field name="flag_category" invisible="1" />
+				<field name="currency_id" invisible="1" />
 			</field>
 			<field name="department_id" position="after">
 				<field name="job_type"/>
@@ -535,9 +694,17 @@
 		<field name="model">project.project</field>
 		<field name="inherit_id" ref="project.edit_project"/>
 		<field name="arch" type="xml">
+			<field name="partner_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
 			<field name="partner_id" position="after">
 				<field name="date_start"/>
+<<<<<<< HEAD
+				<field name="project_task_ids" widget="many2many_tags"/>
+				<field name="user_partner_id"/>				
+=======
 				<field name="project_task_ids" widget="many2many_tags"/>				
+>>>>>>> master
 			</field>
 		</field>
 	</record>
@@ -549,6 +716,10 @@
 		<field name="arch" type="xml">
 			<tree>
 				<field name="name"/>
+<<<<<<< HEAD
+				<field name="task_type"/>
+=======
+>>>>>>> master
 				<field name="is_active"/>
 			</tree>
 		</field>
@@ -567,6 +738,10 @@
 					</div>
 					<group>
 						<group>
+<<<<<<< HEAD
+							<field name="task_type" required="1"/>
+=======
+>>>>>>> master
 							<field name="is_active"/>
 						</group>
 					</group>
@@ -651,6 +826,12 @@
 		<field name="arch" type="xml">
 			<xpath expr="//page[@name='page_invitations']" position="attributes">
 				<attribute name="groups">base.group_user</attribute>
+<<<<<<< HEAD
+			</xpath>
+			<xpath expr="//page[@name='page_misc']" position="attributes">
+				<attribute name="groups">base.group_user</attribute>
+			</xpath>
+=======
 			</xpath>
 			<xpath expr="//page[@name='page_misc']" position="attributes">
 				<attribute name="groups">base.group_user</attribute>
@@ -668,6 +849,7 @@
 				<field name="active" invisible="1"/>
 			</xpath>
 
+>>>>>>> master
 		</field>
 	</record>
 
@@ -679,6 +861,12 @@
         <field name="domain">[]</field>
         <field name="help"></field>
     </record>
+	
+	<menuitem name="Work Entries"
+		id="hr_payroll.menu_hr_payroll_work_entries_root"
+		groups="base.group_no_one"
+		sequence="60"
+		parent="hr_payroll.menu_hr_payroll_root"/>
 	
 	<menuitem name="File Template"
 		id="menu_file_template"

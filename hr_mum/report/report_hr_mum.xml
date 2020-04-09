@@ -38,4 +38,46 @@
     <field name="binding_model_id" eval="False"/>
     <field name="binding_type">report</field>
   </record>
+<<<<<<< HEAD
+
+  <record id="mum_ppkwt_py3o" model="ir.actions.report">
+    <field name="name">PPKWT</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.contract</field>
+    <field name="report_name">hr_mum.ppkwt_py3o</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/ppkwtnew.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <record id="mum_phl_external_py3o" model="ir.actions.report">
+    <field name="name">PHL(External)</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.contract</field>
+    <field name="report_name">hr_mum.phl_external_py3o</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/phl_external.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
+
+  <record id="mum_pkwt_external_py3o" model="ir.actions.report">
+    <field name="name">PKWT(External)</field>
+    <field name="type">ir.actions.report</field>
+    <field name="model">hr.contract</field>
+    <field name="report_name">hr_mum.pkwt_external_py3o</field>
+    <field name="report_type">py3o</field>
+    <field name="py3o_filetype">doc</field>
+    <field name="module">hr_mum</field>
+    <field name="py3o_template_fallback">report/report_mum/pkwt_external.odt</field>
+    <field name="binding_model_id" eval="False"/>
+    <field name="binding_type">report</field>
+  </record>
+=======
+>>>>>>> master
 </odoo>
