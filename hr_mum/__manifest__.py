@@ -24,10 +24,13 @@
         'data/template_mail_notif_contract.xml',
         'views/view_hr_recruitment.xml',
         'views/view_survey.xml',
+<<<<<<< HEAD
         'views/view_company.xml',
         'views/view_payroll.xml',
         'views/view_calendar.xml',
         'views/view_partner.xml',
+=======
+>>>>>>> master
         'views/templates_website_hr_recruitment.xml',
     ],
     'demo': [],

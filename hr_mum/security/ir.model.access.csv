@@ -9,5 +9,9 @@ access_hr_job_location_user,access_hr_job_location_user,model_hr_job_location,ba
 access_hr_job_location_public,access_hr_job_location_public,model_hr_job_location,base.group_public,1,1,1,1
 access_hr_applicant_benefits_user,access_hr_applicant_benefits_user,model_hr_applicant_benefits,base.group_user,1,1,1,1
 access_applicant_filter_admin,access_applicant_filter_admin,model_hr_applicant,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+<<<<<<< HEAD
 access_applicant_filter_user,access_applicant_filter_user,model_hr_applicant,hr_recruitment.group_hr_recruitment_user,1,1,1,1
 access_mail_whatsapp,access_mail_whatsapp,model_mail_whatsapp,base.group_user,1,1,1,1
+=======
+access_applicant_filter_user,access_applicant_filter_user,model_hr_applicant,hr_recruitment.group_hr_recruitment_user,1,1,1,1
+>>>>>>> master
