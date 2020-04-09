@@ -11,12 +11,9 @@
             'place_of_birth',
             'degree_applicant',
             'file_ids',
-<<<<<<< HEAD
             'school',
             'career_summary',
             'work_experience',
-=======
->>>>>>> master
             ]"/>
         </function>
     </data>
