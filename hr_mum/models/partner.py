@@ -12,10 +12,11 @@ class Partner(models.Model):
     @api.constrains('whatsapp')
     def _check_whatsapp(self):
         for partner in self:
-            if partner.whatsapp and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.whatsapp): 
-                raise UserError(_("Wrong WhatsApp Number Format!"))
-            elif partner.whatsapp[0] == '0': 
-                raise UserError(_("Wrong WhatsApp Number Format!"))
+            if partner.whatsapp:
+                if partner.whatsapp and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.whatsapp): 
+                    raise UserError(_("Wrong WhatsApp Number Format!"))
+                elif partner.whatsapp[0] == '0': 
+                    raise UserError(_("Wrong WhatsApp Number Format!"))
 
     @api.model
     def send_wa_notification(self, body=False, flag=False):
