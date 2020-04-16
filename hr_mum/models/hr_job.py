@@ -80,6 +80,7 @@ class Applicant(models.Model):
     job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
     flag_mail_on = fields.Boolean(string='Mail On')
     flag_mail_off = fields.Boolean(string='Mail Off')
+    partner_id = fields.Many2one(related="user_id.partner_id")
   
     @api.model
     def create(self, vals):
@@ -91,6 +92,10 @@ class Applicant(models.Model):
             if rec.file_name:
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
                     raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
+        if rec.partner_id.mobile:
+            message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (rec.name)
+            rec.partner_id.send_wa_notification(body=message, flag=False)
+
         # for file in rec.file_ids:
         #     if file.file:
         #         if (len(file.file) / 1024.0 / 1024.0) >= 2:
@@ -472,7 +477,7 @@ class Job(models.Model):
     alias_name = fields.Char('Email Alias', invisible=True)
     description = fields.Html('Description', translate=html_translate, sanitize=False)
     flag_cron = fields.Boolean(string='Cron')
-    partner_id = fields.Many2one('res.partner', string='Partner', related='user_id.partner_id')
+    partner_id = fields.Many2one('res.partner', string='Partner')
     
     @api.model
     def create(self, vals):
@@ -481,16 +486,13 @@ class Job(models.Model):
             value.website_published = True
         else:
             value.website_published = False
-    
+        value.partner_id = self.partner_id.search([('name', '=', 'Administrator')])
         if value.user_id:
             value.notification_action()
-        if value.partner_id.whatsapp:
-            message = "Lowongan kerja %s baru terbuat. " \
+        if value.partner_id.mobile:
+            message = "[INFO MUM] \n\nLowongan kerja %s baru terbuat. \n" \
                 "Dibuat oleh %s pada tanggal %s" % (value.name, value.user_id.name, fields.date.today())
-            self.env['mail.whatsapp'].create({
-                'name': value.partner_id.whatsapp,
-                'message': message,
-                'sent': False})
+            value.partner_id.send_wa_notification(body=message, flag=True)
         return value
     
     # def write(self, vals):

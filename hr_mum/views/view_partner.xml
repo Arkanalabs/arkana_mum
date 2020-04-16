@@ -6,8 +6,8 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_simple_form" />
             <field name="arch" type="xml">
-                <field name="mobile" position="after">
-                    <field name="whatsapp" placeholder="No space and + sign (e.g 62810000000)" />
+                <field name="mobile" position="attributes">
+                    <attribute name="placeholder">No space and + sign (e.g 62810000000)"</attribute>
                 </field>
             </field>
     	</record>
@@ -17,10 +17,51 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form" />
             <field name="arch" type="xml"> 
-                <field name="user_ids" position="before">
-                    <field name="whatsapp" placeholder="No space and + sign (e.g 62810000000)" />
+                <field name="mobile" position="attributes">
+                    <attribute name="placeholder">No space and + sign (e.g 62810000000)"</attribute>
+                </field>
+                <field name="category_id" position="after">
+                    <field name="warkana_id" options="{'no_open': True}"/>
                 </field>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="location_view_form"> 
+            <field name="name">warkana.firebase.form</field> 
+            <field name="model">warkana.firebase</field> 
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <strong><field name="name"/></strong>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="warkana_firebase_auth"/>
+                                <field name="warkana_firebase_token"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_warkana_firebase" model="ir.actions.act_window">
+            <field name="name">Warkana Firebase</field>
+            <field name="res_model">warkana.firebase</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="domain">[]</field>
+            <field name="help"></field>
+        </record>
+
+        <menuitem name="Whatsapp Notif"
+            id="menu_whatsapp_notif"
+            groups="base.group_system"
+            sequence="5"
+            action="action_warkana_firebase"
+            parent="contacts.res_partner_menu_config"/>
     </data>
 </odoo>

@@ -1,22 +1,48 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-
+from odoo.http import json
+import requests, urllib
     
 class Partner(models.Model):
     _inherit = 'res.partner'
 
-    whatsapp = fields.Char(string='Whatsapp')
+    warkana_id = fields.Many2one('warkana.firebase', string='Warkana', domain="[('name', '=', 'Warkana Firebase')]")
 
-    @api.constrains('whatsapp')
+    @api.constrains('mobile')
     def _check_whatsapp(self):
         for partner in self:
-            if partner.whatsapp and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.whatsapp):
+            if partner.mobile and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.mobile): 
+                raise UserError(_("Wrong WhatsApp Number Format!"))
+            elif partner.mobile[0] == '0': 
                 raise UserError(_("Wrong WhatsApp Number Format!"))
 
-class MailWhatsapp(models.Model):
-    _name = 'mail.whatsapp'
-    _description = 'WhatsApp Temp Message'
+    @api.model
+    def send_wa_notification(self, body=False, flag=False):
+        partner = self
+        URL = 'https://fcm.googleapis.com/fcm/send'
+        HEADERS = {
+            'Authorization': '',
+            'Content-Type': 'application/json'
+        }
+        if partner.mobile and body and partner.warkana_id.warkana_firebase_auth and partner.warkana_id.warkana_firebase_token:
+            try:
+                headers = HEADERS
+                headers['Authorization'] = partner.warkana_id.warkana_firebase_auth
+                payload = {
+                    'to': partner.warkana_id.warkana_firebase_token,
+                    'data': {
+                        'phone': partner.mobile,
+                        'body': body,
+                    }
+                }
+                r = requests.post(URL, headers=headers, data=json.dumps(payload))
+            except requests.exceptions.RequestException as e:
+                return False
 
-    name = fields.Char('Number')
-    message = fields.Char('Message')
-    sent = fields.Boolean('Sent', index=True, default=False)
+    class WarkanaFirebase(models.Model):
+        _name = 'warkana.firebase'
+    
+        name = fields.Char(string='Name', default="Warkana Firebase")
+        warkana_firebase_auth = fields.Text(string='Warkana Firebase Authorization')
+        warkana_firebase_token = fields.Text(string='Warkana Firebase Token')
+

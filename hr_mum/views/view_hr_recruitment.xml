@@ -249,6 +249,7 @@
 			</field>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
+				<field name="partner_id"/>
 				<!-- <field name="user_applicant_id" /> -->
 			</field>
 			<field name="job_id" position="after">
@@ -755,7 +756,7 @@
 	<menuitem name="Automated Task"
 		id="menu_project_task"
 		groups="base.group_user"
-		sequence="5"
+		sequence="4"
 		action="action_project_task_template"
 		parent="project.menu_project_config"/>
 </odoo>
