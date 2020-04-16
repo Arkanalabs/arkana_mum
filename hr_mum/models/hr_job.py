@@ -92,7 +92,7 @@ class Applicant(models.Model):
             if rec.file_name:
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
                     raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
-        if rec.partner_id.mobile:
+        if rec.partner_id.whatsapp:
             message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (rec.name)
             rec.partner_id.send_wa_notification(body=message, flag=False)
 
@@ -489,7 +489,7 @@ class Job(models.Model):
         value.partner_id = self.partner_id.search([('name', '=', 'Administrator')])
         if value.user_id:
             value.notification_action()
-        if value.partner_id.mobile:
+        if value.partner_id.whatsapp:
             message = "[INFO MUM] \n\nLowongan kerja %s baru terbuat. \n" \
                 "Dibuat oleh %s pada tanggal %s" % (value.name, value.user_id.name, fields.date.today())
             value.partner_id.send_wa_notification(body=message, flag=True)

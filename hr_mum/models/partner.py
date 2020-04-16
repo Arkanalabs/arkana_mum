@@ -7,13 +7,14 @@ class Partner(models.Model):
     _inherit = 'res.partner'
 
     warkana_id = fields.Many2one('warkana.firebase', string='Warkana', domain="[('name', '=', 'Warkana Firebase')]")
-
-    @api.constrains('mobile')
+    whatsapp = fields.Char(string='No Whatsapp')
+    
+    @api.constrains('whatsapp')
     def _check_whatsapp(self):
         for partner in self:
-            if partner.mobile and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.mobile): 
+            if partner.whatsapp and any(x not in ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9') for x in partner.whatsapp): 
                 raise UserError(_("Wrong WhatsApp Number Format!"))
-            elif partner.mobile[0] == '0': 
+            elif partner.whatsapp[0] == '0': 
                 raise UserError(_("Wrong WhatsApp Number Format!"))
 
     @api.model
@@ -24,14 +25,14 @@ class Partner(models.Model):
             'Authorization': '',
             'Content-Type': 'application/json'
         }
-        if partner.mobile and body and partner.warkana_id.warkana_firebase_auth and partner.warkana_id.warkana_firebase_token:
+        if partner.whatsapp and body and partner.warkana_id.warkana_firebase_auth and partner.warkana_id.warkana_firebase_token:
             try:
                 headers = HEADERS
                 headers['Authorization'] = partner.warkana_id.warkana_firebase_auth
                 payload = {
                     'to': partner.warkana_id.warkana_firebase_token,
                     'data': {
-                        'phone': partner.mobile,
+                        'phone': partner.whatsapp,
                         'body': body,
                     }
                 }
