@@ -443,6 +443,13 @@ class HrFileTemplateLine(models.Model):
     is_required = fields.Boolean(string='Required')
     template_id = fields.Many2one('hr.file.template', ondelete='cascade')
 
+class HrJobLocation(models.Model):
+    _name = 'hr.job.location'
+    _description = 'Job Location'
+
+    name = fields.Char(string='Location')
+    user_id = fields.Many2one('res.users', 'User Name')
+    address = fields.Text(string='Address')
 
 class Job(models.Model):
     _inherit = 'hr.job'
@@ -469,6 +476,7 @@ class Job(models.Model):
     date_dif = fields.Integer('Day Difference', readonly=True)
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
+    job_address = fields.Text('Address', related="job_location_id.address")
     salary_expected = fields.Float('Expected Salary')
     flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
@@ -806,10 +814,4 @@ class Contract(models.Model):
         is_active = fields.Boolean(string='Active')
         task_type = fields.Selection([("weekly","Weekly"),("monthly","Monthly")], string='Task Type')
         project_id = fields.Many2one('project.project', string="Project")
-
-    class HrJobLocation(models.Model):
-        _name = 'hr.job.location'
-
-        name = fields.Char(string='Location')
-        user_id = fields.Many2one('res.users', 'User Name')
         

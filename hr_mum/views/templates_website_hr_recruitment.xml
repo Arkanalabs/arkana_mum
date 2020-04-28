@@ -208,6 +208,13 @@
     <span>(<t t-esc="job.job_location_id.name"/>)</span>
   </xpath>
   
+  <xpath expr="//div[@id='jobs_grid']/ul/li/div/span" position="replace">
+    <!-- <style type="text/css">
+      .font{}
+    <style> -->
+    <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">&amp;nbsp;&amp;nbsp;<span t-field="job.job_location_id.address"/></span>
+  </xpath>
+
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
     <div t-if="job.flag_salary">
       <span class="col-lg-7 col-md-8 row mt-1"><b>Perkiraan Gaji : &amp;nbsp;Rp.</b><t t-esc="job.salary_expected"/></span>
@@ -223,9 +230,21 @@
 </template>
 
 <template id="detail_mum" inherit_id="website_hr_recruitment.detail">
-  <xpath expr="//div[@id='wrap']/section/div/h1" position="replace">
+  <xpath expr="//div[@id='wrap']/section/div" position="replace">
     <!-- <h1 class="mb0 mt0" t-field="job.name"/> -->
-    <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
+   <div class="container">
+      <div class="float-right">
+        <a role="button" t-attf-href="/jobs/apply/#{job.id}" class="btn btn-primary btn-lg float-right mt32 mb4">Apply Now!</a>
+      </div>
+      <label class="mb0 mt16"><a href="/jobs">Jobs</a></label> /
+      <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
+      <h4 style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span t-field="job.job_location_id.address" /></h4>
+    </div>
+    <!-- t-options='{
+        "widget": "contact",
+        "fields": ["city"],
+        "no_tag_br": True
+    }'         -->
   </xpath>
   
   <xpath expr="//div[@id='wrap']/section/div/h1" position="after">
