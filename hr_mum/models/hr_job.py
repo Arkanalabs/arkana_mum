@@ -92,7 +92,7 @@ class Applicant(models.Model):
             if rec.file_name:
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
                     raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
-        if rec.partner_id.mobile:
+        if rec.partner_id.whatsapp:
             message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (rec.name)
             rec.partner_id.send_wa_notification(body=message, flag=False)
 
@@ -443,6 +443,13 @@ class HrFileTemplateLine(models.Model):
     is_required = fields.Boolean(string='Required')
     template_id = fields.Many2one('hr.file.template', ondelete='cascade')
 
+class HrJobLocation(models.Model):
+    _name = 'hr.job.location'
+    _description = 'Job Location'
+
+    name = fields.Char(string='Location')
+    user_id = fields.Many2one('res.users', 'User Name')
+    address = fields.Text(string='Address')
 
 class Job(models.Model):
     _inherit = 'hr.job'
@@ -469,6 +476,7 @@ class Job(models.Model):
     date_dif = fields.Integer('Day Difference', readonly=True)
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
+    job_address = fields.Text('Address', related="job_location_id.address")
     salary_expected = fields.Float('Expected Salary')
     flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
@@ -489,7 +497,7 @@ class Job(models.Model):
         value.partner_id = self.partner_id.search([('name', '=', 'Administrator')])
         if value.user_id:
             value.notification_action()
-        if value.partner_id.mobile:
+        if value.partner_id.whatsapp:
             message = "[INFO MUM] \n\nLowongan kerja %s baru terbuat. \n" \
                 "Dibuat oleh %s pada tanggal %s" % (value.name, value.user_id.name, fields.date.today())
             value.partner_id.send_wa_notification(body=message, flag=True)
@@ -806,10 +814,4 @@ class Contract(models.Model):
         is_active = fields.Boolean(string='Active')
         task_type = fields.Selection([("weekly","Weekly"),("monthly","Monthly")], string='Task Type')
         project_id = fields.Many2one('project.project', string="Project")
-
-    class HrJobLocation(models.Model):
-        _name = 'hr.job.location'
-
-        name = fields.Char(string='Location')
-        user_id = fields.Many2one('res.users', 'User Name')
         
