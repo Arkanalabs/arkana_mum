@@ -562,16 +562,16 @@
 		</field>
 	</record>
 
-	<record id="hr_contract_sign_view_form_mum" model="ir.ui.view">
+	<!-- <record id="hr_contract_sign_view_form_mum" model="ir.ui.view">
         <field name="name">hr.contract.form</field>
         <field name="model">hr.contract</field>
         <field name="inherit_id" ref="hr_contract_sign.hr_contract_sign_view_form"/>
         <field name="arch" type="xml">
-			<xpath expr="//button[@name='291']" position="attributes">
+			<xpath expr="//button[@name='open_sign_requests']" position="attributes">
 				<attribute name="invisible">1</attribute>
 			</xpath>
 		</field>
-	</record>
+	</record> -->
 
 	<record model="ir.ui.view" id="hr_salary_rule_form_mum">
 		<field name="name">hr.salary.rule.form.mum</field>
