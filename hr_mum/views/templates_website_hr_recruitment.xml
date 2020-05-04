@@ -213,8 +213,7 @@
       .font{}
     <style> -->
     <div t-if="job.company_street">
-      <span t-field="job.company_street" t-options='{
-          "widget": "contact",
+      <span t-field="job.company_street" t-options='{          
           "fields": ["city"],
           "no_tag_br": True
       }'/>
@@ -245,8 +244,7 @@
       <label class="mb0 mt16"><a href="/jobs">Jobs</a></label> /
       <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
       <div t-if="job.company_street">
-        <h4 t-field="job.company_street" t-options='{
-            "widget": "contact",
+        <h4 t-field="job.company_street" t-options='{            
             "fields": ["city"],
             "no_tag_br": True
         }'/>
