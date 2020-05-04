@@ -213,7 +213,11 @@
       .font{}
     <style> -->
     <div t-if="job.company_street">
-      <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street"/></span>
+      <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">
+            &amp;nbsp;&amp;nbsp;<span t-field="job.company_street"/>
+            &amp;nbsp;<span t-field="job.company_city"/>
+            &amp;nbsp;<span t-field="job.company_state_id"/>
+            &amp;nbsp;<span t-field="job.company_zip"/></span>
     </div>
   </xpath>
 
@@ -241,7 +245,11 @@
       <label class="mb0 mt16"><a href="/jobs">Jobs</a></label> /
       <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
       <div t-if="job.company_street">
-        <h4 style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street" /></h4>
+        <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">
+              &amp;nbsp;&amp;nbsp;<span t-field="job.company_street"/>
+              &amp;nbsp;<span t-field="job.company_city"/>
+              &amp;nbsp;<span t-field="job.company_state_id"/>
+              &amp;nbsp;<span t-field="job.company_zip"/></span>
       </div>
     </div>
     <!-- t-options='{

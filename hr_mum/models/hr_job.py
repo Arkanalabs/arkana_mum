@@ -488,7 +488,7 @@ class Job(models.Model):
     partner_id = fields.Many2one('res.partner', string='Partner')
 
     company_street = fields.Char('Address', default=lambda x: x.env.company.street)
-    company_street2 = fields.Char(default=lambda x: x.env.company.street2)
+    # company_street2 = fields.Char(default=lambda x: x.env.company.street2)
     company_zip = fields.Char(change_default=True, default=lambda x: x.env.company.zip)
     company_city = fields.Char(default=lambda x: x.env.company.city)
     company_state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict', default=lambda x: x.env.company.state_id)
