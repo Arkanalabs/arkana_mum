@@ -31,11 +31,20 @@
 			</field>			
 			<field name="address_id" position="after">
 				<field name="partner_id" invisible="1"/>
-				<label for="job_location_id" string="Job Location" />
+				<!-- <label for="job_location_id" string="Job Location" /> -->
+				<!-- <div class="o_address_format"> -->
+				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
+				<label for="company_street" string="Address" />
 				<div class="o_address_format">
-					<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
-					<field name="job_address" class="o_address_street" />
+					<field name="company_street" class="o_address_street" />
+					<field name="company_street2" class="o_address_street" />
+					<field name="company_city" class="o_address_city" />
+					<field name="company_state_id" class="o_address_state" />
+					<field name="company_zip" class="o_address_zip" />
+					<field name="company_country_id"
+						class="o_address_country" />
 				</div>
+				<!-- </div> -->
 				<label for="salary_expected"/>
 				<div class="o_row">
 					<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
@@ -129,6 +138,18 @@
 				<field name="user_id" required="1" attrs="{'invisible': [('flag_for_admin', '=', False)]}"/>
 				<field name="job_location_id" options="{'no_open': True, 'no_create': True}"/>
 				<field name="flag_for_admin" invisible="1"/>
+				<field name="company_id" options="{'no_create': True}" invisible="1" groups="base.group_multi_company"/>
+				<!-- <field name="address_id" invisible="1"/> -->
+				<label for="company_street" string="Address" />
+				<div class="o_address_format">
+					<field name="company_street" class="o_address_street" />
+					<field name="company_street2" class="o_address_street" />
+					<field name="company_city" class="o_address_city" />
+					<field name="company_state_id" class="o_address_state" />
+					<field name="company_zip" class="o_address_zip" />
+					<field name="company_country_id"
+						class="o_address_country" />
+				</div>
 			</field>
 			<xpath expr="//label[@for='alias_name']" position="attributes">
 				<attribute name="invisible">1</attribute>
@@ -192,7 +213,7 @@
 							<field name="name" placeholder="Job Location's" />
 						</h1>
 					</div>
-					<field name="address"/>
+					<!-- <field name="address"/> -->
 					<field name="user_id"/>
 				</sheet>
 			</form>

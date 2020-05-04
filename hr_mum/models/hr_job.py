@@ -476,7 +476,7 @@ class Job(models.Model):
     date_dif = fields.Integer('Day Difference', readonly=True)
     # address_id = fields.Many2one('res.partner', 'Address')
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
-    job_address = fields.Text('Address', related="job_location_id.address")
+    # job_address = fields.Text('Address', related="job_location_id.address")
     salary_expected = fields.Float('Expected Salary')
     flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
@@ -486,6 +486,13 @@ class Job(models.Model):
     description = fields.Html('Description', translate=html_translate, sanitize=False)
     flag_cron = fields.Boolean(string='Cron')
     partner_id = fields.Many2one('res.partner', string='Partner')
+
+    company_street = fields.Char('Address', default=lambda x: x.env.company.street)
+    company_street2 = fields.Char(default=lambda x: x.env.company.street2)
+    company_zip = fields.Char(change_default=True, default=lambda x: x.env.company.zip)
+    company_city = fields.Char(default=lambda x: x.env.company.city)
+    company_state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict', default=lambda x: x.env.company.state_id)
+    company_country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=lambda x: x.env.company.country_id)
     
     @api.model
     def create(self, vals):

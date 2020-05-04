@@ -212,7 +212,9 @@
     <!-- <style type="text/css">
       .font{}
     <style> -->
-    <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">&amp;nbsp;&amp;nbsp;<span t-field="job.job_location_id.address"/></span>
+    <div t-if="job.company_street">
+      <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street"/></span>
+    </div>
   </xpath>
 
   <xpath expr="//div[@id='jobs_grid']/ul/li/div/div" position="after">
@@ -238,7 +240,9 @@
       </div>
       <label class="mb0 mt16"><a href="/jobs">Jobs</a></label> /
       <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
-      <h4 style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span t-field="job.job_location_id.address" /></h4>
+      <div t-if="job.company_street">
+        <h4 style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street" /></h4>
+      </div>
     </div>
     <!-- t-options='{
         "widget": "contact",
