@@ -213,7 +213,11 @@
       .font{}
     <style> -->
     <div t-if="job.company_street">
-      <span class="fa fa-map-marker" style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street"/></span>
+      <span t-field="job.company_street" t-options='{
+          "widget": "contact",
+          "fields": ["city"],
+          "no_tag_br": True
+      }'/>
     </div>
   </xpath>
 
@@ -241,14 +245,14 @@
       <label class="mb0 mt16"><a href="/jobs">Jobs</a></label> /
       <h1><t t-esc="job.name"/> (<t t-esc="job.job_location_id.name"/>)</h1>
       <div t-if="job.company_street">
-        <h4 style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span t-field="job.company_street" /></h4>
+        <h4 t-field="job.company_street" t-options='{
+            "widget": "contact",
+            "fields": ["city"],
+            "no_tag_br": True
+        }'/>
       </div>
     </div>
-    <!-- t-options='{
-        "widget": "contact",
-        "fields": ["city"],
-        "no_tag_br": True
-    }'         -->
+    <!-- style="font-size: 1.25rem; box-sizing: border-box; font-weight: 500;" class="fa fa-map-marker">&amp;nbsp;&amp;nbsp;<span -->            
   </xpath>
   
   <xpath expr="//div[@id='wrap']/section/div/h1" position="after">
