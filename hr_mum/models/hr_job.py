@@ -10,9 +10,11 @@ from datetime import time as datetime_time
 from dateutil.relativedelta import relativedelta
 from odoo.tools import html_translate
 
-import babel, logging
+import babel
+import logging
 
 _logger = logging.getLogger(__name__)
+
 
 class HrJobOrder(models.Model):
     _name = 'hr.job.order'
@@ -21,9 +23,10 @@ class HrJobOrder(models.Model):
 
     name = fields.Char(string='Name', required=True)
 
+
 class Applicant(models.Model):
     _inherit = 'hr.applicant'
-    
+
     # file_ids = fields.One2many(
     #     'hr.applicant.file', 'applicant_id', string='File')
     job_type = fields.Selection([
@@ -33,43 +36,50 @@ class Applicant(models.Model):
     user_id = fields.Many2one(related='job_id.user_id')
     user_applicant_id = fields.Integer(related='job_id.create_uid.id')
     # stage_id = fields.Many2one(readonly=True)
-    flag_admin = fields.Boolean(string='Flag Admin', compute='_compute_flag_admin')
+    flag_admin = fields.Boolean(
+        string='Flag Admin', compute='_compute_flag_admin')
     flag_ol = fields.Boolean(string='Flag', compute='_compute_flag_ol')
     flag_archive = fields.Boolean(string='Flag Archive')
-    flag_client = fields.Boolean(string='Flag Client', compute='_compute_flag_client')
+    flag_client = fields.Boolean(
+        string='Flag Client', compute='_compute_flag_client')
     # psikotes = fields.Binary('Psikotes')
     file_psikotes = fields.Char('File Psikotes')
     progress = fields.Char(string='Progress', related='stage_id.progress')
     time_ids = fields.One2many('hr.applicant.time', 'applicant_id', 'Time')
     sequence_stage = fields.Integer('Sequence', related='stage_id.sequence')
-    gender_applicant = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender')
+    gender_applicant = fields.Selection(
+        [("Pria", "Pria"), ("Wanita", "Wanita")], string='Gender')
     place_of_birth = fields.Char(string='Place')
     birth = fields.Date(string='Place, Date of Birth', store=True)
     age = fields.Integer(string='Age', default=False, compute='_age_compute')
     no_ktp = fields.Char(string='No. KTP')
     address = fields.Text(string='Address')
-    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
-        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
-        ("S3","S3"),("Lainnya","Lainnya")]
+    degree = [("SD", "SD"), ("SMP", "SMP"), ("SMA", "SMA"), ("MAN", "MAN"), ("SMK", "SMK"), ("D1", "D1"), ("D2", "D2"),
+              ("D3", "D3"), ("D4", "D4"), ("S1", "S1"), ("S2", "S2"),
+              ("S3", "S3"), ("Lainnya", "Lainnya")]
     degree_applicant = fields.Selection(degree, string='Degree')
     school = fields.Char(string='University/School')
     # marital_status = fields.Char(string='Marital Status')
     marital_status_applicant = fields.Selection([
-        ("Lajang","Lajang"),
-        ("Menikah","Menikah"),
-        ("Duda/Janda","Duda/Janda"),
-        ], string='Marital Status')
+        ("Lajang", "Lajang"),
+        ("Menikah", "Menikah"),
+        ("Duda/Janda", "Duda/Janda"),
+    ], string='Marital Status')
     work_experience = fields.Integer(string='Work Experience')
     career_summary = fields.Text(string='Career Summary')
     image_applicant = fields.Image(string="Image")
     file_name = fields.Char(string='File Name')
     stage_end = fields.Boolean(string='Stage End')
-    stage_early = fields.Boolean(string='Stage Early', compute='_compute_stage_early')
-    benefits_ids = fields.One2many('hr.applicant.benefits', 'applicant_id', 'Benefits')
+    stage_early = fields.Boolean(
+        string='Stage Early', compute='_compute_stage_early')
+    benefits_ids = fields.One2many(
+        'hr.applicant.benefits', 'applicant_id', 'Benefits')
     base_salary = fields.Monetary(string='Base Salary')
-    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
+    currency_id = fields.Many2one(
+        string="Currency", related='company_id.currency_id', readonly=True)
     contract_period = fields.Integer(string='Contract Period', default=1)
-    effective_date = fields.Date(string='Effective Date', default=lambda x: fields.Datetime.today())
+    effective_date = fields.Date(
+        string='Effective Date', default=lambda x: fields.Datetime.today())
     facility = fields.Text(string='Facility')
     thp_total = fields.Monetary(string='Total THP', compute='_compute_thp')
     salary_proposed = fields.Monetary("Proposed Salary")
@@ -77,11 +87,12 @@ class Applicant(models.Model):
     flag_benefits = fields.Boolean("Show Allowance")
     benefits_id = fields.Many2one('hr.applicant.benefits', 'Benefits')
     availability = fields.Date(default=fields.Date.today())
-    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+    job_location_id = fields.Many2one(
+        'hr.job.location', 'Job Location', related='job_id.job_location_id')
     flag_mail_on = fields.Boolean(string='Mail On')
     flag_mail_off = fields.Boolean(string='Mail Off')
     partner_id = fields.Many2one(related="user_id.partner_id")
-  
+
     @api.model
     def create(self, vals):
         rec = super(Applicant, self).create(vals)
@@ -91,45 +102,47 @@ class Applicant(models.Model):
                 raise UserError('Ukuran dokumen maksimal 2MB')
             if rec.file_name:
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
-                    raise UserError('Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
+                    raise UserError(
+                        'Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
         if rec.partner_id.whatsapp:
-            message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (rec.name)
+            message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (
+                rec.name)
             rec.partner_id.send_wa_notification(body=message, flag=False)
 
         # for file in rec.file_ids:
         #     if file.file:
         #         if (len(file.file) / 1024.0 / 1024.0) >= 2:
         #             raise UserError('Ukuran dokumen maksimal 2MB')
-                # if not self.file_name.split('.')[-1].lower() in allowed_extension:
-                #     raise UserError('Dokumen harus berformat *.pdf/*.img/*.jpg/*.jpeg/*.png !')
+            # if not self.file_name.split('.')[-1].lower() in allowed_extension:
+            #     raise UserError('Dokumen harus berformat *.pdf/*.img/*.jpg/*.jpeg/*.png !')
         return rec
 
     def _compute_flag_admin(self):
-      for rec in self:
-        if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
-            rec.flag_admin = True
-        else :
-            rec.flag_admin = False
-    
+        for rec in self:
+            if self.env.user.has_group('hr_recruitment.group_hr_recruitment_manager'):
+                rec.flag_admin = True
+            else:
+                rec.flag_admin = False
+
     def _compute_flag_client(self):
-      for rec in self:
-        if self.env.user.has_group('hr_mum.group_mum_client'):
-            rec.flag_client = True
-        else :
-            rec.flag_client = False
-    
+        for rec in self:
+            if self.env.user.has_group('hr_mum.group_mum_client'):
+                rec.flag_client = True
+            else:
+                rec.flag_client = False
+
     def _compute_flag_ol(self):
-      for rec in self:
-        if self.stage_id.name == 'Offering Letter':
-            rec.flag_ol = True
-        else :
-            rec.flag_ol = False
-    
+        for rec in self:
+            if self.stage_id.name == 'Offering Letter':
+                rec.flag_ol = True
+            else:
+                rec.flag_ol = False
+
     def _compute_stage_early(self):
         for rec in self:
             if self.stage_id.search([('sequence', '=', 0)]) == self.stage_id:
                 rec.stage_early = True
-            else :
+            else:
                 rec.stage_early = False
 
     @api.depends('benefits_ids.wage')
@@ -145,15 +158,15 @@ class Applicant(models.Model):
         # default_stage_id = self.stage_id.search([('sequence', '<', self.stage_id.id)], limit=1)
         default_stage_id = self.stage_id
         self.write({
-            'active': True, 
+            'active': True,
             'stage_id': default_stage_id.id,
             'flag_archive': False,
         })
-    
+
     def archive_applicant(self):
         self.flag_archive = True
         self.write({'active': False})
-    
+
     @api.depends('birth')
     def _age_compute(self):
         for rec in self:
@@ -168,7 +181,8 @@ class Applicant(models.Model):
 
     def button_rollback(self):
         for rec in self:
-            stage_id = rec.stage_id.search([('sequence', '<', self.stage_id.sequence)], order='sequence desc', limit=1)
+            stage_id = rec.stage_id.search(
+                [('sequence', '<', self.stage_id.sequence)], order='sequence desc', limit=1)
             stage_early = rec.stage_id.search([], order='sequence', limit=2)[1]
             rec.stage_end = False
             if rec.stage_id == stage_early:
@@ -186,8 +200,10 @@ class Applicant(models.Model):
 
     def button_process(self):
         for process in self:
-            stage_id = process.stage_id.search([('sequence', '>', self.stage_id.sequence)], limit=1)
-            stage_end = process.stage_id.search([], order='sequence desc', limit=2)[1]
+            stage_id = process.stage_id.search(
+                [('sequence', '>', self.stage_id.sequence)], limit=1)
+            stage_end = process.stage_id.search(
+                [], order='sequence desc', limit=2)[1]
             if process.stage_id == stage_end:
                 process.stage_end = True
             if stage_id:
@@ -201,7 +217,7 @@ class Applicant(models.Model):
                     'time_process': fields.Datetime.now()
                 })
             # elif process.stage_id == process.stage_id.search([])[-1]:
-            #     raise UserError('Sorry, This is the last process')    
+            #     raise UserError('Sorry, This is the last process')
             # elif not stage_id:
             #     raise UserError('Sorry, This is the last stage')
 
@@ -210,7 +226,7 @@ class Applicant(models.Model):
         res = self.env.ref("hr_mum.mum_offering_letter_py3o").with_context({
             'discard_logo_check': True}).report_action(self)
         return res
-    
+
     def create_employee_from_applicant(self):
         res = super(Applicant, self.with_context({
             'image_applicant': self.image_applicant,
@@ -236,8 +252,9 @@ class Applicant(models.Model):
         #     'marital': self.marital_status_applicant,
         #     'school': self.school,
         # })
-        
-        work_entry_type = self.env['hr.work.entry.type'].search([('name', '=', 'Attendance')])
+
+        work_entry_type = self.env['hr.work.entry.type'].search(
+            [('name', '=', 'Attendance')])
         payroll_type = self.env['hr.payroll.structure.type'].create({
             'emp_id': self.emp_id.id,
             'name': 'Gaji %s' % (self.emp_id.name),
@@ -260,8 +277,10 @@ class Applicant(models.Model):
             'type_id': payroll_type.id,
         })
 
-        allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
-        thp = self.env['hr.salary.rule.category'].search([('name', '=', 'Net')])
+        allowance = self.env['hr.salary.rule.category'].search(
+            [('name', '=', 'Allowance')])
+        thp = self.env['hr.salary.rule.category'].search(
+            [('name', '=', 'Net')])
         if self.benefits_ids:
             for rec in self.benefits_ids:
                 self.env['hr.salary.rule'].create({
@@ -270,7 +289,7 @@ class Applicant(models.Model):
                     'code': rec.code,
                     'name': rec.name,
                     'amount_fix': rec.wage,
-                })        
+                })
         return res
 
     def action_makeMeeting(self):
@@ -283,7 +302,7 @@ class Applicant(models.Model):
             res = super(Applicant, self)._track_template(changes)
         else:
             res = super(Applicant, self)._track_template({})
-        return res 
+        return res
 
 
 # class MailThread(models.AbstractModel):
@@ -292,38 +311,13 @@ class Applicant(models.Model):
 #     def write(self, values):
 #         if not self.env.context.get('mail_off'):
 #             return super(MailThread, self).write(values)
-        
-class HrPayrollStructureType(models.Model):
-    _inherit = 'hr.payroll.structure.type'
 
-    emp_id = fields.Many2one('hr.employee', 'Employee', ondelete='cascade')
-    active = fields.Boolean('Active', default=True)
-
-class HrPayrollStructure(models.Model):
-    _inherit = 'hr.payroll.structure'
-
-    flag_code = fields.Boolean(string='Rules Fix')
-
-class HrSalaryRule(models.Model):
-    _inherit = 'hr.salary.rule'
-
-    thp = fields.Monetary(string='Salary THP')
-    flag_category = fields.Boolean(string='Category', compute='_compute_category')
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
-
-    @api.depends('category_id')
-    def _compute_category(self):
-        for rec in self:
-            if rec.category_id.name ==  'Net':
-                rec.flag_category = True
-            else:
-                rec.flag_category = False
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
     _sql_constraints = [
-        ('No. KTP', 'unique(identification_id)', 'No. KTP sudah pernah didaftarkan.'),
+        ('No. KTP', 'unique(identification_id)',
+         'No. KTP sudah pernah didaftarkan.'),
         ('NIP (Nomor Induk Pegawai)', 'unique(nip)', 'NIP sudah pernah digunakan.')]
 
     identification_id = fields.Char(string='No. KTP')
@@ -331,41 +325,43 @@ class HrEmployee(models.Model):
         ('internal', 'Internal'),
         ('external', 'External'),
     ], string='Type', related='job_id.job_type')
-    job_location_id = fields.Many2one('hr.job.location', 'Job Location', related='job_id.job_location_id')
+    job_location_id = fields.Many2one(
+        'hr.job.location', 'Job Location', related='job_id.job_location_id')
     marital_status_employee = fields.Selection([
-        ("Lajang","Lajang"),
-        ("Menikah","Menikah"),
-        ("Duda/Janda","Duda/Janda"),
-        ], string='Status Marital')
-    employee_gender = fields.Selection([("Pria","Pria"),("Wanita","Wanita")], string='Gender Employee')
+        ("Lajang", "Lajang"),
+        ("Menikah", "Menikah"),
+        ("Duda/Janda", "Duda/Janda"),
+    ], string='Status Marital')
+    employee_gender = fields.Selection(
+        [("Pria", "Pria"), ("Wanita", "Wanita")], string='Gender Employee')
     address = fields.Text(string='Address')
     nip = fields.Char(string='NIP (Nomor Induk Pegawai)')
     departure_date = fields.Date('Departure Date')
     bank_name = fields.Char('Bank Name')
     bank_no_rec = fields.Char('No Account Bank')
     phone_employee = fields.Char('Phone')
-    degree = [("SD","SD"),("SMP","SMP"),("SMA","SMA"),("MAN","MAN"),("SMK","SMK"),("D1","D1"),("D2","D2"),
-        ("D3","D3"),("D4","D4"),("S1","S1"),("S2","S2"),
-        ("S3","S3"),("Lainnya","Lainnya")] 
+    degree = [("SD", "SD"), ("SMP", "SMP"), ("SMA", "SMA"), ("MAN", "MAN"), ("SMK", "SMK"), ("D1", "D1"), ("D2", "D2"),
+              ("D3", "D3"), ("D4", "D4"), ("S1", "S1"), ("S2", "S2"),
+              ("S3", "S3"), ("Lainnya", "Lainnya")]
     degree_employee = fields.Selection(degree, string='Degree')
-    
+
     @api.model
     def create(self, vals):
         vals.update({
-            'image_1920': self.env.context.get('image_applicant', False), 
-            'identification_id': self.env.context.get('no_ktp', False), 
-            'birthday': self.env.context.get('birth', False), 
-            'place_of_birth': self.env.context.get('place_of_birth', False), 
+            'image_1920': self.env.context.get('image_applicant', False),
+            'identification_id': self.env.context.get('no_ktp', False),
+            'birthday': self.env.context.get('birth', False),
+            'place_of_birth': self.env.context.get('place_of_birth', False),
             'address': self.env.context.get('address', False),
             'phone_employee': self.env.context.get('phone', False),
-            'employee_gender': self.env.context.get('gender', False), 
+            'employee_gender': self.env.context.get('gender', False),
             'degree_employee': self.env.context.get('degree', False),
             'marital_status_employee': self.env.context.get('marital', False),
             'study_school': self.env.context.get('school', False),
-            })
-        
+        })
+
         res = super(HrEmployee, self).create(vals)
-        
+
         if res.job_type == 'internal':
             res.nip = self.env['ir.sequence'].next_by_code('nip_internal')
         elif res.job_type == 'external':
@@ -373,11 +369,13 @@ class HrEmployee(models.Model):
 
         return res
 
+
 class HrDepartureWizard(models.TransientModel):
     _inherit = 'hr.departure.wizard'
 
-    departure_date = fields.Date(string='Departure Date', default=fields.Date.today())
-    
+    departure_date = fields.Date(
+        string='Departure Date', default=fields.Date.today())
+
     def action_register_departure(self):
         employee = self.employee_id
         employee.departure_date = self.departure_date
@@ -393,6 +391,7 @@ class HrDepartureWizard(models.TransientModel):
         })
         return super(HrDepartureWizard, self).action_register_departure()
 
+
 class HrApplicantFile(models.Model):
     _name = 'hr.applicant.file'
     _description = 'File'
@@ -402,7 +401,8 @@ class HrApplicantFile(models.Model):
     file = fields.Binary(string='File')
     is_required = fields.Boolean(string='Required')
 
-class HrApplicantFile(models.Model):
+
+class HrApplicantBenefit(models.Model):
     _name = 'hr.applicant.benefits'
     _description = 'Benefits Info'
 
@@ -410,10 +410,14 @@ class HrApplicantFile(models.Model):
     code = fields.Char(string='Code')
     applicant_id = fields.Many2one('hr.applicant', ondelete='cascade')
     wage = fields.Monetary(string='Wage')
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
-    currency_id = fields.Many2one(string="Currency", related='company_id.currency_id', readonly=True)
-    contract_id = fields.Many2one('hr.contract', 'Contract', ondelete='cascade')
+    company_id = fields.Many2one(
+        'res.company', default=lambda self: self.env.company)
+    currency_id = fields.Many2one(
+        string="Currency", related='company_id.currency_id', readonly=True)
+    contract_id = fields.Many2one(
+        'hr.contract', 'Contract', ondelete='cascade')
     number = fields.Integer(string='Numb', default=10)
+
 
 class HrApplicantTime(models.Model):
     _name = 'hr.applicant.time'
@@ -422,6 +426,7 @@ class HrApplicantTime(models.Model):
     time_process = fields.Datetime('Time')
     applicant_id = fields.Many2one('hr.applicant', 'Applicant')
     ket = fields.Text(string='Keterangan')
+
 
 class HrFileTemplate(models.Model):
     _name = 'hr.file.template'
@@ -443,6 +448,7 @@ class HrFileTemplateLine(models.Model):
     is_required = fields.Boolean(string='Required')
     template_id = fields.Many2one('hr.file.template', ondelete='cascade')
 
+
 class HrJobLocation(models.Model):
     _name = 'hr.job.location'
     _description = 'Job Location'
@@ -450,6 +456,7 @@ class HrJobLocation(models.Model):
     name = fields.Char(string='Location')
     user_id = fields.Many2one('res.users', 'User Name')
     address = fields.Text(string='Address')
+
 
 class Job(models.Model):
     _inherit = 'hr.job'
@@ -461,16 +468,18 @@ class Job(models.Model):
             return True
         else:
             return False
-    
+
     code = fields.Char('Code', compute="_compute_code", store=True)
     job_ids = fields.Many2many('hr.job.order', string='Job Order')
     job_type = fields.Selection([
         ('internal', 'Internal'), ('external', 'External')
-    ],default='internal', string='Type')
-    user_id = fields.Many2one('res.users', string='Responsible', default=lambda x: x.env.user.id)
+    ], default='internal', string='Type')
+    user_id = fields.Many2one(
+        'res.users', string='Responsible', default=lambda x: x.env.user.id)
     file_template_id = fields.Many2one('hr.file.template', default=lambda r: r.env[
                                        'hr.file.template'].search([], limit=1))
-    date_start = fields.Date('Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
+    date_start = fields.Date(
+        'Date Start', default=lambda self: fields.Datetime.now().strftime("%Y-%m-%d"))
     date_finish = fields.Date('Date Finish', readonly=True)
     state = fields.Selection(selection_add=[("finish", "Recruiting Finish")])
     date_dif = fields.Integer('Day Difference', readonly=True)
@@ -478,22 +487,29 @@ class Job(models.Model):
     job_location_id = fields.Many2one('hr.job.location', 'Job Location')
     # job_address = fields.Text('Address', related="job_location_id.address")
     salary_expected = fields.Float('Expected Salary')
-    flag_for_admin = fields.Boolean(string='Flag Admin', default=_default_flag_admin)
+    flag_for_admin = fields.Boolean(
+        string='Flag Admin', default=_default_flag_admin)
     flag_salary = fields.Boolean(string='Flag')
     flag_employee = fields.Boolean(string='Flag')
-    qualification = fields.Html(string='Qualification', translate=html_translate, sanitize=False)
+    qualification = fields.Html(
+        string='Qualification', translate=html_translate, sanitize=False)
     alias_name = fields.Char('Email Alias', invisible=True)
-    description = fields.Html('Description', translate=html_translate, sanitize=False)
+    description = fields.Html(
+        'Description', translate=html_translate, sanitize=False)
     flag_cron = fields.Boolean(string='Cron')
     partner_id = fields.Many2one('res.partner', string='Partner')
 
-    company_street = fields.Char('Address', default=lambda x: x.env.company.street)
+    company_street = fields.Char(
+        'Address', default=lambda x: x.env.company.street)
     # company_street2 = fields.Char(default=lambda x: x.env.company.street2)
-    company_zip = fields.Char(change_default=True, default=lambda x: x.env.company.zip)
+    company_zip = fields.Char(
+        change_default=True, default=lambda x: x.env.company.zip)
     company_city = fields.Char(default=lambda x: x.env.company.city)
-    company_state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict', default=lambda x: x.env.company.state_id)
-    company_country_id = fields.Many2one('res.country', string='Country', ondelete='restrict', default=lambda x: x.env.company.country_id)
-    
+    company_state_id = fields.Many2one(
+        "res.country.state", string='State', ondelete='restrict', default=lambda x: x.env.company.state_id)
+    company_country_id = fields.Many2one(
+        'res.country', string='Country', ondelete='restrict', default=lambda x: x.env.company.country_id)
+
     @api.model
     def create(self, vals):
         value = super(Job, self).create(vals)
@@ -501,15 +517,17 @@ class Job(models.Model):
             value.website_published = True
         else:
             value.website_published = False
-        value.partner_id = self.partner_id.search([('name', '=', 'Administrator')])
+        value.partner_id = self.partner_id.search(
+            [('name', '=', 'Administrator')])
         if value.user_id:
             value.notification_action()
         if value.partner_id.whatsapp:
             message = "[INFO MUM] \n\nLowongan kerja %s baru terbuat. \n" \
-                "Dibuat oleh %s pada tanggal %s" % (value.name, value.user_id.name, fields.date.today())
+                "Dibuat oleh %s pada tanggal %s" % (
+                    value.name, value.user_id.name, fields.date.today())
             value.partner_id.send_wa_notification(body=message, flag=True)
         return value
-    
+
     # def write(self, vals):
     #     if 'state' in vals:
     #         if vals.get('state') == 'finish' :
@@ -519,11 +537,12 @@ class Job(models.Model):
     @api.depends('date_start', 'address_id', 'name')
     def _compute_code(self):
         for code in self:
-            self.code = '%s/%s/%s/%s' % (code.env.user.name, code.date_start, code.address_id.name, code.name)
+            self.code = '%s/%s/%s/%s' % (code.env.user.name,
+                                         code.date_start, code.address_id.name, code.name)
 
     def set_open(self):
         date_finish = fields.Datetime.today().strftime("%Y-%m-%d")
-        # d1 = datetime.strptime(str(self.date_start),'%Y-%m-%d') 
+        # d1 = datetime.strptime(str(self.date_start),'%Y-%m-%d')
         date_1 = datetime.strptime(date_finish, '%Y-%m-%d').date()
         date_dif = date_1 - self.date_start
         date_days = date_dif.days
@@ -541,19 +560,19 @@ class Job(models.Model):
         return super(Job, self).set_recruit()
 
     @api.model
-    def _auto_stop_reqruitment(self): 
+    def _auto_stop_reqruitment(self):
         job_ids = self.env['hr.job'].search([('state', '=', 'recruit')])
         for job in job_ids:
             date_now = fields.Datetime.today().strftime("%Y-%m-%d")
             date = datetime.strptime(date_now, '%Y-%m-%d').date()
             interval_time = date - job.date_start
-            if interval_time.days > 10 :
-                _logger.warning('===================> Stop Recruitment %s <===================' % (job.name))
+            if interval_time.days > 10:
+                _logger.warning(
+                    '===================> Stop Recruitment %s <===================' % (job.name))
                 job.state = 'open'
                 job.date_finish = fields.Datetime.today()
                 job.flag_cron = True
                 job.website_published = False
-    
 
     def close_dialog(self):
         form_view = self.env.ref('hr.view_hr_job_form')
@@ -561,264 +580,38 @@ class Job(models.Model):
             'name': _('Job'),
             'res_model': 'hr.job',
             'res_id': self.id,
-            'views': [(form_view.id, 'form'),],
+            'views': [(form_view.id, 'form'), ],
             'type': 'ir.actions.act_window',
             'context': {'form_view_initial_mode': 'edit', 'force_detailed_view': 'true'},
         }
-    
+
     def notification_action(self):
         # notification = {
         #         'mail_message_id': self.env['mail.notification'].mail_message_id.id,
         #         'res_partner_id': self.user_id.partner_id.browse(3),
-     	#         'notification_type': 'inbox',
+        #         'notification_type': 'inbox',
         #         'notification_status': 'ready',
         #     }
         # create_notif = self.env['mail.notification'].create(notification).ids
 
-        message = self.env['mail.message'].create({'message_type':"notification",
-            'subject': "New Job Position",
-            'subtype_id': self.env.ref("hr_recruitment.mt_job_new").id, # subject type
-            'body': "New job position %s" % (self.name),   
-            'model': self._name,
-            'res_id': self.id,
-        })
-        
+        message = self.env['mail.message'].create({'message_type': "notification",
+                                                   'subject': "New Job Position",
+                                                   # subject type
+                                                   'subtype_id': self.env.ref("hr_recruitment.mt_job_new").id,
+                                                   'body': "New job position %s" % (self.name),
+                                                   'model': self._name,
+                                                   'res_id': self.id,
+                                                   })
+
         self.env['mail.notification'].create({
-                'res_partner_id': self.env.ref('base.partner_admin').id,
-                'notification_type': 'inbox',
-                'notification_status': 'ready',   
-                'mail_message_id': message.id,
-            })
+            'res_partner_id': self.env.ref('base.partner_admin').id,
+            'notification_type': 'inbox',
+            'notification_status': 'ready',
+            'mail_message_id': message.id,
+        })
 
-class Contract(models.Model):
-    _inherit = 'hr.contract'
 
-    name = fields.Char('Contract Reference', required=False)
-    job_type = fields.Selection([
-        ('internal', 'Internal'),
-        ('external', 'External'),
-    ], string='Type', related='job_id.job_type')
-    contract_type = fields.Selection([
-        ("pkwt","PKWT"),
-        ("phl","PHL"),
-        ("ppkwt", "PPKWT"),
-        # ("tetap","TETAP")
-    ], string='Contract Type')
-    month_end = fields.Integer(string='End Month', default=4)
-    date_now = fields.Date(string='Date_now', default=fields.Date.today())
-    date_interval = fields.Integer(string='Interval Date', compute="_date_interval", readonly=1)
-    benefits_ids = fields.One2many('hr.applicant.benefits', 'contract_id', 'Line')
-    thp = fields.Monetary(string='THP')
-    notif = fields.Boolean(string='Notif')
-    
-    @api.depends('date_start', 'date_end')
-    def _date_interval(self):
-        for rec in self:
-            if rec.date_end and rec.date_start:
-                years = rec.date_end.year - rec.date_start.year
-                rec.date_interval = years
-            else:
-                rec.date_interval = 0
+class HrRecruitmentStage(models.Model):
+    _inherit = 'hr.recruitment.stage'
 
-    def write(self, vals):
-        if 'state' in vals :
-            if vals.get('state') == 'open':
-                if self.contract_type == 'pkwt' and self.job_type == 'internal':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_pkwt')
-                    # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_pkwt')})
-                elif self.contract_type == 'phl' and self.job_type == 'internal':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl')
-                    # self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_phl')})
-                elif self.contract_type == 'ppkwt' and self.job_type == 'internal':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt')
-                
-                elif self.contract_type == 'pkwt' and self.job_type == 'external':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_pkwt_ext')
-                elif self.contract_type == 'phl' and self.job_type == 'external':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_phl_ext')
-                elif self.contract_type == 'ppkwt' and self.job_type == 'external':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_ppkwt_ext')
-                else:
-                    raise UserError("Please fill the 'Contract Type' field before !")
-                
-                if not self.date_end:
-                    raise UserError("Please fill the 'End Date' field before !")
-                
-                if not self.employee_id.birthday:
-                    raise UserError("Please fill the 'Birthday' field on Employee's Form before !")
-                
-                code = self.company_id.code
-                if not code :
-                    code = ''
-                name_code = str(vals['name']).split('*')
-                vals['name'] = name_code[0] + code + name_code[1]
-                self.write({'name': vals['name']})
-
-                if self.contract_type != 'phl' or self.job_type != 'external':
-                    deduction = self.env['hr.salary.rule.category'].search([('name', '=', 'Deduction')])
-                    allowance = self.env['hr.salary.rule.category'].search([('name', '=', 'Allowance')])
-                    struct = self.structure_type_id.default_struct_id
-                    struct.rule_ids.filtered(lambda x: x.name == 'Net Salary').amount_python_compute = 'result = categories.BASIC + categories.ALW - categories.DED'
-                    if not struct.flag_code:
-                        # Potongan Pajak
-                        self.env['hr.salary.rule'].create({
-                            'struct_id': struct.id,
-                            'category_id': deduction.id,
-                            'amount_select': 'code',
-                            'code': 'BPJSK',
-                            'name': 'BPJS Kesehatan',
-                            'sequence': 110,
-                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
-                        })
-                        self.env['hr.salary.rule'].create({
-                            'struct_id': struct.id,
-                            'category_id': deduction.id,
-                            'amount_select': 'code',
-                            'code': 'JHT',
-                            'name': 'BPJS Jaminan Hari Tua',
-                            'sequence': 120,
-                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
-                        })
-                        self.env['hr.salary.rule'].create({
-                            'struct_id': struct.id,
-                            'category_id': deduction.id,
-                            'amount_select': 'code',
-                            'code': 'JP',
-                            'name': 'BPJS Jaminan Pensiun',
-                            'sequence': 130,
-                            'amount_python_compute': 'result = GROSS * 1 / 100' ,
-                        })
-                        struct.flag_code = True
-                                            
-                        # Other Inputs
-                        self.env['hr.salary.rule'].create({
-                            'struct_id': struct.id,
-                            'category_id': deduction.id,
-                            'code': 'ATTD',
-                            'name': 'Potongan Kehadiran',
-                            'sequence': 150,
-                            'amount_select': 'code' ,
-                            'amount_python_compute': 'result = inputs.ATTD and inputs.ATTD.amount' ,
-                        })
-                        self.env['hr.payslip.input.type'].create({
-                            'name':'Potongan Kehadiran',
-                            'code':'ATTD',
-                            'struct_ids': [(4, struct.id)]
-                        })
-                        self.env['hr.salary.rule'].create({
-                            'struct_id': struct.id,
-                            'category_id': allowance.id,
-                            'code': 'INS',
-                            'name': 'Insentif Kehadiran',
-                            'sequence': 140,
-                            'amount_select': 'code' ,
-                            'amount_python_compute': 'result = inputs.INS and inputs.INS.amount' ,
-                        })
-                        self.env['hr.payslip.input.type'].create({
-                            'name':'Insentif Kehadiran',
-                            'code':'INS',
-                            'struct_ids': [(4, struct.id)]
-                        })
-                # else:   
-                #     self.write({'name': self.env['ir.sequence'].next_by_code('kontrak_tetap')})
-        # elif vals.get('state') == 'open':
-        #     vals['name'] = self.env['ir.sequence'].next_by_code('kontrak_number')
-        return super(Contract, self).write(vals)
-
-    @api.model
-    def _notif_contract(self): 
-        contract_ids = self.search([('state', '=', 'open')])
-        for contract in contract_ids:
-            if contract.date_end:
-                _logger.warning('===================> Stop Recruitment %s <===================' % (contract.name))
-                before_three_months = contract.date_end - relativedelta(months=+3)
-                before_two_months = contract.date_end - relativedelta(months=+2)
-                before_one_months = contract.date_end - relativedelta(months=+1)
-
-                if before_three_months == date.today() \
-                    or before_two_months == date.today() or before_one_months == date.today():
-                    contract.month_end -= 1
-                    contract.notif = True
-                    template = self.env.ref('hr_mum.template_mail_notif_contract')
-                    template.sudo().send_mail(contract.id, raise_exception=True, force_send= True)
-
-    def act_download_report_contract(self):
-        self.ensure_one()
-        if self.contract_type == 'phl' and self.job_type == 'internal':
-            res = self.env.ref("hr_mum.mum_phl_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        elif self.contract_type == 'pkwt' and self.job_type == 'internal':
-            res = self.env.ref("hr_mum.mum_pkwt_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        elif self.contract_type == 'ppkwt' and self.job_type == 'internal':
-            res = self.env.ref("hr_mum.mum_ppkwt_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-       
-        elif self.contract_type == 'phl' and self.job_type == 'external':
-            res = self.env.ref("hr_mum.mum_phl_external_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        elif self.contract_type == 'pkwt' and self.job_type == 'external':
-            res = self.env.ref("hr_mum.mum_pkwt_external_py3o").with_context({
-                'discard_logo_check': True}).report_action(self)
-        else:
-            raise UserError('Mohon maaf tidak bisa ..')
-        return res
-
-    
-    class HrRecruitmentStage(models.Model):
-        _inherit = 'hr.recruitment.stage'
-
-        progress = fields.Char(string='Progress')
-
-    class Project(models.Model):
-        _inherit = 'project.project'
-        
-        project_task_ids = fields.Many2many('project.task.template', string='Automated Task', domain="[('is_active', '=', True)]")
-        user_partner_id = fields.Many2one('res.partner', string='Assigned To', domain="[('user_ids', '!=', False)]")
-        date_start = fields.Date('Date Start', default=fields.Date.today())
-
-        @api.model
-        def _create_task_project(self):
-            project_ids = self.search([])
-            for project in project_ids:
-                 _logger.warning('===================> Stop Recruitment %s <===================' % (project.name))  
-                 if project.date_start:
-                    # if after_one_months == date.today():
-                    task_ids = project.project_task_ids
-                    if task_ids:
-                        for rec in task_ids:
-                            stage = project.env['project.task.type'].search([], order='sequence', limit=1)
-                            user_id = project.user_id.search([]).filtered(lambda x: x.name == project.user_partner_id.name)
-                            if rec.task_type == 'weekly':
-                                after_one_week = project.date_start + relativedelta(weeks=+1)
-                                if after_one_week == date.today() :
-                                    _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
-                                    project.env['project.task'].create([
-                                        {
-                                        'project_id': project.id,
-                                        'name': rec.name,
-                                        'user_id': user_id.id,
-                                        'stage_id': stage.id
-                                        },
-                                    ])
-                            elif rec.task_type == 'monthly':
-                                after_one_months = project.date_start + relativedelta(months=+1)
-                                if after_one_months == date.today():
-                                    _logger.warning('===================> Stop Recruitment %s <===================' % (rec.task_type))
-                                    project.env['project.task'].create([
-                                        {
-                                        'project_id': project.id,
-                                        'name': rec.name,
-                                        'user_id': project.user_partner_id.id,
-                                        'stage_id': stage.id
-                                        },
-                                    ])
-        
-    class ProjectTaskTemplate(models.Model):
-        _name = 'project.task.template'
-
-        name = fields.Char(string='Task Name')
-        is_active = fields.Boolean(string='Active')
-        task_type = fields.Selection([("weekly","Weekly"),("monthly","Monthly")], string='Task Type')
-        project_id = fields.Many2one('project.project', string="Project")
-        
+    progress = fields.Char(string='Progress')

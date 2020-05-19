@@ -1,14 +1,12 @@
 <odoo>
 	<!-- Job -->
-	<record model="ir.ui.view" id="view_hr_job_form"> 
-		<field name="name">hr.job.form</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr.view_hr_job_form" /> 
+	<record model="ir.ui.view" id="view_hr_job_form">
+		<field name="name">hr.job.form</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr.view_hr_job_form" />
 		<field name="arch" type="xml">
 			<xpath expr="//header" position="after">
-				<div class="alert alert-danger text-center o_form_header"
-					attrs="{'invisible': [('flag_cron', '!=', True)]}"
-					role="status">
+				<div class="alert alert-danger text-center o_form_header" attrs="{'invisible': [('flag_cron', '!=', True)]}" role="status">
 					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
 					<div>
 						<strong>10-days limit for Job Position has been expired</strong>
@@ -28,7 +26,7 @@
 			</field>
 			<field name="address_id" position="attributes">
 				<attribute name="invisible">1</attribute>
-			</field>			
+			</field>
 			<field name="address_id" position="after">
 				<field name="partner_id" invisible="1"/>
 				<!-- <label for="job_location_id" string="Job Location" /> -->
@@ -41,14 +39,14 @@
 					<field name="company_city" class="o_address_city" />
 					<field name="company_state_id" class="o_address_state" />
 					<field name="company_zip" class="o_address_zip" />
-					<field name="company_country_id"
-						class="o_address_country" />
+					<field name="company_country_id" class="o_address_country" />
 				</div>
 				<!-- </div> -->
 				<label for="salary_expected"/>
 				<div class="o_row">
 					<field name="salary_expected" widget="monetary" options="{'currency_field': 'currency_id'}"/>
-					<field name="flag_salary"/><span class="text-muted">(Check to Publish)</span>
+					<field name="flag_salary"/>
+					<span class="text-muted">(Check to Publish)</span>
 				</div>
 				<field name="qualification"/>
 			</field>
@@ -59,7 +57,8 @@
 				<label for="no_of_recruitment"/>
 				<div class="o_row">
 					<field name="no_of_recruitment"/>
-					<field name="flag_employee"/><span class="text-muted">(Check to Publish)</span>
+					<field name="flag_employee"/>
+					<span class="text-muted">(Check to Publish)</span>
 				</div>
 			</field>
 			<field name="user_id" position="after">
@@ -73,37 +72,38 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="hr_job_survey_mum"> 
-		<field name="name">hr.job.form</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/> 
+	<record model="ir.ui.view" id="hr_job_survey_mum">
+		<field name="name">hr.job.form</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
 		<field name="arch" type="xml">
 			<xpath expr="//div[@name='alias_def']" position="replace">
 				<div name="alias_def" invisible="1">
-                    <field name="alias_id" class="oe_read_only" string="Email Alias" required="0"/>
-                    <div class="oe_edit_only" name="edit_alias">
-                        <field name="alias_name" class="oe_inline"/>@<field name="alias_domain" class="oe_inline" readonly="1"/>
-                    </div>
-                </div>
+					<field name="alias_id" class="oe_read_only" string="Email Alias" required="0"/>
+					<div class="oe_edit_only" name="edit_alias">
+						<field name="alias_name" class="oe_inline"/>
+@						<field name="alias_domain" class="oe_inline" readonly="1"/>
+					</div>
+				</div>
 			</xpath>
 		</field>
 	</record>
 
-	<record id="view_hr_job_published_button" model="ir.ui.view" >
-        <field name="name">hr.job.form.published.button</field>
-        <field name="model">hr.job</field>
-        <field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
-        <field name="arch" type="xml">
-            <field name="is_published" widget="website_redirect_button" position="attributes">
+	<record id="view_hr_job_published_button" model="ir.ui.view">
+		<field name="name">hr.job.form.published.button</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+		<field name="arch" type="xml">
+			<field name="is_published" widget="website_redirect_button" position="attributes">
 				<attribute name="groups">base.group_system</attribute>
 			</field>
-        </field>
-    </record>
+		</field>
+	</record>
 
-	<record model="ir.ui.view" id="view_job_desc_website_inherit"> 
-		<field name="name">hr.job.desc.website.inherit</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="website_hr_recruitment.hr_job_website_inherit" /> 
+	<record model="ir.ui.view" id="view_job_desc_website_inherit">
+		<field name="name">hr.job.desc.website.inherit</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="website_hr_recruitment.hr_job_website_inherit" />
 		<field name="arch" type="xml">
 			<xpath expr="//span/a" position="attributes">
 				<attribute name="groups">base.group_system</attribute>
@@ -111,10 +111,10 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="view_hr_job_kanban"> 
-		<field name="name">hr.job.kanban</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr_recruitment.view_hr_job_kanban" /> 
+	<record model="ir.ui.view" id="view_hr_job_kanban">
+		<field name="name">hr.job.kanban</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.view_hr_job_kanban" />
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="job_location_id" />
@@ -123,15 +123,16 @@
 				<attribute name="default_order">create_date desc</attribute>
 			</xpath>
 			<xpath expr="//templates/t/div/div/div/div/span" position="after">
-				<span>(<t t-esc="record.job_location_id.value"/>)</span>
+				<span>(					<t t-esc="record.job_location_id.value"/>
+)</span>
 			</xpath>
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="view_job_simple_form"> 
-		<field name="name">hr.job.simple.form</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_job_simple_form" /> 
+	<record model="ir.ui.view" id="view_job_simple_form">
+		<field name="name">hr.job.simple.form</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_simple_form" />
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="job_type" required="1"/>
@@ -147,8 +148,7 @@
 					<field name="company_city" class="o_address_city" />
 					<field name="company_state_id" class="o_address_state" />
 					<field name="company_zip" class="o_address_zip" />
-					<field name="company_country_id"
-						class="o_address_country" />
+					<field name="company_country_id" class="o_address_country" />
 				</div>
 			</field>
 			<xpath expr="//label[@for='alias_name']" position="attributes">
@@ -160,10 +160,10 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="view_job_filter_searchpanel"> 
-		<field name="name">hr.job.filter.searchpanel</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_job_search_view" /> 
+	<record model="ir.ui.view" id="view_job_filter_searchpanel">
+		<field name="name">hr.job.filter.searchpanel</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_search_view" />
 		<field name="arch" type="xml">
 			<xpath expr="//searchpanel/field[@name='user_id']" position="replace">
 				<field name="job_location_id" select="multi" icon="fa-map" />
@@ -172,16 +172,16 @@
 	</record>
 
 	<record model="ir.ui.view" id="view_job_filter">
-		<field name="name">hr.job.search</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr.view_job_filter" /> 
+		<field name="name">hr.job.search</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr.view_job_filter" />
 		<field name="arch" type="xml">
 			<field name="name" position="after">
 				<field name="job_location_id" />
 				<field name="job_ids" />
 			</field>
 			<filter name="status" position="after">
-				<filter string="Job Location" name="address" domain="[('type', '=', 'recruitment')]"  context="{'group_by': 'job_location_id'}" />
+				<filter string="Job Location" name="address" domain="[('type', '=', 'recruitment')]" context="{'group_by': 'job_location_id'}" />
 			</filter>
 			<field name="department_id" position="after">
 				<filter name="type_internal" string="Internal" domain="[('job_type', '=', 'internal')]"/>
@@ -191,9 +191,9 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="location_view_tree"> 
-		<field name="name">hr.job.location.tree</field> 
-		<field name="model">hr.job.location</field> 
+	<record model="ir.ui.view" id="location_view_tree">
+		<field name="name">hr.job.location.tree</field>
+		<field name="model">hr.job.location</field>
 		<field name="arch" type="xml">
 			<tree>
 				<field name="name" />
@@ -202,13 +202,13 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="location_view_form"> 
-		<field name="name">hr.job.location.form</field> 
-		<field name="model">hr.job.location</field> 
+	<record model="ir.ui.view" id="location_view_form">
+		<field name="name">hr.job.location.form</field>
+		<field name="model">hr.job.location</field>
 		<field name="arch" type="xml">
 			<form>
 				<sheet>
-					<div class="oe_title">						
+					<div class="oe_title">
 						<h1>
 							<field name="name" placeholder="Job Location's" />
 						</h1>
@@ -220,10 +220,10 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="view_hr_job_survey2"> 
-		<field name="name">hr.job.form1</field> 
-		<field name="model">hr.job</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_job_survey" /> 
+	<record model="ir.ui.view" id="view_hr_job_survey2">
+		<field name="name">hr.job.form1</field>
+		<field name="model">hr.job</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey" />
 		<field name="arch" type="xml">
 			<xpath expr="//label[@for='alias_name']" position="attributes">
 				<attribute name="invisible">1</attribute>
@@ -233,12 +233,12 @@
 			</field>
 		</field>
 	</record>
-	
+
 	<!-- Applicant -->
-	<record model="ir.ui.view" id="hr_applicant_view_form"> 
-		<field name="name">hr.applicant.form</field> 
-		<field name="model">hr.applicant</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" /> 
+	<record model="ir.ui.view" id="hr_applicant_view_form">
+		<field name="name">hr.applicant.form</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form" />
 		<field name="arch" type="xml">
 			<button name="create_employee_from_applicant" position="attributes">
 				<attribute name="attrs">{'invisible': ['|','|',('emp_id', '!=', False), ('active', '=', False), ('stage_end', '=', False)]}</attribute>
@@ -247,10 +247,8 @@
 				<attribute name="attrs">{'invisible':['|',('flag_client', '=', True)]}</attribute>
 			</button>
 			<button name="create_employee_from_applicant" position="after">
-				<button string="Process" name="button_process" type="object"
-                        class="oe_highlight" attrs="{'invisible': ['|','|',('stage_end', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}" />
-				<button string="Rollback" name="button_rollback" type="object" context="{'mail_off': True}"
-						class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}"/>
+				<button string="Process" name="button_process" type="object" class="oe_highlight" attrs="{'invisible': ['|','|',('stage_end', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}" />
+				<button string="Rollback" name="button_rollback" type="object" context="{'mail_off': True}" class="btn-warning" style="color: #e9ecef;" attrs="{'invisible': ['|','|','|',('flag_admin', '=', False), ('stage_early', '=', True), ('flag_archive', '=', True), ('flag_client', '=', True)]}"/>
 			</button>
 			<button name="action_makeMeeting" position="before">
 				<button string="Download Offering Letter" name="act_download_offering_letter" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('flag_ol', '=', False)]}"/>
@@ -291,7 +289,7 @@
 			</field>
 			<xpath expr="//sheet/group/group[4]" position="after">
 				<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
-					<tree editable="bottom" >
+					<tree editable="bottom">
 						<field name="name" />
 						<field name="code" required="1" />
 						<field name="wage" />
@@ -310,7 +308,7 @@
 					<!-- <page string='Fringe Benefits'>
 						<group>
 							<field name="benefits_ids" attrs="{'invisible': [('flag_benefits', '=', False)]}">
-								<tree editable="bottom" >
+								<tree editable="bottom">
 									<field name="name" />
 									<field name="wage" />
 									<field name="currency_id" invisible="1" />
@@ -347,7 +345,7 @@
 				<!-- <field name="psikotes" filename="file_psikotes" widget="binary"/> -->
 				<!-- <field name="file_psikotes" invisible="1"/> -->
 				<field name="file_name" invisible="1"/>
-				<field name="gender_applicant"/>	
+				<field name="gender_applicant"/>
 				<label for="birth"/>
 				<div class="o_row">
 					<field name="place_of_birth" nolabel="1" placeholder="Place"/>
@@ -379,9 +377,9 @@
 	</record>
 
 	<record model="ir.ui.view" id="hr_applicant_view_search">
-		<field name="name">hr.applicant.view.search</field> 
-		<field name="model">hr.applicant</field> 
-		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis" /> 
+		<field name="name">hr.applicant.view.search</field>
+		<field name="model">hr.applicant</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis" />
 		<field name="arch" type="xml">
 			<field name="attachment_ids" position="after">
 				<filter name="type_internal" string="Internal" domain="[('job_type', '=', 'internal')]"/>
@@ -392,9 +390,9 @@
 	</record>
 
 	<!-- File Template -->
-	<record model="ir.ui.view" id="file_template_view_tree"> 
-		<field name="name">hr.file.template.tree</field> 
-		<field name="model">hr.file.template</field> 
+	<record model="ir.ui.view" id="file_template_view_tree">
+		<field name="name">hr.file.template.tree</field>
+		<field name="model">hr.file.template</field>
 		<field name="arch" type="xml">
 			<tree>
 				<field name="name" />
@@ -402,9 +400,9 @@
 		</field>
 	</record>
 
-	<record model="ir.ui.view" id="file_template_view_form"> 
-		<field name="name">hr.file.template.form</field> 
-		<field name="model">hr.file.template</field> 
+	<record model="ir.ui.view" id="file_template_view_form">
+		<field name="name">hr.file.template.form</field>
+		<field name="model">hr.file.template</field>
 		<field name="arch" type="xml">
 			<form>
 				<sheet>
@@ -428,13 +426,13 @@
 
 
 	<record id="action_file_template" model="ir.actions.act_window">
-        <field name="name">File Template</field>
-        <field name="res_model">hr.file.template</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
-        <field name="domain">[]</field>
-        <field name="help"></field>
-    </record>
+		<field name="name">File Template</field>
+		<field name="res_model">hr.file.template</field>
+		<field name="view_mode">tree,form</field>
+		<field name="context">{}</field>
+		<field name="domain">[]</field>
+		<field name="help"></field>
+	</record>
 
 	<!-- Recruitment -->
 	<record model="ir.ui.view" id="recruitment_stage_tree">
@@ -458,7 +456,7 @@
 			</field>
 		</field>
 	</record>
-	
+
 	<!-- Employee -->
 	<record model="ir.ui.view" id="view_employee_form3">
 		<field name="name">hr.employee.form</field>
@@ -544,9 +542,7 @@
 		<field name="arch" type="xml">
 			<xpath expr="//header" position="after">
 				<field name="notif" invisible="1"/>
-				<div class="alert alert-danger text-center o_form_header"
-					attrs="{'invisible': [('notif', '!=', True)]}"
-					role="status">
+				<div class="alert alert-danger text-center o_form_header" attrs="{'invisible': [('notif', '!=', True)]}" role="status">
 					<a class="close" data-dismiss="alert" href="#" aria-label="Close">x</a>
 					<div>
 						<strong>Kontrak Akan Berakhir Dalam ${object.month_end}</strong>
@@ -555,8 +551,7 @@
 			</xpath>
 			<xpath expr="//div[@name='button_box']" position="replace">
 				<div class="oe_button_box" name="button_box">
-					<button string="Download Contract" name="act_download_report_contract"
-					icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('state', '!=', 'open')]}"/>
+					<button string="Download Contract" name="act_download_report_contract" icon="fa-download" class="text-center" type="object" attrs="{'invisible': [('state', '!=', 'open')]}"/>
 				</div>
 			</xpath>
 			<xpath expr="//group[@name='duration_group']/div[1]" position="after">
@@ -607,73 +602,12 @@
 		</field>
 	</record>
 
-	<!-- Project -->
-	<record model="ir.ui.view" id="project_one_month_form">
-		<field name="name">project.project.form</field>
-		<field name="model">project.project</field>
-		<field name="inherit_id" ref="project.edit_project"/>
-		<field name="arch" type="xml">
-			<field name="partner_id" position="attributes">
-				<attribute name="invisible">1</attribute>
-			</field>
-			<field name="partner_id" position="after">
-				<field name="date_start"/>
-				<field name="project_task_ids" widget="many2many_tags"/>
-				<field name="user_partner_id"/>				
-			</field>
-		</field>
-	</record>
-
-	<!-- Project Task Template -->
-	<record model="ir.ui.view" id="project_task_template_tree">
-		<field name="name">project.task.template.tree</field>
-		<field name="model">project.task.template</field>
-		<field name="arch" type="xml">
-			<tree>
-				<field name="name"/>
-				<field name="task_type"/>
-				<field name="is_active"/>
-			</tree>
-		</field>
-	</record>
-
-	<record model="ir.ui.view" id="project_task_template_form">
-		<field name="name">project.task.template.form</field>
-		<field name="model">project.task.template</field>
-		<field name="arch" type="xml">
-			<form>
-				<sheet>
-					<div class="oe_title">
-						<h1>
-							<field name="name" placeholder="Task Name" />
-						</h1>
-					</div>
-					<group>
-						<group>
-							<field name="task_type" required="1"/>
-							<field name="is_active"/>
-						</group>
-					</group>
-				</sheet>
-			</form>
-		</field>
-	</record>
-
-	<record id="action_project_task_template" model="ir.actions.act_window">
-        <field name="name">Automated Task</field>
-        <field name="res_model">project.task.template</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
-        <field name="domain">[]</field>
-        <field name="help"></field>
-    </record>
-	
 	<!-- Kanban Applicant -->
 	<record model="ir.ui.view" id="hr_rec_form">
 		<field name="name">hr_rec.form</field>
 		<field name="model">hr.applicant</field>
 		<field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
-		<field name="arch" type="xml">	
+		<field name="arch" type="xml">
 			<xpath expr="//kanban" position="attributes">
 				<attribute name="records_draggable">0</attribute>
 			</xpath>
@@ -685,9 +619,14 @@
 						</div>
 						<div class="o_kanban_record_headings">
 							<b class="o_kanban_record_title mt8" t-if="record.partner_name.raw_value">
-								<field name="partner_name"/><br/>
-							</b><t t-else="1">
-								<i class="o_kanban_record_title"><field name="name"/></i><br/>
+								<field name="partner_name"/>
+								<br/>
+							</b>
+							<t t-else="1">
+								<i class="o_kanban_record_title">
+									<field name="name"/>
+								</i>
+								<br/>
 							</t>
 							<div class="o_kanban_record_subtitle" invisible="context.get('search_default_job_id', False)">
 								<field name="job_id"/>
@@ -695,7 +634,11 @@
 						</div>
 					</div>
 					<field name="categ_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-					<t t-if="record.partner_mobile.raw_value"><i class="fa fa-mobile mr4" role="img" aria-label="Mobile" title="Mobile"/><field name="partner_mobile" widget="phone"/><br/></t>
+					<t t-if="record.partner_mobile.raw_value">
+						<i class="fa fa-mobile mr4" role="img" aria-label="Mobile" title="Mobile"/>
+						<field name="partner_mobile" widget="phone"/>
+						<br/>
+					</t>
 					<div class="o_kanban_record_bottom mt4 offset-md-4" style="position: absolute; top: 50px;">
 						<div class="oe_kanban_bottom_left">
 							<div class="float-left mr4" groups="base.group_user">
@@ -705,12 +648,16 @@
 								<field name="activity_ids" widget="kanban_activity"/>
 							</div>
 							<t t-if="record.message_needaction_counter.raw_value">
-								<span role="alert" class="oe_kanban_mail_new mr4" title="Unread Messages"><i class="fa fa-comments" role="img" aria-label="Unread messages"/><t t-raw="record.message_needaction_counter.raw_value"/></span>
+								<span role="alert" class="oe_kanban_mail_new mr4" title="Unread Messages">
+									<i class="fa fa-comments" role="img" aria-label="Unread messages"/>
+									<t t-raw="record.message_needaction_counter.raw_value"/>
+								</span>
 							</t>
 						</div>
 						<div class="oe_kanban_bottom_right">
 							<a name="action_get_attachment_tree_view" type="object">
-								<span title="Documents"><i class="fa fa-paperclip" role="img" aria-label="Documents"/>
+								<span title="Documents">
+									<i class="fa fa-paperclip" role="img" aria-label="Documents"/>
 									<t t-esc="record.attachment_number.raw_value"/>
 								</span>
 							</a>
@@ -743,38 +690,17 @@
 	</record>
 
 	<record id="action_job_location_recruitment" model="ir.actions.act_window">
-        <field name="name">Job Location</field>
-        <field name="res_model">hr.job.location</field>
-        <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
-        <field name="domain">[]</field>
-        <field name="help"></field>
-    </record>
-	
-	<menuitem name="Work Entries"
-		id="hr_payroll.menu_hr_payroll_work_entries_root"
-		groups="base.group_no_one"
-		sequence="60"
-		parent="hr_payroll.menu_hr_payroll_root"/>
-	
-	<menuitem name="File Template"
-		id="menu_file_template"
-		groups="base.group_user"
-		sequence="30"
-		action="action_file_template"
-		parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+		<field name="name">Job Location</field>
+		<field name="res_model">hr.job.location</field>
+		<field name="view_mode">tree,form</field>
+		<field name="context">{}</field>
+		<field name="domain">[]</field>
+		<field name="help"></field>
+	</record>
 
-	<menuitem name="Job Location"
-		id="menu_partner_recruitement"
-		groups="base.group_system"
-		sequence="40"
-		action="action_job_location_recruitment"
-		parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+	<menuitem name="Work Entries" id="hr_payroll.menu_hr_payroll_work_entries_root" groups="base.group_no_one" sequence="60" parent="hr_payroll.menu_hr_payroll_root"/>
 
-	<menuitem name="Automated Task"
-		id="menu_project_task"
-		groups="base.group_user"
-		sequence="4"
-		action="action_project_task_template"
-		parent="project.menu_project_config"/>
+	<menuitem name="File Template" id="menu_file_template" groups="base.group_user" sequence="30" action="action_file_template" parent="hr_recruitment.menu_hr_recruitment_configuration"/>
+
+	<menuitem name="Job Location" id="menu_partner_recruitement" groups="base.group_system" sequence="40" action="action_job_location_recruitment" parent="hr_recruitment.menu_hr_recruitment_configuration"/>
 </odoo>

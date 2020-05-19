@@ -11,6 +11,7 @@
     'description': """Project MUM""",
     'depends': [
         'project',
+        'hr_mum',
     ],
     'data': [
         # 'data/service_cron.xml',

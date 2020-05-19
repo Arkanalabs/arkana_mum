@@ -18,4 +18,67 @@
 			</xpath>
 		</field>
 	</record>
+	
+	<!-- Project -->
+	<record model="ir.ui.view" id="project_one_month_form">
+		<field name="name">project.project.form</field>
+		<field name="model">project.project</field>
+		<field name="inherit_id" ref="project.edit_project"/>
+		<field name="arch" type="xml">
+			<field name="partner_id" position="attributes">
+				<attribute name="invisible">1</attribute>
+			</field>
+			<field name="partner_id" position="after">
+				<field name="date_start"/>
+				<field name="project_task_ids" widget="many2many_tags"/>
+				<field name="user_partner_id"/>				
+			</field>
+		</field>
+	</record>
+
+	<!-- Project Task Template -->
+	<record model="ir.ui.view" id="project_task_template_tree">
+		<field name="name">project.task.template.tree</field>
+		<field name="model">project.task.template</field>
+		<field name="arch" type="xml">
+			<tree>
+				<field name="name"/>
+				<field name="task_type"/>
+				<field name="is_active"/>
+			</tree>
+		</field>
+	</record>
+
+	<record model="ir.ui.view" id="project_task_template_form">
+		<field name="name">project.task.template.form</field>
+		<field name="model">project.task.template</field>
+		<field name="arch" type="xml">
+			<form>
+				<sheet>
+					<div class="oe_title">
+						<h1>
+							<field name="name" placeholder="Task Name" />
+						</h1>
+					</div>
+					<group>
+						<group>
+							<field name="task_type" required="1"/>
+							<field name="is_active"/>
+						</group>
+					</group>
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_project_task_template" model="ir.actions.act_window">
+        <field name="name">Automated Task</field>
+        <field name="res_model">project.task.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+        <field name="help"></field>
+    </record>
+
+	<menuitem name="Automated Task" id="menu_project_task" groups="base.group_user" sequence="4" action="action_project_task_template" parent="project.menu_project_config"/>
 </odoo>

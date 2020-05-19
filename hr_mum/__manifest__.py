@@ -11,7 +11,10 @@
     'description': """HR MUM""",
     'depends': [
         'website_hr_recruitment',
+        'hr_payroll',
         'report_py3o',
+        'survey',
+        'contacts',
     ],
     'data': [
         'security/ir.model.access.csv',
