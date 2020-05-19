@@ -15,6 +15,7 @@
         'report_py3o',
         'survey',
         'contacts',
+        
     ],
     'data': [
         'security/ir.model.access.csv',
