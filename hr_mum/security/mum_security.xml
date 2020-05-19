@@ -24,7 +24,7 @@
             <field name="name">Job Filter by User</field>
             <field name="model_id" ref="hr_mum.model_hr_job"/>
             <field name="groups" eval="[(4, ref('hr_recruitment.group_hr_recruitment_user'))]"/>
-            <field name="domain_force">['|',('company_id', '=', user.company_id.id), ('create_uid','=', user.id), ('user_id','=', user.id)]</field>
+            <field name="domain_force">['|',('company_id', 'in', user.company_ids.ids), ('create_uid','=', user.id), ('user_id','=', user.id)]</field>
         </record>
 
         <record id="job_location_admin" model="ir.rule">
