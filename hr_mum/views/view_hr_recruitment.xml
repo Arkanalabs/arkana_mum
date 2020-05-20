@@ -265,7 +265,7 @@
 			</field>
 			<field name="job_id" position="before">
 				<field name="job_type"/>
-				<field name="partner_id"/>
+				<!-- <field name="partner_id"/> -->
 				<!-- <field name="user_applicant_id" /> -->
 			</field>
 			<field name="job_id" position="after">

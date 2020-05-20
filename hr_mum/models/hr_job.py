@@ -91,7 +91,7 @@ class Applicant(models.Model):
         'hr.job.location', 'Job Location', related='job_id.job_location_id')
     flag_mail_on = fields.Boolean(string='Mail On')
     flag_mail_off = fields.Boolean(string='Mail Off')
-    partner_id = fields.Many2one(related="user_id.partner_id")
+    # partner_id = fields.Many2one(related="user_id.partner_id")
 
     @api.model
     def create(self, vals):
@@ -104,10 +104,10 @@ class Applicant(models.Model):
                 if not rec.file_name.split('.')[-1].lower() in allowed_extension:
                     raise UserError(
                         'Dokumen harus berformat *.img/*.jpg/*.jpeg/*.png !')
-        if rec.partner_id.whatsapp:
+        if rec.user_id.partner_id.whatsapp:
             message = "[INFO MUM]\n\n Applicant baru telah mendaftar dengan nama %s" % (
                 rec.name)
-            rec.partner_id.send_wa_notification(body=message, flag=False)
+            rec.user_id.partner_id.send_wa_notification(body=message, flag=False)
 
         # for file in rec.file_ids:
         #     if file.file:
